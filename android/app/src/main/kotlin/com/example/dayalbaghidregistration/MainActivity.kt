@@ -47,25 +47,22 @@ class MainActivity: FlutterActivity() , MFS100Event {
             // TODO
 
             if (call.method == "startReading") {
-//                isbusy = false;
-//                RFIDReader.CreateBT4Conn("BTR-8L020080005", this)
-//                //Rfid_BT4_Init("BTR-8L020080005",this)
-//                GetEpc()
-               // MFS100Test().onStart(this);
-//                //RFIDReader.CloseConn(connParam)
-//
 
+                InitScanner(this);
+                byteArray = ByteArray(0);
                 StartSyncCapture();
                 //result.success(list);
                 //MFS100Test().Stop();
 
             }
             else if(call.method == "getFingerprint"){
+                Stop()
                 result.success(byteArray)
-                mfs100?.StopAutoCapture()
+
             }
             else if(call.method == "initialiseReader"){
-                val code = onStart(this);
+                onStart(this);
+
 //                result.success(code);
 
             }
@@ -75,9 +72,11 @@ class MainActivity: FlutterActivity() , MFS100Event {
         }
     }
 
-    protected fun onStart(mCOntext: Context): String? {
+    protected fun onStart(mCOntext: Context) {
         try {
+
             mfs100 = MFS100(this)
+            Log.d("starting","$mfs100");
             mfs100!!.SetApplicationContext(mCOntext)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -87,17 +86,18 @@ class MainActivity: FlutterActivity() , MFS100Event {
                 mfs100 = MFS100(this)
                 mfs100!!.SetApplicationContext(mCOntext)
             } else {
-                return InitScanner(mCOntext)
+                 InitScanner(mCOntext)
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return "not init 1"
+
     }
 
     protected fun Stop() {
         try {
             if (isCaptureRunning) {
+                Log.d("stopping","stopped");
                 val ret = mfs100!!.StopAutoCapture()
             }
             Thread.sleep(500)
@@ -108,11 +108,13 @@ class MainActivity: FlutterActivity() , MFS100Event {
     }
 
 
-    private fun InitScanner(context: Context): String? {
-        return try {
+    private fun InitScanner(context: Context){
+         try {
+
             val ret = mfs100!!.Init()
             if (ret != 0) {
-                mfs100!!.GetErrorMsg(ret)
+                val x = mfs100!!.GetErrorMsg(ret)
+                Log.d("error","$x $ret")
             } else {
                 """Serial: ${mfs100!!.GetDeviceInfo().SerialNo()} Make: ${
                     mfs100!!.GetDeviceInfo().Make()
@@ -132,8 +134,11 @@ Certificate: ${mfs100!!.GetCertification()}"""
             try {
                 val fingerData = FingerData()
                 val ret = mfs100!!.AutoCapture(fingerData, timeout, true)
-                Log.e("StartSyncCapture.RET", "" + ret)
-
+                Log.e("StartSyncCapture.RET", "" +ret+ mfs100!!.GetErrorMsg(ret))
+                if(ret == -1324) {
+                    val strError = mfs100!!.GetErrorMsg(ret);
+                    byteArray = strError.toByteArray()
+                }
                 if (ret != 0) {
                     //   SetTextOnUIThread(mfs100.GetErrorMsg(ret));
                 } else {
@@ -190,6 +195,7 @@ Certificate: ${mfs100!!.GetCertification()}"""
     private var mLastAttTime = 0L
     var s: String? = null
     override fun OnDeviceAttached(vid: Int, pid: Int, hasPermission: Boolean) {
+        Log.d("devic attched","yes");
         if (SystemClock.elapsedRealtime() - mLastAttTime < Threshold) {
             return
         }

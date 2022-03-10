@@ -34,7 +34,8 @@ class _AddSatsangiState extends State<AddSatsangi>
   File? imageFile;
   late Animation<double> _animation;
   late AnimationController _animationController;
-
+  bool error = false;
+  bool loading = false;
   //= File("assets/images/userDummyPhoto.png");
   @override
   void initState() {
@@ -84,6 +85,11 @@ class _AddSatsangiState extends State<AddSatsangi>
   }
 
   startReading() async {
+    //initialiseReader();
+    setState(() {
+      loading = true;
+    });
+
     await AddSatsangi.platform.invokeMethod("startReading");
   }
 
@@ -92,20 +98,34 @@ class _AddSatsangiState extends State<AddSatsangi>
       final Uint8List result =
           await AddSatsangi.platform.invokeMethod("getFingerprint");
       finger = result;
-
-      VxToast.show(context, msg: "$result");
-      // if (x == "check") {
-      //   code = 1;
-      // } else if (x == "bitmap 0") {
-      //   code = 2;
-      // } else if (x == "error") {
-      //   code = 3;
-      // }
-      if (result.isNotEmpty)
+      int code = convertUint8ListToString(result);
+      if (code == 0) {
         setState(() {
+          loading = false;
+          fingerData = false;
+          Navigator.pop(context);
+          showDialog(
+              context: context,
+              builder: (BuildContext context) =>
+                  _buildPopupretakeFingerprint(context));
+        });
+      }
+      if (result.isNotEmpty && code == 1) {
+        setState(() {
+          loading = false;
+          Navigator.pop(context);
           fingerData = true;
         });
+      }
     } on PlatformException catch (e) {}
+  }
+
+  int convertUint8ListToString(Uint8List uint8list) {
+    if (String.fromCharCodes(uint8list) == "Improper Finger Placement") {
+      return 0;
+    } else {
+      return 1;
+    }
   }
 
   @override
@@ -323,10 +343,40 @@ class _AddSatsangiState extends State<AddSatsangi>
     );
   }
 
+  Widget _buildPopupretakeFingerprint(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text("Improper finger placement Please take the scan again"),
+      actions: <Widget>[
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            elevation: 5,
+            primary: Colors.orange,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+            showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    _buildPopupFingerprint(context));
+            startReading();
+          },
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'Scan',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildPopupFingerprint(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("Please set the finger on the scanner"),
+      title: Text("Please retrieve to check the image"),
       actions: <Widget>[
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -336,10 +386,10 @@ class _AddSatsangiState extends State<AddSatsangi>
           onPressed: () {
             getFingerprint();
           },
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: const Text(
-              'Proceed',
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'Get Scan',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
           ),
