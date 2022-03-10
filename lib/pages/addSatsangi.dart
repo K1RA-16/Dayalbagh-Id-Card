@@ -21,8 +21,14 @@ class AddSatsangi extends StatefulWidget {
 
 class _AddSatsangiState extends State<AddSatsangi>
     with SingleTickerProviderStateMixin {
+  int fingersLeft = 4;
   int index = satsangiListData.index;
   bool fingerData = false;
+  bool finger1 = false;
+  bool finger2 = false;
+  bool finger3 = false;
+  bool finger4 = false;
+
   late TextEditingController uidController;
   late TextEditingController mobileController;
   late TextEditingController fatherNameController;
@@ -93,7 +99,7 @@ class _AddSatsangiState extends State<AddSatsangi>
     await AddSatsangi.platform.invokeMethod("startReading");
   }
 
-  getFingerprint() async {
+  getFingerprint(int fingerIso) async {
     try {
       final Uint8List result =
           await AddSatsangi.platform.invokeMethod("getFingerprint");
@@ -107,13 +113,34 @@ class _AddSatsangiState extends State<AddSatsangi>
           showDialog(
               context: context,
               builder: (BuildContext context) =>
-                  _buildPopupretakeFingerprint(context));
+                  _buildPopupretakeFingerprint(context, fingerIso));
         });
       }
+
       if (result.isNotEmpty && code == 1) {
         setState(() {
-          loading = false;
           Navigator.pop(context);
+          if (fingersLeft != 0) {
+            fingersLeft--;
+            print(fingerIso);
+            if (fingerIso == 1) {
+              finger1 = true;
+            } else if (fingerIso == 2) {
+              finger2 = true;
+            } else if (fingerIso == 3) {
+              finger3 = true;
+            } else if (fingerIso == 4) {
+              finger4 = true;
+            }
+            Navigator.pop(context);
+            showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    _buildPopupShowFingers(context));
+          }
+          setState(() {});
+          loading = false;
+
           fingerData = true;
         });
       }
@@ -156,8 +183,7 @@ class _AddSatsangiState extends State<AddSatsangi>
               showDialog(
                   context: context,
                   builder: (BuildContext context) =>
-                      _buildPopupFingerprint(context));
-              startReading();
+                      _buildPopupShowFingers(context));
             },
           ),
         ],
@@ -343,7 +369,7 @@ class _AddSatsangiState extends State<AddSatsangi>
     );
   }
 
-  Widget _buildPopupretakeFingerprint(BuildContext context) {
+  Widget _buildPopupretakeFingerprint(BuildContext context, int fingerIso) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("Improper finger placement Please take the scan again"),
@@ -358,7 +384,7 @@ class _AddSatsangiState extends State<AddSatsangi>
             showDialog(
                 context: context,
                 builder: (BuildContext context) =>
-                    _buildPopupFingerprint(context));
+                    _buildPopupFingerprint(context, fingerIso));
             startReading();
           },
           child: const Padding(
@@ -373,7 +399,125 @@ class _AddSatsangiState extends State<AddSatsangi>
     );
   }
 
-  Widget _buildPopupFingerprint(BuildContext context) {
+  Widget _buildPopupShowFingers(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text("$fingersLeft Finger Scans Left"),
+      actions: <Widget>[
+        Image.asset(
+          "assets/fingers.png",
+          fit: BoxFit.contain,
+        ),
+        5.heightBox,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              alignment: Alignment.topCenter,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFingerprint(context, 1));
+              startReading();
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Scan finger 1',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger1) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
+        ),
+        5.heightBox,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFingerprint(context, 2));
+              startReading();
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Scan finger 2',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger2) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
+        ),
+        5.heightBox,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFingerprint(context, 3));
+              startReading();
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Scan finger 3',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger3) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
+        ),
+        5.heightBox,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFingerprint(context, 4));
+              startReading();
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Scan finger 4',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger4) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPopupFingerprint(BuildContext context, int fingerIso) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("Please retrieve to check the image"),
@@ -384,7 +528,7 @@ class _AddSatsangiState extends State<AddSatsangi>
             primary: Colors.orange,
           ),
           onPressed: () {
-            getFingerprint();
+            getFingerprint(fingerIso);
           },
           child: const Padding(
             padding: EdgeInsets.all(8.0),
