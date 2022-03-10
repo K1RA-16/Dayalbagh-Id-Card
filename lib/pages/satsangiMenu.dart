@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class SatsangiMenu extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -10,8 +9,7 @@ class SatsangiMenu extends StatelessWidget {
       appBar: AppBar(
           title: Text(
         "Dayalbagh Id Registration",
-        style: TextStyle(
-            color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
       )),
       body: Padding(
         padding: const EdgeInsets.only(left: 10, right: 10),
@@ -45,9 +43,7 @@ class SatsangiMenu extends StatelessWidget {
               ),
               const HeightBox(10),
               InkWell(
-                onTap: () => {
-                  Navigator.pushNamed(context, "/children")
-                },
+                onTap: () => {Navigator.pushNamed(context, "/children")},
                 //     "/connectRfid")), //SystemSetting.goto(SettingTarget.BLUETOOTH)),
                 child: Card(
                     margin: const EdgeInsets.all(8.0),
@@ -91,9 +87,7 @@ class SatsangiMenu extends StatelessWidget {
               ),
               const HeightBox(10),
               InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, "/tagUpdate");
-                },
+                onTap: () {},
                 child: Card(
                   margin: const EdgeInsets.all(8.0),
                   elevation: 8,
@@ -113,26 +107,6 @@ class SatsangiMenu extends StatelessWidget {
                 ),
               ),
               const HeightBox(10),
-              InkWell(
-                onTap: () => {},
-                child: Card(
-                  margin: const EdgeInsets.all(8.0),
-                  elevation: 8,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  color: Colors.blueGrey,
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Text("Search User",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 19)),
-                      ),
-                    ],
-                  ).p(20),
-                ),
-              ),
             ],
           ),
         )),

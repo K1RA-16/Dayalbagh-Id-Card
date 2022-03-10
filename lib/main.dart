@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         "/addSatsangi": (context) => AddSatsangi(),
         "/login": (context) => LoginPage(),
         "/menu": (context) => SatsangiMenu(),
-        //"/children": (context) => ManageChildren(),
+        "/children": (context) => ManageChildren(),
       },
     );
   }

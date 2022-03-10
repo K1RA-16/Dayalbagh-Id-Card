@@ -51,8 +51,7 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
             title: const Text(
           "Dayalbagh Id Registration",
-          style: TextStyle(
-              color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
         )),
         body: Padding(
           padding: const EdgeInsets.only(left: 10, right: 10),
