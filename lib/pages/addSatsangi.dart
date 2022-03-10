@@ -9,7 +9,12 @@ import 'package:flutter/services.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:image_picker/image_picker.dart';
 
-Uint8List finger = Uint8List(0);
+Uint8List fingerData1 = Uint8List(0);
+Uint8List fingerData2 = Uint8List(0);
+Uint8List fingerData3 = Uint8List(0);
+Uint8List fingerData4 = Uint8List(0);
+Uint8List fingerData5 = Uint8List(0);
+Uint8List fingerData6 = Uint8List(0);
 int code = 0;
 
 class AddSatsangi extends StatefulWidget {
@@ -23,7 +28,7 @@ class _AddSatsangiState extends State<AddSatsangi>
     with SingleTickerProviderStateMixin {
   int fingersLeft = 4;
   int index = satsangiListData.index;
-  bool fingerData = false;
+
   bool finger1 = false;
   bool finger2 = false;
   bool finger3 = false;
@@ -104,8 +109,21 @@ class _AddSatsangiState extends State<AddSatsangi>
     try {
       final Uint8List result =
           await AddSatsangi.platform.invokeMethod("getFingerprint");
-      finger = result;
+      if (fingerIso == 1) {
+        fingerData1 = result;
+      } else if (fingerIso == 2) {
+        fingerData2 = result;
+      } else if (fingerIso == 3) {
+        fingerData3 = result;
+      } else if (fingerIso == 4) {
+        fingerData4 = result;
+      } else if (fingerIso == 5) {
+        fingerData5 = result;
+      } else if (fingerIso == 6) {
+        fingerData6 = result;
+      }
       int code = convertUint8ListToString(result);
+
       if (code == 0) {
         setState(() {
           loading = false;
@@ -122,12 +140,12 @@ class _AddSatsangiState extends State<AddSatsangi>
           } else if (fingerIso == 6) {
             finger6 = false;
           }
-          Navigator.pop(context);
-          showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  _buildPopupretakeFingerprint(context, fingerIso));
         });
+        Navigator.pop(context);
+        showDialog(
+            context: context,
+            builder: (BuildContext context) =>
+                _buildPopupretakeFingerprint(context, fingerIso));
       }
 
       if (result.isNotEmpty && code == 1) {
@@ -174,8 +192,6 @@ class _AddSatsangiState extends State<AddSatsangi>
           }
           setState(() {});
           loading = false;
-
-          fingerData = true;
         });
       }
     } on PlatformException catch (e) {}
@@ -183,6 +199,7 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   int convertUint8ListToString(Uint8List uint8list) {
     if (String.fromCharCodes(uint8list) == "Improper Finger Placement") {
+      fingersLeft++;
       return 0;
     } else {
       return 1;
@@ -303,7 +320,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                       "left index finger".text.black.make(),
                       5.heightBox,
                       Image.memory(
-                        finger,
+                        fingerData2,
                         width: 100,
                         height: 100,
                         fit: BoxFit.contain,
@@ -319,7 +336,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                       "left middle finger".text.black.make(),
                       5.heightBox,
                       Image.memory(
-                        finger,
+                        fingerData1,
                         width: 100,
                         height: 100,
                         fit: BoxFit.contain,
@@ -335,7 +352,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                       "left thumb".text.black.make(),
                       5.heightBox,
                       Image.memory(
-                        finger,
+                        fingerData5,
                         width: 100,
                         height: 100,
                         fit: BoxFit.contain,
@@ -360,7 +377,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                       "right index finger".text.black.make(),
                       5.heightBox,
                       Image.memory(
-                        finger,
+                        fingerData3,
                         width: 100,
                         height: 100,
                         fit: BoxFit.contain,
@@ -376,7 +393,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                       "left middle finger".text.black.make(),
                       5.heightBox,
                       Image.memory(
-                        finger,
+                        fingerData4,
                         width: 100,
                         height: 100,
                         fit: BoxFit.contain,
@@ -392,7 +409,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                       "left thumb".text.black.make(),
                       5.heightBox,
                       Image.memory(
-                        finger,
+                        fingerData6,
                         width: 100,
                         height: 100,
                         fit: BoxFit.contain,
@@ -553,6 +570,7 @@ class _AddSatsangiState extends State<AddSatsangi>
           ),
           onPressed: () {
             Navigator.pop(context);
+            //print("re read iso $fingerIso");
             showDialog(
                 context: context,
                 builder: (BuildContext context) =>
@@ -562,7 +580,7 @@ class _AddSatsangiState extends State<AddSatsangi>
           child: const Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
-              'Scan',
+              'Scan again',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
           ),
@@ -599,12 +617,16 @@ class _AddSatsangiState extends State<AddSatsangi>
                             _buildPopupFingerprint(context, 1));
                     startReading();
                   }
+                  if (fingersLeft == 0 && finger1 == false) {
+                    VxToast.show(context,
+                        msg: "try resetting if ther are no more scans left");
+                  }
                 },
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
+                      const Text(
                         'finger 1',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
@@ -629,12 +651,16 @@ class _AddSatsangiState extends State<AddSatsangi>
                             _buildPopupFingerprint(context, 3));
                     startReading();
                   }
+                  if (fingersLeft == 0 && finger3 == false) {
+                    VxToast.show(context,
+                        msg: "try resetting if ther are no more scans left");
+                  }
                 },
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
+                      const Text(
                         'finger 3',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
@@ -664,12 +690,16 @@ class _AddSatsangiState extends State<AddSatsangi>
                             _buildPopupFingerprint(context, 2));
                     startReading();
                   }
+                  if (fingersLeft == 0 && finger2 == false) {
+                    VxToast.show(context,
+                        msg: "try resetting if ther are no more scans left");
+                  }
                 },
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
+                      const Text(
                         'finger 2',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
@@ -694,12 +724,16 @@ class _AddSatsangiState extends State<AddSatsangi>
                             _buildPopupFingerprint(context, 4));
                     startReading();
                   }
+                  if (fingersLeft == 0 && finger4 == false) {
+                    VxToast.show(context,
+                        msg: "try resetting if ther are no more scans left");
+                  }
                 },
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
+                      const Text(
                         'finger 4',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
@@ -732,12 +766,16 @@ class _AddSatsangiState extends State<AddSatsangi>
                             _buildPopupFingerprint(context, 5));
                     startReading();
                   }
+                  if (fingersLeft == 0 && finger5 == false) {
+                    VxToast.show(context,
+                        msg: "try resetting if ther are no more scans left");
+                  }
                 },
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
+                      const Text(
                         'finger 5',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
@@ -762,12 +800,16 @@ class _AddSatsangiState extends State<AddSatsangi>
                             _buildPopupFingerprint(context, 6));
                     startReading();
                   }
+                  if (fingersLeft == 0 && finger6 == false) {
+                    VxToast.show(context,
+                        msg: "try resetting if ther are no more scans left");
+                  }
                 },
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
+                      const Text(
                         'finger 6',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
@@ -792,7 +834,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  const Text(
                     'Reset finger scans',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),

@@ -1,0 +1,2 @@
+de/florianweinaug/system_settings/BuildConfig.java
+ de.florianweinaug.system_settings.BuildConfig
