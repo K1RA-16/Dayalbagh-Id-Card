@@ -1,5 +1,6 @@
 package com.example.dayalbaghidregistration
 
+import android.view.WindowManager.LayoutParams
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -38,6 +39,7 @@ class MainActivity: FlutterActivity() , MFS100Event {
     private var image: Byte? = null;
     private val CHANNEL = "com.example.dayalbaghidregistration/getBitmap";
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+        window.addFlags(LayoutParams.FLAG_SECURE)
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(
             flutterEngine.getDartExecutor(),
@@ -127,8 +129,7 @@ Certificate: ${mfs100!!.GetCertification()}"""
     }
 
     protected fun StartSyncCapture() {
-
-
+        Thread{
             //  SetTextOnUIThread("");
             isCaptureRunning = true
             try {
@@ -158,7 +159,7 @@ Certificate: ${mfs100!!.GetCertification()}"""
 
             } finally {
                 isCaptureRunning = false
-            }
+            }}.start();
 
 
     }
