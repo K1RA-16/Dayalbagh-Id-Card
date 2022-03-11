@@ -28,7 +28,7 @@ class _AddSatsangiState extends State<AddSatsangi>
     with SingleTickerProviderStateMixin {
   int fingersLeft = 4;
   int index = satsangiListData.index;
-
+  bool photoTaken = false;
   bool finger1 = false;
   bool finger2 = false;
   bool finger3 = false;
@@ -75,6 +75,7 @@ class _AddSatsangiState extends State<AddSatsangi>
     final curvedAnimation =
         CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+
     super.initState();
   }
 
@@ -84,7 +85,14 @@ class _AddSatsangiState extends State<AddSatsangi>
 
     // Capture a photo
     var image = await _picker.getImage(source: ImageSource.camera);
-    if (image != null) imageFile = File(image.path);
+    if (image != null) {
+      imageFile = File(image.path);
+      photoTaken = true;
+      Navigator.pop(context);
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => _buildPopupImage(context));
+    }
     setState(() {});
   }
 
@@ -226,8 +234,10 @@ class _AddSatsangiState extends State<AddSatsangi>
               primary: Colors.black,
             ),
             onPressed: () {
-              VxToast.show(context, msg: "Details Updated");
-              Navigator.pop(context);
+              //VxToast.show(context, msg: "Details Updated");
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => _buildPopupImage(context));
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -589,6 +599,636 @@ class _AddSatsangiState extends State<AddSatsangi>
     );
   }
 
+  Widget _buildPopupFinger1(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text("$fingersLeft Finger Scans Left"),
+      actions: <Widget>[
+        Image.asset(
+          "assets/LI.png",
+          fit: BoxFit.contain,
+        ),
+        5.heightBox,
+        if (finger1)
+          Card(
+            color: Colors.white,
+            child: Column(
+              children: [
+                Image.memory(
+                  fingerData1,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ).p(5),
+          ),
+        5.heightBox,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFinger2(context));
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'finger not available',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger1) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
+        ),
+        5.heightBox,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFinger2(context));
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Next',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    if (finger1) Icon(Icons.check, color: Colors.green),
+                  ]),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFingerprint(context, 1));
+                startReading();
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Start Scanning',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    if (finger1) Icon(Icons.check, color: Colors.green),
+                  ]),
+            ),
+            5.heightBox,
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPopupFinger2(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text("$fingersLeft Finger Scans Left"),
+      actions: <Widget>[
+        Image.asset(
+          "assets/RI.png",
+          fit: BoxFit.contain,
+        ),
+        5.heightBox,
+        if (finger2)
+          Card(
+            color: Colors.white,
+            child: Column(
+              children: [
+                Image.memory(
+                  fingerData2,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ).p(5),
+          ),
+        5.heightBox,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFinger3(context));
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'finger not available',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger2) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
+        ),
+        5.heightBox,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFinger3(context));
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Next',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    if (finger2) Icon(Icons.check, color: Colors.green),
+                  ]),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFingerprint(context, 2));
+                startReading();
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Start Scanning',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    if (finger2) Icon(Icons.check, color: Colors.green),
+                  ]),
+            ),
+            5.heightBox,
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPopupFinger3(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text("$fingersLeft Finger Scans Left"),
+      actions: <Widget>[
+        Image.asset(
+          "assets/LM.png",
+          fit: BoxFit.contain,
+        ),
+        5.heightBox,
+        if (finger3)
+          Card(
+            color: Colors.white,
+            child: Column(
+              children: [
+                "right index finger".text.black.make(),
+                5.heightBox,
+                Image.memory(
+                  fingerData3,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ).p(5),
+          ),
+        5.heightBox,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFinger4(context));
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'finger not available',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger3) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
+        ),
+        5.heightBox,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFinger4(context));
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Next',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    if (finger3) Icon(Icons.check, color: Colors.green),
+                  ]),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                if (fingersLeft != 0 || (fingersLeft == 0 && finger3 == true)) {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _buildPopupFingerprint(context, 3));
+                  startReading();
+                }
+                if (fingersLeft == 0 && finger3 == false) {
+                  VxToast.show(context,
+                      msg: "try resetting if ther are no more scans left");
+                }
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Start Scanning',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    if (finger3) Icon(Icons.check, color: Colors.green),
+                  ]),
+            ),
+            5.heightBox,
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPopupFinger4(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text("$fingersLeft Finger Scans Left"),
+      actions: <Widget>[
+        Image.asset(
+          "assets/RM.png",
+          fit: BoxFit.contain,
+        ),
+        5.heightBox,
+        if (finger4)
+          Card(
+            color: Colors.white,
+            child: Column(
+              children: [
+                "left middle finger".text.black.make(),
+                5.heightBox,
+                Image.memory(
+                  fingerData4,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ).p(5),
+          ),
+        5.heightBox,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFinger5(context));
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'finger not available',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger4) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
+        ),
+        5.heightBox,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFinger5(context));
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Next',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    if (finger4) Icon(Icons.check, color: Colors.green),
+                  ]),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                if (fingersLeft != 0 || (fingersLeft == 0 && finger4 == true)) {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _buildPopupFingerprint(context, 4));
+                  startReading();
+                }
+                if (fingersLeft == 0 && finger4 == false) {
+                  VxToast.show(context,
+                      msg: "try resetting if ther are no more scans left");
+                }
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Start Scanning',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    if (finger4) Icon(Icons.check, color: Colors.green),
+                  ]),
+            ),
+            5.heightBox,
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPopupFinger5(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text("$fingersLeft Finger Scans Left"),
+      actions: <Widget>[
+        Image.asset(
+          "assets/LR.png",
+          fit: BoxFit.contain,
+        ),
+        5.heightBox,
+        if (finger5)
+          Card(
+            color: Colors.white,
+            child: Column(
+              children: [
+                "left thumb".text.black.make(),
+                5.heightBox,
+                Image.memory(
+                  fingerData5,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ).p(5),
+          ),
+        5.heightBox,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFinger6(context));
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Next',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    if (finger5) Icon(Icons.check, color: Colors.green),
+                  ]),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                if (fingersLeft != 0 || (fingersLeft == 0 && finger5 == true)) {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _buildPopupFingerprint(context, 5));
+                  startReading();
+                }
+                if (fingersLeft == 0 && finger5 == false) {
+                  VxToast.show(context,
+                      msg: "try resetting if ther are no more scans left");
+                }
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Start Scanning',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    if (finger5) Icon(Icons.check, color: Colors.green),
+                  ]),
+            ),
+            5.heightBox,
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPopupFinger6(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text("$fingersLeft Finger Scans Left"),
+      actions: <Widget>[
+        Image.asset(
+          "assets/RR.png",
+          fit: BoxFit.contain,
+        ),
+        5.heightBox,
+        if (finger6)
+          Card(
+            color: Colors.white,
+            child: Column(
+              children: [
+                "left thumb".text.black.make(),
+                5.heightBox,
+                Image.memory(
+                  fingerData6,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ).p(5),
+          ),
+        5.heightBox,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Next',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    if (finger6) Icon(Icons.check, color: Colors.green),
+                  ]),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                if (fingersLeft != 0 || (fingersLeft == 0 && finger6 == true)) {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _buildPopupFingerprint(context, 6));
+                  startReading();
+                }
+                if (fingersLeft == 0 && finger6 == false) {
+                  VxToast.show(context,
+                      msg: "try resetting if ther are no more scans left");
+                }
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Start Scanning',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    if (finger6) Icon(Icons.check, color: Colors.green),
+                  ]),
+            ),
+            5.heightBox,
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildPopupShowFingers(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -599,228 +1239,6 @@ class _AddSatsangiState extends State<AddSatsangi>
           fit: BoxFit.contain,
         ),
         5.heightBox,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  primary: Colors.orange,
-                ),
-                onPressed: () {
-                  if (fingersLeft != 0 ||
-                      (fingersLeft == 0 && finger1 == true)) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _buildPopupFingerprint(context, 1));
-                    startReading();
-                  }
-                  if (fingersLeft == 0 && finger1 == false) {
-                    VxToast.show(context,
-                        msg: "try resetting if ther are no more scans left");
-                  }
-                },
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'finger 1',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
-                      ),
-                      if (finger1) Icon(Icons.check, color: Colors.green),
-                    ]),
-              ),
-            ),
-            5.heightBox,
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  primary: Colors.orange,
-                ),
-                onPressed: () {
-                  if (fingersLeft != 0 ||
-                      (fingersLeft == 0 && finger3 == true)) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _buildPopupFingerprint(context, 3));
-                    startReading();
-                  }
-                  if (fingersLeft == 0 && finger3 == false) {
-                    VxToast.show(context,
-                        msg: "try resetting if ther are no more scans left");
-                  }
-                },
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'finger 3',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
-                      ),
-                      if (finger3) Icon(Icons.check, color: Colors.green),
-                    ]),
-              ),
-            ),
-          ],
-        ),
-        5.heightBox,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  primary: Colors.orange,
-                ),
-                onPressed: () {
-                  if (fingersLeft != 0 ||
-                      (fingersLeft == 0 && finger2 == true)) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _buildPopupFingerprint(context, 2));
-                    startReading();
-                  }
-                  if (fingersLeft == 0 && finger2 == false) {
-                    VxToast.show(context,
-                        msg: "try resetting if ther are no more scans left");
-                  }
-                },
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'finger 2',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
-                      ),
-                      if (finger2) Icon(Icons.check, color: Colors.green),
-                    ]),
-              ),
-            ),
-            5.heightBox,
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  primary: Colors.orange,
-                ),
-                onPressed: () {
-                  if (fingersLeft != 0 ||
-                      (fingersLeft == 0 && finger4 == true)) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _buildPopupFingerprint(context, 4));
-                    startReading();
-                  }
-                  if (fingersLeft == 0 && finger4 == false) {
-                    VxToast.show(context,
-                        msg: "try resetting if ther are no more scans left");
-                  }
-                },
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'finger 4',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
-                      ),
-                      if (finger4) Icon(Icons.check, color: Colors.green),
-                    ]),
-              ),
-            ),
-          ],
-        ),
-        5.heightBox,
-        Text("scan finger 5 or 6 if index or middle finger cannot be used")
-            .p(10),
-        5.heightBox,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  primary: Colors.orange,
-                ),
-                onPressed: () {
-                  if (fingersLeft != 0 ||
-                      (fingersLeft == 0 && finger5 == true)) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _buildPopupFingerprint(context, 5));
-                    startReading();
-                  }
-                  if (fingersLeft == 0 && finger5 == false) {
-                    VxToast.show(context,
-                        msg: "try resetting if ther are no more scans left");
-                  }
-                },
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'finger 5',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
-                      ),
-                      if (finger5) Icon(Icons.check, color: Colors.green),
-                    ]),
-              ),
-            ),
-            5.heightBox,
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  primary: Colors.orange,
-                ),
-                onPressed: () {
-                  if (fingersLeft != 0 ||
-                      (fingersLeft == 0 && finger6 == true)) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _buildPopupFingerprint(context, 6));
-                    startReading();
-                  }
-                  if (fingersLeft == 0 && finger6 == false) {
-                    VxToast.show(context,
-                        msg: "try resetting if ther are no more scans left");
-                  }
-                },
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'finger 6',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
-                      ),
-                      if (finger6) Icon(Icons.check, color: Colors.green),
-                    ]),
-              ),
-            ),
-            5.heightBox,
-          ],
-        ),
         Center(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -866,6 +1284,75 @@ class _AddSatsangiState extends State<AddSatsangi>
               'Get Scan',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPopupImage(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text("Please take a photo"),
+      actions: <Widget>[
+        if (imageFile != null)
+          Center(
+            child: CircleAvatar(
+              radius: 100,
+              backgroundImage: FileImage(imageFile!),
+            ),
+          ),
+        10.heightBox,
+        Center(
+          child: Column(
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 5,
+                  primary: Colors.orange,
+                ),
+                onPressed: () {
+                  initialiseCamera();
+                },
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: photoTaken
+                      ? Text(
+                          'Retake photo',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        )
+                      : Text(
+                          "Capture",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                ),
+              ),
+              10.heightBox,
+              if (photoTaken)
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 5,
+                    primary: Colors.orange,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            _buildPopupFinger1(context));
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Next",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ],
