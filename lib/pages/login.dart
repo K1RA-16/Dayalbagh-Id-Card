@@ -35,6 +35,7 @@ class LoginPage extends StatelessWidget {
             20.heightBox,
             TextField(
               controller: password,
+              obscureText: true,
               decoration: InputDecoration(
                   label: Text("Password"),
                   labelStyle: TextStyle(color: Colors.white),

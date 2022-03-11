@@ -1,11 +1,11 @@
 # compiler: R8
 # compiler_version: 2.1.62
 # min_api: 21
-# pg_map_id: e298475
+# pg_map_id: 4417464
 # common_typos_disable
 $$ServiceLoaderMethods -> a:
-    java.util.Iterator $load$8565() -> a
-    java.util.Iterator $load$9061() -> b
+    java.util.Iterator $load$8569() -> a
+    java.util.Iterator $load$9065() -> b
 $r8$backportedMethods$utility$Boolean$1$hashCode -> b:
     int hashCode(boolean) -> a
 $r8$backportedMethods$utility$Long$1$hashCode -> c:
@@ -7471,24 +7471,29 @@ com.baseflow.permissionhandler.ServiceManager$SuccessCallback -> e.a.a.p$a:
 com.example.dayalbaghidregistration.-$$Lambda$MainActivity$A62MUdpeVMGSpecXJOVHbW2F-y0 -> com.example.dayalbaghidregistration.a:
     com.example.dayalbaghidregistration.MainActivity f$0 -> a
     void onMethodCall(io.flutter.plugin.common.MethodCall,io.flutter.plugin.common.MethodChannel$Result) -> a
+com.example.dayalbaghidregistration.-$$Lambda$MainActivity$XnTCV0QAA0XqBpTarijevRLD4-g -> com.example.dayalbaghidregistration.b:
+    com.example.dayalbaghidregistration.MainActivity f$0 -> e
 com.example.dayalbaghidregistration.MainActivity -> com.example.dayalbaghidregistration.MainActivity:
-    com.mantra.mfs100.MFS100 mfs100 -> j
-    byte[] byteArray -> l
+    com.mantra.mfs100.MFS100 mfs100 -> k
+    int timeout -> j
+    com.mantra.mfs100.FingerData lastCapFingerData -> i
     long Threshold -> h
-    boolean isCaptureRunning -> k
-    java.lang.String CHANNEL -> m
-    int timeout -> i
-    long mLastAttTime -> n
-    long mLastDttTime -> o
+    boolean isCaptureRunning -> l
+    byte[] byteArray -> m
+    java.lang.String CHANNEL -> n
+    long mLastDttTime -> p
+    long mLastAttTime -> o
     void configureFlutterEngine(io.flutter.embedding.engine.FlutterEngine) -> B
     void InitScanner(android.content.Context) -> N
     void StartSyncCapture() -> O
-    void Stop() -> P
-    void UnInitScanner() -> Q
-    void configureFlutterEngine$lambda-0(com.example.dayalbaghidregistration.MainActivity,io.flutter.plugin.common.MethodCall,io.flutter.plugin.common.MethodChannel$Result) -> R
-    void lambda$A62MUdpeVMGSpecXJOVHbW2F-y0(com.example.dayalbaghidregistration.MainActivity,io.flutter.plugin.common.MethodCall,io.flutter.plugin.common.MethodChannel$Result) -> S
-    void onStart(android.content.Context) -> T
-    void showSuccessLog(java.lang.String) -> U
+    void StartSyncCapture$lambda-1(com.example.dayalbaghidregistration.MainActivity) -> P
+    void Stop() -> Q
+    void UnInitScanner() -> R
+    void configureFlutterEngine$lambda-0(com.example.dayalbaghidregistration.MainActivity,io.flutter.plugin.common.MethodCall,io.flutter.plugin.common.MethodChannel$Result) -> S
+    void lambda$A62MUdpeVMGSpecXJOVHbW2F-y0(com.example.dayalbaghidregistration.MainActivity,io.flutter.plugin.common.MethodCall,io.flutter.plugin.common.MethodChannel$Result) -> T
+    void lambda$XnTCV0QAA0XqBpTarijevRLD4-g(com.example.dayalbaghidregistration.MainActivity) -> U
+    void onStart(android.content.Context) -> V
+    void showSuccessLog(java.lang.String) -> W
     void OnDeviceDetached() -> n
     void OnDeviceAttached(int,int,boolean) -> o
 com.example.dayalbaghidregistration.MainActivity$ScannerAction -> com.example.dayalbaghidregistration.MainActivity$a:

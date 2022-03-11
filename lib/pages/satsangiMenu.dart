@@ -33,7 +33,7 @@ class SatsangiMenu extends StatelessWidget {
                     children: [
                       Icon(Icons.add),
                       Center(
-                        child: Text("Add User",
+                        child: Text("Add Biometrics",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 19)),
                       ),
@@ -64,49 +64,25 @@ class SatsangiMenu extends StatelessWidget {
               ),
               const HeightBox(10),
               InkWell(
-                onTap: () {
-                  //Navigator.pushNamed(context, "/listUpdate");
-                },
+                onTap: () => {},
+                //     "/connectRfid")), //SystemSetting.goto(SettingTarget.BLUETOOTH)),
                 child: Card(
-                  margin: const EdgeInsets.all(8.0),
-                  elevation: 8,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  color: Colors.blueGrey,
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Text("Request Transfer",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 19)),
-                      ),
-                    ],
-                  ).p(20),
-                ),
+                    margin: const EdgeInsets.all(8.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    color: Colors.blueGrey,
+                    elevation: 8,
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Text("Manage Relatives",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 19)),
+                        ),
+                      ],
+                    ).p(20)),
               ),
-              const HeightBox(10),
-              InkWell(
-                onTap: () {},
-                child: Card(
-                  margin: const EdgeInsets.all(8.0),
-                  elevation: 8,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  color: Colors.blueGrey,
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Text("Delete User",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 19)),
-                      ),
-                    ],
-                  ).p(20),
-                ),
-              ),
-              const HeightBox(10),
             ],
           ),
         )),

@@ -5952,9 +5952,9 @@ kotlin.sequences.GeneratorSequence
 kotlin.sequences.SequencesKt__SequenceBuilderKt$sequence$$inlined$Sequence$1
 androidx.customview.widget.ExploreByTouchHelper
 androidx.annotation.CheckResult
-io.flutter.embedding.engine.systemchannels.PlatformChannel:
-    private static final java.lang.String TAG
 io.flutter.embedding.engine.systemchannels.PlatformViewsChannel:
+    private static final java.lang.String TAG
+io.flutter.embedding.engine.systemchannels.PlatformChannel:
     private static final java.lang.String TAG
 kotlinx.coroutines.flow.FlowKt__ReduceKt$single$$inlined$collect$1
 kotlin.Suppress
@@ -11265,8 +11265,8 @@ androidx.activity.OnBackPressedDispatcher:
     public boolean hasEnabledCallbacks()
 com.google.common.eventbus.Dispatcher$LegacyAsyncDispatcher
 com.google.common.graph.MutableNetwork
-com.baseflow.permissionhandler.PermissionConstants
 com.baseflow.permissionhandler.PermissionConstants$PermissionStatus
+com.baseflow.permissionhandler.PermissionConstants
 com.google.common.graph.MapIteratorCache$1$1
 kotlinx.coroutines.flow.StateFlowSlot
 androidx.annotation.experimental.Experimental$Level
@@ -15317,7 +15317,6 @@ io.flutter.embedding.engine.plugins.shim.ShimRegistrar:
 androidx.appcompat.widget.ActionBarContextView$1:
     final synthetic androidx.appcompat.widget.ActionBarContextView this$0
 com.example.dayalbaghidregistration.MainActivity:
-    private com.mantra.mfs100.FingerData lastCapFingerData
     private com.example.dayalbaghidregistration.MainActivity$ScannerAction scannerAction
     private java.lang.String s
 androidx.fragment.app.FragmentTransitionImpl$1:
@@ -15495,6 +15494,6 @@ androidx.appcompat.view.StandaloneActionMode:
     private boolean mFocusable
 io.github.edufolly.flutterbluetoothserial.FlutterBluetoothSerialPlugin:
     static final synthetic boolean $assertionsDisabled
-androidx.lifecycle.DefaultLifecycleObserver$-CC
 io.flutter.plugin.common.BinaryMessenger$-CC
+androidx.lifecycle.DefaultLifecycleObserver$-CC
 io.flutter.plugin.platform.PlatformView$-CC
