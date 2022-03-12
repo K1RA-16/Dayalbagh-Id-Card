@@ -300,6 +300,9 @@ class _AddSatsangiState extends State<AddSatsangi>
                   faceImage != "") {
                 updateData();
                 VxToast.show(context, msg: "details updated");
+              } else {
+                VxToast.show(context,
+                    msg: "error updating (try again after resetting data)");
               }
             },
             child: Row(
