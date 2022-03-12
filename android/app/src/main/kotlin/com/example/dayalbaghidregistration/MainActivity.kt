@@ -140,6 +140,14 @@ Certificate: ${mfs100!!.GetCertification()}"""
                     val strError = mfs100!!.GetErrorMsg(ret);
                     byteArray = strError.toByteArray()
                 }
+                else if(ret == -1307) {
+                    val strError = mfs100!!.GetErrorMsg(ret);
+                    byteArray = strError.toByteArray()
+                }
+                else if(ret == -1319){
+                    val strError = mfs100!!.GetErrorMsg(ret);
+                    byteArray = strError.toByteArray()
+                }
                 if (ret != 0) {
                     //   SetTextOnUIThread(mfs100.GetErrorMsg(ret));
                 } else {

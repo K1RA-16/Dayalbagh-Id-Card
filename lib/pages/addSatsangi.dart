@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dayalbaghidregistration/apis/postApis.dart';
 import 'package:dayalbaghidregistration/data/satsangiData.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ Uint8List fingerData4 = Uint8List(0);
 Uint8List fingerData5 = Uint8List(0);
 Uint8List fingerData6 = Uint8List(0);
 int code = 0;
+//Uint8List testImage = Uint8List(0);
 
 class AddSatsangi extends StatefulWidget {
   static const platform =
@@ -26,7 +29,7 @@ class AddSatsangi extends StatefulWidget {
 
 class _AddSatsangiState extends State<AddSatsangi>
     with SingleTickerProviderStateMixin {
-  int fingersLeft = 4;
+  int fingerScanned = 0;
   int index = satsangiListData.index;
   bool photoTaken = false;
   bool finger1 = false;
@@ -35,6 +38,10 @@ class _AddSatsangiState extends State<AddSatsangi>
   bool finger4 = false;
   bool finger5 = false;
   bool finger6 = false;
+
+  List<int> iso = [];
+  List<String> fingerprints = [];
+
   late TextEditingController uidController;
   late TextEditingController mobileController;
   late TextEditingController fatherNameController;
@@ -44,6 +51,8 @@ class _AddSatsangiState extends State<AddSatsangi>
   late TextEditingController doi2Controller;
 
   File? imageFile;
+
+  late String faceImage;
   late Animation<double> _animation;
   late AnimationController _animationController;
   bool error = false;
@@ -66,7 +75,7 @@ class _AddSatsangiState extends State<AddSatsangi>
     doi2Controller = TextEditingController(
         text: satsangiListData.satsangiList[index].doi_Second);
     initialiseReader();
-
+    //getImage();
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 260),
@@ -93,8 +102,16 @@ class _AddSatsangiState extends State<AddSatsangi>
           context: context,
           builder: (BuildContext context) => _buildPopupImage(context));
     }
+    Uint8List imagebytes = await image!.readAsBytes(); //convert to bytes
+    faceImage = base64.encode(imagebytes); //convert bytes to base64 string
+    print(faceImage);
     setState(() {});
   }
+
+  //getImage() async {
+  //  testImage = await PostApi().getTestImage();
+  //   setState(() {});
+  // }
 
   initialiseReader() async {
     try {
@@ -159,45 +176,61 @@ class _AddSatsangiState extends State<AddSatsangi>
       if (result.isNotEmpty && code == 1) {
         setState(() {
           Navigator.pop(context);
-          if (fingersLeft != 0) {
-            print("finger iso $fingerIso");
-            if (fingerIso == 1) {
-              if (!finger1) {
-                fingersLeft--;
-              }
-              finger1 = true;
-            } else if (fingerIso == 2) {
-              if (!finger2) {
-                fingersLeft--;
-              }
-              finger2 = true;
-            } else if (fingerIso == 3) {
-              if (!finger3) {
-                fingersLeft--;
-              }
-              finger3 = true;
-            } else if (fingerIso == 4) {
-              if (!finger4) {
-                fingersLeft--;
-              }
-              finger4 = true;
-            } else if (fingerIso == 5) {
-              if (!finger5) {
-                fingersLeft--;
-              }
-              finger5 = true;
-            } else if (fingerIso == 6) {
-              if (!finger6) {
-                fingersLeft--;
-              }
-              finger6 = true;
+
+          print("finger iso $fingerIso");
+          Navigator.pop(context);
+
+          if (fingerIso == 1) {
+            if (!finger1) {
+              fingerScanned++;
             }
-            Navigator.pop(context);
+
+            finger1 = true;
             showDialog(
                 context: context,
-                builder: (BuildContext context) =>
-                    _buildPopupShowFingers(context));
+                builder: (BuildContext context) => _buildPopupFinger1(context));
+          } else if (fingerIso == 2) {
+            if (!finger2) {
+              fingerScanned++;
+            }
+            finger2 = true;
+            showDialog(
+                context: context,
+                builder: (BuildContext context) => _buildPopupFinger2(context));
+          } else if (fingerIso == 3) {
+            if (!finger3) {
+              fingerScanned++;
+            }
+            finger3 = true;
+            showDialog(
+                context: context,
+                builder: (BuildContext context) => _buildPopupFinger3(context));
+          } else if (fingerIso == 4) {
+            if (!finger4) {
+              fingerScanned++;
+            }
+            finger4 = true;
+            showDialog(
+                context: context,
+                builder: (BuildContext context) => _buildPopupFinger4(context));
+          } else if (fingerIso == 5) {
+            if (!finger5) {
+              fingerScanned++;
+            }
+            finger5 = true;
+            showDialog(
+                context: context,
+                builder: (BuildContext context) => _buildPopupFinger5(context));
+          } else if (fingerIso == 6) {
+            if (!finger6) {
+              fingerScanned++;
+            }
+            finger6 = true;
+            showDialog(
+                context: context,
+                builder: (BuildContext context) => _buildPopupFinger6(context));
           }
+
           setState(() {});
           loading = false;
         });
@@ -206,19 +239,27 @@ class _AddSatsangiState extends State<AddSatsangi>
   }
 
   int convertUint8ListToString(Uint8List uint8list) {
+    print(String.fromCharCodes(uint8list));
     if (String.fromCharCodes(uint8list) == "Improper Finger Placement") {
-      fingersLeft++;
       return 0;
+    } else if (String.fromCharCodes(uint8list) == "No Device Connected") {
+      Navigator.pop(context);
+      VxToast.show(context, msg: "please connect the device properly");
+      return 2;
+    } else if (String.fromCharCodes(uint8list) == "Capturing stopped") {
+      Navigator.pop(context);
+      VxToast.show(context, msg: "please wait until the scanner stops reading");
+      return 2;
     } else {
       return 1;
     }
   }
 
-  resetFingerData() {
-    Navigator.pop(context);
+  resetData() {
     setState(() {
+      imageFile = null;
       finger1 = finger2 = finger3 = finger4 = finger5 = finger6 = false;
-      fingersLeft = 4;
+      fingerScanned = 0;
     });
   }
 
@@ -235,16 +276,15 @@ class _AddSatsangiState extends State<AddSatsangi>
             ),
             onPressed: () {
               //VxToast.show(context, msg: "Details Updated");
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) => _buildPopupImage(context));
+              VxToast.show(context, msg: "details updated");
+              Navigator.pop(context);
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Update Info',
+                    'Done',
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -256,50 +296,107 @@ class _AddSatsangiState extends State<AddSatsangi>
           ).p(5),
         ],
       ),
-      floatingActionButton: FloatingActionBubble(
-        items: <Bubble>[
-          Bubble(
-            title: "Add Image",
-            iconColor: Colors.black,
-            bubbleColor: Colors.orange,
-            icon: Icons.add_photo_alternate,
-            titleStyle: TextStyle(fontSize: 16, color: Colors.black),
-            onPress: () {
-              initialiseCamera();
-            },
-          ),
-          Bubble(
-            title: "Add fingerprint",
-            iconColor: Colors.black,
-            bubbleColor: Colors.orange,
-            icon: Icons.fingerprint,
-            titleStyle: TextStyle(fontSize: 16, color: Colors.black),
-            onPress: () {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _buildPopupShowFingers(context));
-            },
-          ),
-        ],
-        animation: _animation,
+      // floatingActionButton: FloatingActionBubble(
+      //   items: <Bubble>[
+      //     Bubble(
+      //       title: "Add Image",
+      //       iconColor: Colors.black,
+      //       bubbleColor: Colors.orange,
+      //       icon: Icons.add_photo_alternate,
+      //       titleStyle: TextStyle(fontSize: 16, color: Colors.black),
+      //       onPress: () {
+      //         initialiseCamera();
+      //       },
+      //     ),
+      //     Bubble(
+      //       title: "Add fingerprint",
+      //       iconColor: Colors.black,
+      //       bubbleColor: Colors.orange,
+      //       icon: Icons.fingerprint,
+      //       titleStyle: TextStyle(fontSize: 16, color: Colors.black),
+      //       onPress: () {
+      //         showDialog(
+      //             context: context,
+      //             builder: (BuildContext context) =>
+      //                 _buildPopupShowFingers(context));
+      //       },
+      //     ),
+      //   ],
+      //   animation: _animation,
 
-        // On pressed change animation state
-        onPress: () => _animationController.isCompleted
-            ? _animationController.reverse()
-            : _animationController.forward(),
+      //   // On pressed change animation state
+      //   onPress: () => _animationController.isCompleted
+      //       ? _animationController.reverse()
+      //       : _animationController.forward(),
 
-        // Floating Action button Icon color
-        iconColor: Colors.black,
+      //   // Floating Action button Icon color
+      //   iconColor: Colors.black,
 
-        // Flaoting Action button Icon
-        iconData: Icons.add,
-        backGroundColor: Colors.orange,
-      ),
+      //   // Flaoting Action button Icon
+      //   iconData: Icons.add,
+      //   backGroundColor: Colors.orange,
+      // ),
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Column(children: [
           20.heightBox,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 5,
+                  primary: Colors.orange,
+                ),
+                onPressed: () {
+                  //VxToast.show(context, msg: "Details Updated");
+                  resetData();
+                },
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Reset all info',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15),
+                      ),
+                      5.widthBox,
+                      Icon(Icons.restore, color: Colors.green),
+                    ]),
+              ).p(5),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 5,
+                  primary: Colors.orange,
+                ),
+                onPressed: () {
+                  //VxToast.show(context, msg: "Details Updated");
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _buildPopupImage(context));
+                },
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Update Info',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15),
+                      ),
+                      5.widthBox,
+                      Icon(Icons.update, color: Colors.green),
+                    ]),
+              ).p(5),
+            ],
+          ),
+          10.heightBox,
           if (imageFile != null)
             CircleAvatar(
               radius: 100,
@@ -316,34 +413,17 @@ class _AddSatsangiState extends State<AddSatsangi>
               ),
             ),
           5.heightBox,
-          if (finger1 || finger2 || finger5)
-            "Left hand finger prints".text.make(),
+          if (finger1 || finger2) "Left hand finger prints".text.make(),
           5.heightBox,
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (finger2)
-                Card(
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      "left index finger".text.black.make(),
-                      5.heightBox,
-                      Image.memory(
-                        fingerData2,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.contain,
-                      ),
-                    ],
-                  ).p(5),
-                ),
               if (finger1)
                 Card(
                   color: Colors.white,
                   child: Column(
                     children: [
-                      "left middle finger".text.black.make(),
+                      "left index finger".text.black.make(),
                       5.heightBox,
                       Image.memory(
                         fingerData1,
@@ -354,15 +434,15 @@ class _AddSatsangiState extends State<AddSatsangi>
                     ],
                   ).p(5),
                 ),
-              if (finger5)
+              if (finger3)
                 Card(
                   color: Colors.white,
                   child: Column(
                     children: [
-                      "left thumb".text.black.make(),
+                      "left middle finger".text.black.make(),
                       5.heightBox,
                       Image.memory(
-                        fingerData5,
+                        fingerData3,
                         width: 100,
                         height: 100,
                         fit: BoxFit.contain,
@@ -373,13 +453,12 @@ class _AddSatsangiState extends State<AddSatsangi>
             ],
           ),
           5.heightBox,
-          if (finger3 || finger4 || finger6)
-            "Right hand finger prints".text.make(),
+          if (finger3 || finger4) "Right hand finger prints".text.make(),
           5.heightBox,
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (finger3)
+              if (finger2)
                 Card(
                   color: Colors.white,
                   child: Column(
@@ -387,7 +466,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                       "right index finger".text.black.make(),
                       5.heightBox,
                       Image.memory(
-                        fingerData3,
+                        fingerData2,
                         width: 100,
                         height: 100,
                         fit: BoxFit.contain,
@@ -400,10 +479,33 @@ class _AddSatsangiState extends State<AddSatsangi>
                   color: Colors.white,
                   child: Column(
                     children: [
-                      "left middle finger".text.black.make(),
+                      "Right middle finger".text.black.make(),
                       5.heightBox,
                       Image.memory(
                         fingerData4,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.contain,
+                      ),
+                    ],
+                  ).p(5),
+                ),
+            ],
+          ),
+          if (finger5 || finger6) "Ring finger prints".text.make(),
+          5.heightBox,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (finger5)
+                Card(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      "left ring finger".text.black.make(),
+                      5.heightBox,
+                      Image.memory(
+                        fingerData5,
                         width: 100,
                         height: 100,
                         fit: BoxFit.contain,
@@ -416,7 +518,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                   color: Colors.white,
                   child: Column(
                     children: [
-                      "left thumb".text.black.make(),
+                      "Right ring finger".text.black.make(),
                       5.heightBox,
                       Image.memory(
                         fingerData6,
@@ -570,6 +672,7 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   Widget _buildPopupretakeFingerprint(BuildContext context, int fingerIso) {
     return AlertDialog(
+      backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("Improper finger placement Please take the scan again"),
       actions: <Widget>[
@@ -601,27 +704,36 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   Widget _buildPopupFinger1(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingersLeft Finger Scans Left"),
+      title: Text("$fingerScanned Fingers Scanned"),
       actions: <Widget>[
-        Image.asset(
-          "assets/LI.png",
-          fit: BoxFit.contain,
+        Center(
+          child: Container(
+            width: 250,
+            height: 250,
+            child: Image.asset(
+              "assets/LI.png",
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
         5.heightBox,
         if (finger1)
-          Card(
-            color: Colors.white,
-            child: Column(
-              children: [
-                Image.memory(
-                  fingerData1,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.contain,
-                ),
-              ],
-            ).p(5),
+          Center(
+            child: Card(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Image.memory(
+                    fingerData1,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  ),
+                ],
+              ).p(5),
+            ),
           ),
         5.heightBox,
         Center(
@@ -631,21 +743,28 @@ class _AddSatsangiState extends State<AddSatsangi>
               primary: Colors.orange,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              finger1 = false;
               showDialog(
                   context: context,
                   builder: (BuildContext context) =>
-                      _buildPopupFinger2(context));
+                      _buildPopupFingerprint(context, 1));
+              startReading();
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'finger not available',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                  if (finger1) Icon(Icons.check, color: Colors.green),
+                  finger1
+                      ? const Text(
+                          'Re-scan',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        )
+                      : const Text(
+                          'Start Scanning',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
                 ]),
           ),
         ),
@@ -670,11 +789,10 @@ class _AddSatsangiState extends State<AddSatsangi>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Next',
+                      'finger not available',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
-                    if (finger1) Icon(Icons.check, color: Colors.green),
                   ]),
             ),
             ElevatedButton(
@@ -683,18 +801,26 @@ class _AddSatsangiState extends State<AddSatsangi>
                 primary: Colors.orange,
               ),
               onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFingerprint(context, 1));
-                startReading();
+                if (finger1) {
+                  Navigator.pop(context);
+                  iso.add(7);
+                  fingerprints.add(base64.encode(fingerData1));
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _buildPopupFinger2(context));
+                } else {
+                  VxToast.show(context,
+                      msg:
+                          "Please scan the finger or select finger not available");
+                }
               },
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Start Scanning',
+                      'Next',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
@@ -710,27 +836,36 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   Widget _buildPopupFinger2(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingersLeft Finger Scans Left"),
+      title: Text("$fingerScanned Finger Scanned"),
       actions: <Widget>[
-        Image.asset(
-          "assets/RI.png",
-          fit: BoxFit.contain,
+        Center(
+          child: Container(
+            width: 250,
+            height: 250,
+            child: Image.asset(
+              "assets/RI.png",
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
         5.heightBox,
         if (finger2)
-          Card(
-            color: Colors.white,
-            child: Column(
-              children: [
-                Image.memory(
-                  fingerData2,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.contain,
-                ),
-              ],
-            ).p(5),
+          Center(
+            child: Card(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Image.memory(
+                    fingerData2,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  ),
+                ],
+              ).p(5),
+            ),
           ),
         5.heightBox,
         Center(
@@ -740,21 +875,28 @@ class _AddSatsangiState extends State<AddSatsangi>
               primary: Colors.orange,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              finger2 = false;
               showDialog(
                   context: context,
                   builder: (BuildContext context) =>
-                      _buildPopupFinger3(context));
+                      _buildPopupFingerprint(context, 2));
+              startReading();
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'finger not available',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                  if (finger2) Icon(Icons.check, color: Colors.green),
+                  finger2
+                      ? const Text(
+                          'Re-scan',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        )
+                      : const Text(
+                          'Start Scanning',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
                 ]),
           ),
         ),
@@ -779,11 +921,10 @@ class _AddSatsangiState extends State<AddSatsangi>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Next',
+                      'finger not available',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
-                    if (finger2) Icon(Icons.check, color: Colors.green),
                   ]),
             ),
             ElevatedButton(
@@ -792,18 +933,26 @@ class _AddSatsangiState extends State<AddSatsangi>
                 primary: Colors.orange,
               ),
               onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFingerprint(context, 2));
-                startReading();
+                if (finger2) {
+                  iso.add(2);
+                  fingerprints.add(base64.encode(fingerData2));
+                  Navigator.pop(context);
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _buildPopupFinger3(context));
+                } else {
+                  VxToast.show(context,
+                      msg:
+                          "Please scan the finger or select finger not available");
+                }
               },
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Start Scanning',
+                      'Next',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
@@ -819,29 +968,36 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   Widget _buildPopupFinger3(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingersLeft Finger Scans Left"),
+      title: Text("$fingerScanned Finger Scanned"),
       actions: <Widget>[
-        Image.asset(
-          "assets/LM.png",
-          fit: BoxFit.contain,
+        Center(
+          child: Container(
+            width: 250,
+            height: 250,
+            child: Image.asset(
+              "assets/LM.png",
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
         5.heightBox,
         if (finger3)
-          Card(
-            color: Colors.white,
-            child: Column(
-              children: [
-                "right index finger".text.black.make(),
-                5.heightBox,
-                Image.memory(
-                  fingerData3,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.contain,
-                ),
-              ],
-            ).p(5),
+          Center(
+            child: Card(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Image.memory(
+                    fingerData3,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  ),
+                ],
+              ).p(5),
+            ),
           ),
         5.heightBox,
         Center(
@@ -851,21 +1007,28 @@ class _AddSatsangiState extends State<AddSatsangi>
               primary: Colors.orange,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              finger3 = false;
               showDialog(
                   context: context,
                   builder: (BuildContext context) =>
-                      _buildPopupFinger4(context));
+                      _buildPopupFingerprint(context, 3));
+              startReading();
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'finger not available',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                  if (finger3) Icon(Icons.check, color: Colors.green),
+                  finger3
+                      ? const Text(
+                          'Re-scan',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        )
+                      : const Text(
+                          'Start Scanning',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
                 ]),
           ),
         ),
@@ -890,11 +1053,10 @@ class _AddSatsangiState extends State<AddSatsangi>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Next',
+                      'finger not available',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
-                    if (finger3) Icon(Icons.check, color: Colors.green),
                   ]),
             ),
             ElevatedButton(
@@ -903,16 +1065,18 @@ class _AddSatsangiState extends State<AddSatsangi>
                 primary: Colors.orange,
               ),
               onPressed: () {
-                if (fingersLeft != 0 || (fingersLeft == 0 && finger3 == true)) {
+                if (finger3) {
+                  iso.add(8);
+                  fingerprints.add(base64.encode(fingerData3));
+                  Navigator.pop(context);
                   showDialog(
                       context: context,
                       builder: (BuildContext context) =>
-                          _buildPopupFingerprint(context, 3));
-                  startReading();
-                }
-                if (fingersLeft == 0 && finger3 == false) {
+                          _buildPopupFinger4(context));
+                } else {
                   VxToast.show(context,
-                      msg: "try resetting if ther are no more scans left");
+                      msg:
+                          "Please scan the finger or select finger not available");
                 }
               },
               child: Row(
@@ -920,7 +1084,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Start Scanning',
+                      'Next',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
@@ -936,29 +1100,36 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   Widget _buildPopupFinger4(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingersLeft Finger Scans Left"),
+      title: Text("$fingerScanned Finger Scanned"),
       actions: <Widget>[
-        Image.asset(
-          "assets/RM.png",
-          fit: BoxFit.contain,
+        Center(
+          child: Container(
+            width: 250,
+            height: 250,
+            child: Image.asset(
+              "assets/RM.png",
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
         5.heightBox,
         if (finger4)
-          Card(
-            color: Colors.white,
-            child: Column(
-              children: [
-                "left middle finger".text.black.make(),
-                5.heightBox,
-                Image.memory(
-                  fingerData4,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.contain,
-                ),
-              ],
-            ).p(5),
+          Center(
+            child: Card(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Image.memory(
+                    fingerData4,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  ),
+                ],
+              ).p(5),
+            ),
           ),
         5.heightBox,
         Center(
@@ -968,21 +1139,28 @@ class _AddSatsangiState extends State<AddSatsangi>
               primary: Colors.orange,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              finger4 = false;
               showDialog(
                   context: context,
                   builder: (BuildContext context) =>
-                      _buildPopupFinger5(context));
+                      _buildPopupFingerprint(context, 4));
+              startReading();
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'finger not available',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                  if (finger4) Icon(Icons.check, color: Colors.green),
+                  finger2
+                      ? const Text(
+                          'Re-scan',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        )
+                      : const Text(
+                          'Start Scanning',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
                 ]),
           ),
         ),
@@ -1007,11 +1185,10 @@ class _AddSatsangiState extends State<AddSatsangi>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Next',
+                      'finger not available',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
-                    if (finger4) Icon(Icons.check, color: Colors.green),
                   ]),
             ),
             ElevatedButton(
@@ -1020,16 +1197,20 @@ class _AddSatsangiState extends State<AddSatsangi>
                 primary: Colors.orange,
               ),
               onPressed: () {
-                if (fingersLeft != 0 || (fingersLeft == 0 && finger4 == true)) {
+                if (finger4 && fingerScanned < 4) {
+                  iso.add(3);
+                  fingerprints.add(base64.encode(fingerData4));
+                  Navigator.pop(context);
                   showDialog(
                       context: context,
                       builder: (BuildContext context) =>
-                          _buildPopupFingerprint(context, 4));
-                  startReading();
-                }
-                if (fingersLeft == 0 && finger4 == false) {
+                          _buildPopupFinger5(context));
+                } else if (fingerScanned >= 4) {
+                  Navigator.pop(context);
+                } else {
                   VxToast.show(context,
-                      msg: "try resetting if ther are no more scans left");
+                      msg:
+                          "Please scan the finger or select finger not available");
                 }
               },
               child: Row(
@@ -1037,7 +1218,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Start Scanning',
+                      'Next',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
@@ -1053,30 +1234,70 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   Widget _buildPopupFinger5(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingersLeft Finger Scans Left"),
+      title: Text("$fingerScanned Finger Scanned"),
       actions: <Widget>[
-        Image.asset(
-          "assets/LR.png",
-          fit: BoxFit.contain,
+        Center(
+          child: Container(
+            width: 250,
+            height: 250,
+            child: Image.asset(
+              "assets/LR.png",
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
         5.heightBox,
         if (finger5)
-          Card(
-            color: Colors.white,
-            child: Column(
-              children: [
-                "left thumb".text.black.make(),
-                5.heightBox,
-                Image.memory(
-                  fingerData5,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.contain,
-                ),
-              ],
-            ).p(5),
+          Center(
+            child: Card(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Image.memory(
+                    fingerData5,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  ),
+                ],
+              ).p(5),
+            ),
           ),
+        5.heightBox,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              finger5 = false;
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFingerprint(context, 5));
+              startReading();
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  finger5
+                      ? const Text(
+                          'Re-scan',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        )
+                      : const Text(
+                          'Start Scanning',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                ]),
+          ),
+        ),
         5.heightBox,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1087,11 +1308,21 @@ class _AddSatsangiState extends State<AddSatsangi>
                 primary: Colors.orange,
               ),
               onPressed: () {
-                Navigator.pop(context);
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFinger6(context));
+                if (finger5 && fingerScanned < 4) {
+                  iso.add(9);
+                  fingerprints.add(base64.encode(fingerData5));
+                  Navigator.pop(context);
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _buildPopupFinger6(context));
+                } else if (fingerScanned >= 4) {
+                  Navigator.pop(context);
+                } else {
+                  VxToast.show(context,
+                      msg:
+                          "Please scan the finger or select finger not available");
+                }
               },
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -1099,36 +1330,6 @@ class _AddSatsangiState extends State<AddSatsangi>
                   children: [
                     const Text(
                       'Next',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    if (finger5) Icon(Icons.check, color: Colors.green),
-                  ]),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
-                if (fingersLeft != 0 || (fingersLeft == 0 && finger5 == true)) {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          _buildPopupFingerprint(context, 5));
-                  startReading();
-                }
-                if (fingersLeft == 0 && finger5 == false) {
-                  VxToast.show(context,
-                      msg: "try resetting if ther are no more scans left");
-                }
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Start Scanning',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
@@ -1144,30 +1345,70 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   Widget _buildPopupFinger6(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingersLeft Finger Scans Left"),
+      title: Text("$fingerScanned Finger Scanned"),
       actions: <Widget>[
-        Image.asset(
-          "assets/RR.png",
-          fit: BoxFit.contain,
+        Center(
+          child: Container(
+            width: 250,
+            height: 250,
+            child: Image.asset(
+              "assets/RI.png",
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
         5.heightBox,
         if (finger6)
-          Card(
-            color: Colors.white,
-            child: Column(
-              children: [
-                "left thumb".text.black.make(),
-                5.heightBox,
-                Image.memory(
-                  fingerData6,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.contain,
-                ),
-              ],
-            ).p(5),
+          Center(
+            child: Card(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Image.memory(
+                    fingerData6,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  ),
+                ],
+              ).p(5),
+            ),
           ),
+        5.heightBox,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              finger6 = false;
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFingerprint(context, 6));
+              startReading();
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  finger6
+                      ? const Text(
+                          'Re-scan',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        )
+                      : const Text(
+                          'Start Scanning',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                ]),
+          ),
+        ),
         5.heightBox,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1178,7 +1419,11 @@ class _AddSatsangiState extends State<AddSatsangi>
                 primary: Colors.orange,
               ),
               onPressed: () {
-                Navigator.pop(context);
+                if (finger6 || fingerScanned >= 4) {
+                  iso.add(4);
+                  fingerprints.add(base64.encode(fingerData6));
+                  Navigator.pop(context);
+                }
               },
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -1192,36 +1437,6 @@ class _AddSatsangiState extends State<AddSatsangi>
                     if (finger6) Icon(Icons.check, color: Colors.green),
                   ]),
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
-                if (fingersLeft != 0 || (fingersLeft == 0 && finger6 == true)) {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          _buildPopupFingerprint(context, 6));
-                  startReading();
-                }
-                if (fingersLeft == 0 && finger6 == false) {
-                  VxToast.show(context,
-                      msg: "try resetting if ther are no more scans left");
-                }
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Start Scanning',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    if (finger6) Icon(Icons.check, color: Colors.green),
-                  ]),
-            ),
             5.heightBox,
           ],
         ),
@@ -1229,44 +1444,9 @@ class _AddSatsangiState extends State<AddSatsangi>
     );
   }
 
-  Widget _buildPopupShowFingers(BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingersLeft Finger Scans Left"),
-      actions: <Widget>[
-        Image.asset(
-          "assets/fingers.png",
-          fit: BoxFit.contain,
-        ),
-        5.heightBox,
-        Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 5,
-              primary: Colors.orange,
-            ),
-            onPressed: () {
-              resetFingerData();
-            },
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Reset finger scans',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                  const Icon(Icons.settings_backup_restore_outlined,
-                      color: Colors.black),
-                ]),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildPopupFingerprint(BuildContext context, int fingerIso) {
     return AlertDialog(
+      backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("Please retrieve to check the image"),
       actions: <Widget>[
@@ -1292,6 +1472,7 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   Widget _buildPopupImage(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("Please take a photo"),
       actions: <Widget>[
