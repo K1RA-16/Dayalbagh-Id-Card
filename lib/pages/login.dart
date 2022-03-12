@@ -1,4 +1,4 @@
-import 'package:dayalbaghidregistration/apis/postApis.dart';
+import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 

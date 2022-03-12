@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1047676830213",
+    "project_id": "dayalbagh-registra",
+    "storage_bucket": "dayalbagh-registra.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1047676830213:android:b38a4f16b8ac6474f2126c",
+        "android_client_info": {
+          "package_name": "com.example.dayalbaghidregistration"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1047676830213-cih2o4hkj1lasko2ngb3598f3uli7jb0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-jGm5228LK2cFOdCEkI45KHtoyhO8KyM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1047676830213-cih2o4hkj1lasko2ngb3598f3uli7jb0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

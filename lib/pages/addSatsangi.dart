@@ -3,8 +3,9 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:dayalbaghidregistration/apis/postApis.dart';
+import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
 import 'package:dayalbaghidregistration/data/satsangiData.dart';
+import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,6 +42,7 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   List<int> iso = [];
   List<String> fingerprints = [];
+  String faceImage = "";
 
   late TextEditingController uidController;
   late TextEditingController mobileController;
@@ -52,7 +54,6 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   File? imageFile;
 
-  late String faceImage;
   late Animation<double> _animation;
   late AnimationController _animationController;
   bool error = false;
@@ -117,6 +118,7 @@ class _AddSatsangiState extends State<AddSatsangi>
     try {
       String x = await AddSatsangi.platform.invokeMethod("initialiseReader");
       VxToast.show(context, msg: x);
+
       // ignore: empty_catches
     } on PlatformException catch (e) {}
   }
@@ -263,6 +265,21 @@ class _AddSatsangiState extends State<AddSatsangi>
     });
   }
 
+  updateData() async {
+    PostApi().updateBiometric(
+        satsangiListData.satsangiList[satsangiListData.index].uid,
+        iso[0],
+        iso[1],
+        iso[2],
+        iso[3],
+        fingerprints[0],
+        fingerprints[1],
+        fingerprints[2],
+        fingerprints[3],
+        faceImage);
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -276,8 +293,14 @@ class _AddSatsangiState extends State<AddSatsangi>
             ),
             onPressed: () {
               //VxToast.show(context, msg: "Details Updated");
-              VxToast.show(context, msg: "details updated");
-              Navigator.pop(context);
+              print(iso);
+              print(fingerprints);
+              if (fingerprints.length == 4 &&
+                  iso.length == 4 &&
+                  faceImage != "") {
+                updateData();
+                VxToast.show(context, msg: "details updated");
+              }
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1150,7 +1173,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  finger2
+                  finger4
                       ? const Text(
                           'Re-scan',
                           style: TextStyle(
@@ -1207,6 +1230,8 @@ class _AddSatsangiState extends State<AddSatsangi>
                           _buildPopupFinger5(context));
                 } else if (fingerScanned >= 4) {
                   Navigator.pop(context);
+                  iso.add(3);
+                  fingerprints.add(base64.encode(fingerData4));
                 } else {
                   VxToast.show(context,
                       msg:

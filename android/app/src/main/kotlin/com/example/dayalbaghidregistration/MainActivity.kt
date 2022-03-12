@@ -2,11 +2,15 @@ package com.example.dayalbaghidregistration
 
 import android.view.WindowManager.LayoutParams
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.SystemClock
+import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.annotation.NonNull
+import androidx.annotation.RequiresApi
 import com.mantra.mfs100.FingerData
 import com.mantra.mfs100.MFS100
 import com.mantra.mfs100.MFS100Event
@@ -15,6 +19,11 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
+import androidx.core.app.ActivityCompat
+
+import androidx.core.content.ContextCompat
+import java.util.jar.Manifest
+
 
 class MainActivity: FlutterActivity() , MFS100Event {
     private val mLastClkTime: Long = 0
@@ -23,7 +32,7 @@ class MainActivity: FlutterActivity() , MFS100Event {
     enum class ScannerAction {
         Capture, Verify
     }
-
+    private val REQUEST_READ_PHONE_STATE = 1;
     lateinit var Enroll_Template: ByteArray
     lateinit var Verify_Template: ByteArray
     private var lastCapFingerData: FingerData? = null
@@ -38,6 +47,7 @@ class MainActivity: FlutterActivity() , MFS100Event {
     private var byteArray = ByteArray(0)
     private var image: Byte? = null;
     private val CHANNEL = "com.example.dayalbaghidregistration/getBitmap";
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         window.addFlags(LayoutParams.FLAG_SECURE)
         super.configureFlutterEngine(flutterEngine)
@@ -55,6 +65,42 @@ class MainActivity: FlutterActivity() , MFS100Event {
                 StartSyncCapture();
                 //result.success(list);
                 //MFS100Test().Stop();
+
+            }else if (call.method == "getPhoneData") {
+
+                var m:MutableMap<String, String> = mutableMapOf();
+                val manager: TelephonyManager =
+                    context.getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+                val carrierName: String = manager.getNetworkOperatorName()
+                Log.d("carrier",carrierName)
+                val permissionCheck =
+                    ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE)
+
+                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(android.Manifest.permission.READ_PHONE_STATE),
+                        REQUEST_READ_PHONE_STATE
+                    )
+                } else {
+                    val imei = manager.imei
+                    m["imei"] = imei;
+//                    try{
+//                    val data = manager.isDataEnabled
+//                    m["data"] = data.toString()}
+//                    catch (e:Exception){
+//
+//                    }
+                }
+                val manufacturer = Build.MANUFACTURER
+                val deviceModel = Build.MODEL
+                val deviceBrand = Build.BRAND
+
+                m["phoneBrand"]=deviceBrand;
+                m["phoneModel"] = deviceModel
+                m["carrier"] = carrierName;
+                result.success(m);
+
 
             }
             else if(call.method == "getFingerprint"){

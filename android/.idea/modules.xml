@@ -3,6 +3,16 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/android.iml" filepath="$PROJECT_DIR$/.idea/modules/android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/android.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/android.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-63562225/android.firebase_core.iml" filepath="$PROJECT_DIR$/.idea/modules/-63562225/android.firebase_core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-440919500/android.firebase_database.iml" filepath="$PROJECT_DIR$/.idea/modules/-440919500/android.firebase_database.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1400310230/android.flutter_bluetooth_serial.iml" filepath="$PROJECT_DIR$/.idea/modules/-1400310230/android.flutter_bluetooth_serial.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1846472790/android.flutter_plugin_android_lifecycle.iml" filepath="$PROJECT_DIR$/.idea/modules/1846472790/android.flutter_plugin_android_lifecycle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/586221326/android.image_picker.iml" filepath="$PROJECT_DIR$/.idea/modules/586221326/android.image_picker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1404737724/android.path_provider_android.iml" filepath="$PROJECT_DIR$/.idea/modules/-1404737724/android.path_provider_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/471545529/android.permission_handler_android.iml" filepath="$PROJECT_DIR$/.idea/modules/471545529/android.permission_handler_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1767165442/android.shared_preferences_android.iml" filepath="$PROJECT_DIR$/.idea/modules/1767165442/android.shared_preferences_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1276427675/android.system_settings.iml" filepath="$PROJECT_DIR$/.idea/modules/-1276427675/android.system_settings.iml" />
     </modules>
   </component>
 </project>

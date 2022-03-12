@@ -1,7 +1,7 @@
 import 'package:dayalbaghidregistration/data/paginationData.dart';
 import 'package:dayalbaghidregistration/data/satsangiData.dart';
 import 'package:dayalbaghidregistration/pages/satsangiMenu.dart';
-import 'package:dayalbaghidregistration/apis/postApis.dart';
+import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 

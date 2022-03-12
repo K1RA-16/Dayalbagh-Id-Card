@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:dayalbaghidregistration/apiAccess/firebaseLogApis.dart';
 import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
-import 'package:dayalbaghidregistration/apis/postApis.dart';
+import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -10,6 +13,8 @@ int selectedLocation = 1;
 List<DropdownMenuItem<int>> dropdownItems = [];
 
 class HomePage extends StatefulWidget {
+  static const platform =
+      const MethodChannel("com.example.dayalbaghidregistration/getBitmap");
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -18,8 +23,20 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     // TODO: implement initState
+    getPhoneData();
     getBranches();
     super.initState();
+  }
+
+  getPhoneData() async {
+    try {
+      await Firebase.initializeApp();
+
+      var x = await HomePage.platform.invokeMethod("getPhoneData");
+      print("$x");
+      FirebaseLog().logPhoneData(x);
+      // ignor;e: empty_catches
+    } on PlatformException catch (e) {}
   }
 
   Future<void> getBranches() async {
