@@ -45,7 +45,6 @@ class PostApi {
   Future<List<dynamic>> getBranches() async {
     final pref = await SharedPreferences.getInstance();
     var token = pref.getString("token") ?? "";
-
     final response = await http
         .get(Uri.parse('https://api.dbidentity.in/api/branch/list'), headers: {
       'Content-type': 'application/json',
