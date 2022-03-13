@@ -91,22 +91,24 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   initialiseCamera() async {
     // TODO: implement initState
-    final ImagePicker _picker = ImagePicker();
+    try {
+      final ImagePicker _picker = ImagePicker();
 
-    // Capture a photo
-    var image = await _picker.getImage(source: ImageSource.camera);
-    if (image != null) {
-      imageFile = File(image.path);
-      photoTaken = true;
-      Navigator.pop(context);
-      showDialog(
-          context: context,
-          builder: (BuildContext context) => _buildPopupImage(context));
-    }
-    Uint8List imagebytes = await image!.readAsBytes(); //convert to bytes
-    faceImage = base64.encode(imagebytes); //convert bytes to base64 string
-    print(faceImage);
-    setState(() {});
+      // Capture a photo
+      var image = await _picker.getImage(source: ImageSource.camera);
+      if (image != null) {
+        imageFile = File(image.path);
+        photoTaken = true;
+        Navigator.pop(context);
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => _buildPopupImage(context));
+      }
+      Uint8List imagebytes = await image!.readAsBytes(); //convert to bytes
+      faceImage = base64.encode(imagebytes); //convert bytes to base64 string
+      print(faceImage);
+      setState(() {});
+    } catch (e) {}
   }
 
   //getImage() async {

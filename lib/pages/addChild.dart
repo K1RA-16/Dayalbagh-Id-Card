@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'package:date_field/date_field.dart';
 import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
 import 'package:dayalbaghidregistration/data/childBiometricViewData.dart';
 import 'package:dayalbaghidregistration/data/childListData.dart';
@@ -30,8 +30,11 @@ class ManageChildren extends StatefulWidget {
   State<ManageChildren> createState() => _AddChildrenState();
 }
 
+enum SingingCharacter { male, female }
+
 class _AddChildrenState extends State<ManageChildren>
     with SingleTickerProviderStateMixin {
+  SingingCharacter? _character = SingingCharacter.male;
   int fingerScanned = 0;
   int index = satsangiListData.index;
   bool photoTaken = false;
@@ -50,7 +53,7 @@ class _AddChildrenState extends State<ManageChildren>
   late TextEditingController mobileController;
   late TextEditingController fatherNameController;
   late TextEditingController nameController;
-  late TextEditingController dobController;
+  late String dateSelected;
   late TextEditingController uid1Controller;
   late TextEditingController uid2Controller;
 
@@ -71,7 +74,7 @@ class _AddChildrenState extends State<ManageChildren>
     fatherNameController =
         TextEditingController(text: satsangiListData.satsangiList[index].name);
     nameController = TextEditingController();
-    dobController = TextEditingController();
+
     uid1Controller =
         TextEditingController(text: satsangiListData.satsangiList[index].uid);
     uid2Controller = TextEditingController();
@@ -90,23 +93,26 @@ class _AddChildrenState extends State<ManageChildren>
   }
 
   initialiseCamera() async {
-    // TODO: implement initState
-    final ImagePicker _picker = ImagePicker();
+    try {
+      // TODO: implement initState
+      final ImagePicker _picker = ImagePicker();
 
-    // Capture a photo
-    var image = await _picker.getImage(source: ImageSource.camera);
-    if (image != null) {
-      imageFile = File(image.path);
-      photoTaken = true;
+      // Capture a photo
+      var image = await _picker.getImage(source: ImageSource.camera);
       Navigator.pop(context);
-      showDialog(
-          context: context,
-          builder: (BuildContext context) => _buildPopupImage(context));
-    }
-    Uint8List imagebytes = await image!.readAsBytes(); //convert to bytes
-    faceImage = base64.encode(imagebytes); //convert bytes to base64 string
-    print(faceImage);
-    setState(() {});
+      if (image != null) {
+        imageFile = File(image.path);
+        photoTaken = true;
+
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => _buildPopupImage(context));
+      }
+      Uint8List imagebytes = await image!.readAsBytes(); //convert to bytes
+      faceImage = base64.encode(imagebytes); //convert bytes to base64 string
+      print(faceImage);
+      setState(() {});
+    } catch (e) {}
   }
 
   //getImage() async {
@@ -267,7 +273,14 @@ class _AddChildrenState extends State<ManageChildren>
 
   updateData() async {
     PostApi().updateChildBiometric(
-        satsangiListData.satsangiList[satsangiListData.index].uid,
+        nameController.text,
+        dateSelected,
+        _character.toString(),
+        uidController.text,
+        fatherNameController.text,
+        uid1Controller.text,
+        uid2Controller.text,
+        mobileController.text,
         iso[0],
         iso[1],
         iso[2],
@@ -596,6 +609,33 @@ class _AddChildrenState extends State<ManageChildren>
                 )),
           ),
           20.heightBox,
+          "Select Gender".text.make(),
+          10.heightBox,
+          ListTile(
+            title: const Text('Male'),
+            leading: Radio<SingingCharacter>(
+              value: SingingCharacter.male,
+              groupValue: _character,
+              onChanged: (SingingCharacter? value) {
+                setState(() {
+                  _character = value;
+                });
+              },
+            ),
+          ),
+          ListTile(
+            title: const Text('Female'),
+            leading: Radio<SingingCharacter>(
+              value: SingingCharacter.female,
+              groupValue: _character,
+              onChanged: (SingingCharacter? value) {
+                setState(() {
+                  _character = value;
+                });
+              },
+            ),
+          ),
+          20.heightBox,
           TextField(
             style: TextStyle(color: Colors.grey),
             readOnly: true,
@@ -616,22 +656,24 @@ class _AddChildrenState extends State<ManageChildren>
                 )),
           ),
           20.heightBox,
-          TextField(
-            controller: dobController,
-            decoration: InputDecoration(
-                label: Text("Date Of Birth"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
+          DateTimeFormField(
+            decoration: const InputDecoration(
+              hintStyle: TextStyle(color: Colors.black45),
+              errorStyle: TextStyle(color: Colors.redAccent),
+              border: OutlineInputBorder(),
+              suffixIcon: Icon(Icons.event_note),
+              labelText: 'Select Date',
+            ),
+            mode: DateTimeFieldPickerMode.date,
+            autovalidateMode: AutovalidateMode.always,
+            validator: (e) =>
+                (e?.day ?? 0) == 1 ? 'Please not the first day' : null,
+            onDateSelected: (DateTime value) {
+              var date = DateTime.parse(value.toString());
+              var formattedDate = "${date.day}-${date.month}-${date.year}";
+
+              dateSelected = formattedDate;
+            },
           ),
           20.heightBox,
           TextField(
