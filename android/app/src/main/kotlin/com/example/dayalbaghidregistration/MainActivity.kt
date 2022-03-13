@@ -198,16 +198,19 @@ Certificate: ${mfs100!!.GetCertification()}"""
                     //   SetTextOnUIThread(mfs100.GetErrorMsg(ret));
                 } else {
                     lastCapFingerData = fingerData
-                    val bitmap = BitmapFactory.decodeByteArray(
-                        fingerData.FingerImage(), 0,
-                        fingerData.FingerImage().size
-                    )
-                    val stream = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                    byteArray = stream.toByteArray()
-                    bitmap.recycle()
-
-                    //
+//                    val bitmap = BitmapFactory.decodeByteArray(
+//                        fingerData.FingerImage(), 0,
+//                        fingerData.FingerImage().size
+//                    )
+//                    val stream = ByteArrayOutputStream()
+//                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+//                    byteArray = stream.toByteArray()
+//                    bitmap.recycle()
+                    Log.d("nfiq","${fingerData.Nfiq()}");
+                    byteArray = if(fingerData.Nfiq() > 3)
+                        "bad image".toByteArray()
+                    else
+                        fingerData.FingerImage();
                 }
             } catch (ex: Exception) {
 

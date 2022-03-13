@@ -6,6 +6,8 @@ class ChildBiometricData {
 
 class ChildBiometricView {
   final int id;
+  final String gender;
+  final String mobile;
   final String name;
   final String father_name;
   final String dob;
@@ -26,6 +28,8 @@ class ChildBiometricView {
   final String uid;
   ChildBiometricView({
     required this.id,
+    required this.gender,
+    required this.mobile,
     required this.name,
     required this.father_name,
     required this.dob,
@@ -48,6 +52,8 @@ class ChildBiometricView {
 
   ChildBiometricView copyWith({
     int? id,
+    String? gender,
+    String? mobile,
     String? name,
     String? father_name,
     String? dob,
@@ -69,6 +75,8 @@ class ChildBiometricView {
   }) {
     return ChildBiometricView(
       id: id ?? this.id,
+      gender: gender ?? this.gender,
+      mobile: mobile ?? this.mobile,
       name: name ?? this.name,
       father_name: father_name ?? this.father_name,
       dob: dob ?? this.dob,
@@ -93,6 +101,8 @@ class ChildBiometricView {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'gender': gender,
+      'mobile': mobile,
       'name': name,
       'father_name': father_name,
       'dob': dob,
@@ -117,6 +127,8 @@ class ChildBiometricView {
   factory ChildBiometricView.fromMap(Map<String, dynamic> map) {
     return ChildBiometricView(
       id: map['id']?.toInt() ?? 0,
+      gender: map['gender'] ?? '',
+      mobile: map['mobile'] ?? '',
       name: map['name'] ?? '',
       father_name: map['father_name'] ?? '',
       dob: map['dob'] ?? '',
@@ -145,55 +157,59 @@ class ChildBiometricView {
 
   @override
   String toString() {
-    return 'ChildBiometricView(id: $id, name: $name, father_name: $father_name, dob: $dob, parent_uid_one: $parent_uid_one, parent_uid_two: $parent_uid_two, branch: $branch, first_created: $first_created, last_updated: $last_updated, isO_FP_1: $isO_FP_1, isO_FP_2: $isO_FP_2, isO_FP_3: $isO_FP_3, isO_FP_4: $isO_FP_4, fingerPrint_1: $fingerPrint_1, fingerPrint_2: $fingerPrint_2, fingerPrint_3: $fingerPrint_3, fingerPrint_4: $fingerPrint_4, image: $image, uid: $uid)';
+    return 'ChildBiometricView(id: $id, gender: $gender, mobile: $mobile, name: $name, father_name: $father_name, dob: $dob, parent_uid_one: $parent_uid_one, parent_uid_two: $parent_uid_two, branch: $branch, first_created: $first_created, last_updated: $last_updated, isO_FP_1: $isO_FP_1, isO_FP_2: $isO_FP_2, isO_FP_3: $isO_FP_3, isO_FP_4: $isO_FP_4, fingerPrint_1: $fingerPrint_1, fingerPrint_2: $fingerPrint_2, fingerPrint_3: $fingerPrint_3, fingerPrint_4: $fingerPrint_4, image: $image, uid: $uid)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-
+  
     return other is ChildBiometricView &&
-        other.id == id &&
-        other.name == name &&
-        other.father_name == father_name &&
-        other.dob == dob &&
-        other.parent_uid_one == parent_uid_one &&
-        other.parent_uid_two == parent_uid_two &&
-        other.branch == branch &&
-        other.first_created == first_created &&
-        other.last_updated == last_updated &&
-        other.isO_FP_1 == isO_FP_1 &&
-        other.isO_FP_2 == isO_FP_2 &&
-        other.isO_FP_3 == isO_FP_3 &&
-        other.isO_FP_4 == isO_FP_4 &&
-        other.fingerPrint_1 == fingerPrint_1 &&
-        other.fingerPrint_2 == fingerPrint_2 &&
-        other.fingerPrint_3 == fingerPrint_3 &&
-        other.fingerPrint_4 == fingerPrint_4 &&
-        other.image == image &&
-        other.uid == uid;
+      other.id == id &&
+      other.gender == gender &&
+      other.mobile == mobile &&
+      other.name == name &&
+      other.father_name == father_name &&
+      other.dob == dob &&
+      other.parent_uid_one == parent_uid_one &&
+      other.parent_uid_two == parent_uid_two &&
+      other.branch == branch &&
+      other.first_created == first_created &&
+      other.last_updated == last_updated &&
+      other.isO_FP_1 == isO_FP_1 &&
+      other.isO_FP_2 == isO_FP_2 &&
+      other.isO_FP_3 == isO_FP_3 &&
+      other.isO_FP_4 == isO_FP_4 &&
+      other.fingerPrint_1 == fingerPrint_1 &&
+      other.fingerPrint_2 == fingerPrint_2 &&
+      other.fingerPrint_3 == fingerPrint_3 &&
+      other.fingerPrint_4 == fingerPrint_4 &&
+      other.image == image &&
+      other.uid == uid;
   }
 
   @override
   int get hashCode {
     return id.hashCode ^
-        name.hashCode ^
-        father_name.hashCode ^
-        dob.hashCode ^
-        parent_uid_one.hashCode ^
-        parent_uid_two.hashCode ^
-        branch.hashCode ^
-        first_created.hashCode ^
-        last_updated.hashCode ^
-        isO_FP_1.hashCode ^
-        isO_FP_2.hashCode ^
-        isO_FP_3.hashCode ^
-        isO_FP_4.hashCode ^
-        fingerPrint_1.hashCode ^
-        fingerPrint_2.hashCode ^
-        fingerPrint_3.hashCode ^
-        fingerPrint_4.hashCode ^
-        image.hashCode ^
-        uid.hashCode;
+      gender.hashCode ^
+      mobile.hashCode ^
+      name.hashCode ^
+      father_name.hashCode ^
+      dob.hashCode ^
+      parent_uid_one.hashCode ^
+      parent_uid_two.hashCode ^
+      branch.hashCode ^
+      first_created.hashCode ^
+      last_updated.hashCode ^
+      isO_FP_1.hashCode ^
+      isO_FP_2.hashCode ^
+      isO_FP_3.hashCode ^
+      isO_FP_4.hashCode ^
+      fingerPrint_1.hashCode ^
+      fingerPrint_2.hashCode ^
+      fingerPrint_3.hashCode ^
+      fingerPrint_4.hashCode ^
+      image.hashCode ^
+      uid.hashCode;
   }
 }

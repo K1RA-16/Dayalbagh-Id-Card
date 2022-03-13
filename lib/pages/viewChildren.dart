@@ -24,6 +24,8 @@ class _ViewChildrenState extends State<ViewChildren> {
   late TextEditingController uid1Controller;
 
   late TextEditingController uid2Controller;
+  late TextEditingController genderController;
+  late TextEditingController firstCreatedController;
 
   bool finger1 = false;
   bool finger2 = false;
@@ -45,31 +47,44 @@ class _ViewChildrenState extends State<ViewChildren> {
 
   @override
   void initState() {
-    uidController = TextEditingController(text: ChildBiometricData.data["uid"]);
-    mobileController = TextEditingController();
-    parentNameController =
-        TextEditingController(text: ChildBiometricData.data["father_name"]);
-    nameController =
-        TextEditingController(text: ChildBiometricData.data["name"]);
-    dobController = TextEditingController(text: ChildBiometricData.data["dob"]);
-    uid1Controller =
-        TextEditingController(text: ChildBiometricData.data["parent_uid_one"]);
-    uid2Controller =
-        TextEditingController(text: ChildBiometricData.data["parent_uid_two"]);
+    try {
+      uidController = TextEditingController(text: ChildBiometricData.data["uid"]);
+      mobileController =
+          TextEditingController(text: ChildBiometricData.data["mobile"]);
+      parentNameController =
+          TextEditingController(text: ChildBiometricData.data["father_name"]);
+      genderController =
+          TextEditingController(text: ChildBiometricData.data["gender"]);
+      firstCreatedController =
+          TextEditingController(text: ChildBiometricData.data["first_created"]);
+      nameController =
+          TextEditingController(text: ChildBiometricData.data["name"]);
+      dobController = TextEditingController(text: ChildBiometricData.data["dob"]);
+      uid1Controller =
+          TextEditingController(text: ChildBiometricData.data["parent_uid_one"]);
+      uid2Controller =
+          TextEditingController(text: ChildBiometricData.data["parent_uid_two"]);
+    } on Exception catch (e) {
+          // TODO
+    }
     loadData();
     super.initState();
   }
 
   loadData() {
-    loadIso(ChildBiometricData.data["isO_FP_1"], 1);
-    loadIso(ChildBiometricData.data["isO_FP_2"], 2);
-    loadIso(ChildBiometricData.data["isO_FP_3"], 3);
-    loadIso(ChildBiometricData.data["isO_FP_4"], 4);
-    fingerData1 = base64Decode(ChildBiometricData.data["fingerPrint_1"]);
-    fingerData2 = base64Decode(ChildBiometricData.data["fingerPrint_2"]);
-    fingerData3 = base64Decode(ChildBiometricData.data["fingerPrint_3"]);
-    fingerData4 = base64Decode(ChildBiometricData.data["fingerPrint_4"]);
-    imageFile = base64Decode(ChildBiometricData.data["image"]);
+    try {
+      loadIso(ChildBiometricData.data["isO_FP_1"], 1);
+      loadIso(ChildBiometricData.data["isO_FP_2"], 2);
+      loadIso(ChildBiometricData.data["isO_FP_3"], 3);
+      loadIso(ChildBiometricData.data["isO_FP_4"], 4);
+      fingerData1 = base64Decode(ChildBiometricData.data["fingerPrint_1"]);
+      fingerData2 = base64Decode(ChildBiometricData.data["fingerPrint_2"]);
+      fingerData3 = base64Decode(ChildBiometricData.data["fingerPrint_3"]);
+      fingerData4 = base64Decode(ChildBiometricData.data["fingerPrint_4"]);
+      imageFile = base64Decode(ChildBiometricData.data["image"]);
+    } on Exception catch (e) {
+          // TODO
+    }
   }
 
   loadIso(int key, int index) {
@@ -276,6 +291,25 @@ class _ViewChildrenState extends State<ViewChildren> {
           20.heightBox,
           TextField(
             readOnly: true,
+            controller: genderController,
+            decoration: InputDecoration(
+                label: Text("Gender"),
+                labelStyle: TextStyle(color: Colors.white),
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                )),
+          ),
+          20.heightBox,
+          TextField(
+            readOnly: true,
             controller: mobileController,
             decoration: InputDecoration(
                 label: Text("Mobile Number"),
@@ -355,6 +389,25 @@ class _ViewChildrenState extends State<ViewChildren> {
             controller: uid2Controller,
             decoration: InputDecoration(
                 label: Text("Uid of Second Parent"),
+                labelStyle: TextStyle(color: Colors.white),
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                )),
+          ),
+          20.heightBox,
+          TextField(
+            readOnly: true,
+            controller: firstCreatedController,
+            decoration: InputDecoration(
+                label: Text("Date of creation"),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(

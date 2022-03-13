@@ -96,6 +96,16 @@ class _AddSatsangiState extends State<AddSatsangi>
 
       // Capture a photo
       var image = await _picker.getImage(source: ImageSource.camera);
+      Uint8List imagebytes = await image!.readAsBytes(); //convert to bytes
+      faceImage = base64.encode(imagebytes); //convert bytes to base64 string
+      //VxToast.show(context, msg: "please wait while we check the image");
+      // Navigator.pop(context);
+      // showDialog(
+      //     context: context,
+      //     builder: (BuildContext context) => _buildPopUpWait(context));
+      // bool faceCorrect =
+      //await PostApi().checkFace("data:image/jpeg;base64,$faceImage");
+      //  faceapi not working
       if (image != null) {
         imageFile = File(image.path);
         photoTaken = true;
@@ -103,11 +113,8 @@ class _AddSatsangiState extends State<AddSatsangi>
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupImage(context));
+        setState(() {});
       }
-      Uint8List imagebytes = await image!.readAsBytes(); //convert to bytes
-      faceImage = base64.encode(imagebytes); //convert bytes to base64 string
-      print(faceImage);
-      setState(() {});
     } catch (e) {}
   }
 
@@ -253,6 +260,10 @@ class _AddSatsangiState extends State<AddSatsangi>
     } else if (String.fromCharCodes(uint8list) == "Capturing stopped") {
       Navigator.pop(context);
       VxToast.show(context, msg: "please wait until the scanner stops reading");
+      return 2;
+    } else if (String.fromCharCodes(uint8list) == "bad image") {
+      Navigator.pop(context);
+      VxToast.show(context, msg: "image quality not proper please scan again");
       return 2;
     } else {
       return 1;
@@ -1512,6 +1523,15 @@ class _AddSatsangiState extends State<AddSatsangi>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildPopUpWait(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.blueGrey,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text("Please wait while we process the photo"),
+      titleTextStyle: TextStyle(fontSize: 18),
     );
   }
 
