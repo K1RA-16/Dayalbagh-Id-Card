@@ -1,0 +1,181 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.dayalbaghidregistration"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+9        android:targetSdkVersion="31" />
+10    <!--
+11         Flutter needs it to communicate with the running application
+12         to allow setting breakpoints, to provide hot reload, etc.
+13    -->
+14    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+14-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:4:5-86
+14-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:4:22-83
+15    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+15-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:6:5-81
+15-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:6:22-78
+16    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+16-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:7:5-80
+16-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:7:22-77
+17    <uses-permission android:name="android.permission.USB_PERMISSION" />
+17-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:8:5-73
+17-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:8:22-70
+18    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+18-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:9:5-75
+18-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:9:22-72
+19    <uses-permission android:name="android.permission.INTERNET" />
+19-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:3:5-67
+19-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:3:22-64
+20    <uses-permission android:name="android.Manifest.permission.READ_PHONE_STATE" />
+20-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:5:5-84
+20-->/Users/k1ra/Dayalbagh-Id-Card/android/app/src/main/AndroidManifest.xml:5:22-81
+21    <uses-permission android:name="android.permission.BLUETOOTH" />
+21-->[:flutter_bluetooth_serial] /Users/k1ra/Dayalbagh-Id-Card/build/flutter_bluetooth_serial/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-68
+21-->[:flutter_bluetooth_serial] /Users/k1ra/Dayalbagh-Id-Card/build/flutter_bluetooth_serial/intermediates/library_manifest/debug/AndroidManifest.xml:7:22-65
+22    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+22-->[:flutter_bluetooth_serial] /Users/k1ra/Dayalbagh-Id-Card/build/flutter_bluetooth_serial/intermediates/library_manifest/debug/AndroidManifest.xml:8:5-74
+22-->[:flutter_bluetooth_serial] /Users/k1ra/Dayalbagh-Id-Card/build/flutter_bluetooth_serial/intermediates/library_manifest/debug/AndroidManifest.xml:8:22-71
+23    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+23-->[:flutter_bluetooth_serial] /Users/k1ra/Dayalbagh-Id-Card/build/flutter_bluetooth_serial/intermediates/library_manifest/debug/AndroidManifest.xml:9:5-81
+23-->[:flutter_bluetooth_serial] /Users/k1ra/Dayalbagh-Id-Card/build/flutter_bluetooth_serial/intermediates/library_manifest/debug/AndroidManifest.xml:9:22-78
+24    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
+24-->[:flutter_bluetooth_serial] /Users/k1ra/Dayalbagh-Id-Card/build/flutter_bluetooth_serial/intermediates/library_manifest/debug/AndroidManifest.xml:10:5-79
+24-->[:flutter_bluetooth_serial] /Users/k1ra/Dayalbagh-Id-Card/build/flutter_bluetooth_serial/intermediates/library_manifest/debug/AndroidManifest.xml:10:22-76
+25    <!-- <uses-sdk android:minSdkVersion="14"/> -->
+26    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+26-->[com.google.firebase:firebase-database:20.0.3] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/b6d24f29457a21d3568e9b5830c007b6/jetified-firebase-database-20.0.3/AndroidManifest.xml:25:5-79
+26-->[com.google.firebase:firebase-database:20.0.3] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/b6d24f29457a21d3568e9b5830c007b6/jetified-firebase-database-20.0.3/AndroidManifest.xml:25:22-76
+27
+28    <application
+29        android:name="android.app.Application"
+30        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+30-->[androidx.core:core:1.6.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/875654acb8fd75501dc33efa1bebb479/core-1.6.0/AndroidManifest.xml:24:18-86
+31        android:debuggable="true"
+32        android:icon="@mipmap/ic_launcher"
+33        android:label="dayalbaghidregistration" >
+34        <activity
+35            android:name="com.example.dayalbaghidregistration.MainActivity"
+36            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+37            android:exported="true"
+38            android:hardwareAccelerated="true"
+39            android:launchMode="singleTop"
+40            android:theme="@style/LaunchTheme"
+41            android:windowSoftInputMode="adjustResize" >
+42
+43            <!--
+44                 Specifies an Android theme to apply to this Activity as soon as
+45                 the Android process has started. This theme is visible to the user
+46                 while the Flutter UI initializes. After that, this theme continues
+47                 to determine the Window background behind the Flutter UI.
+48            -->
+49            <meta-data
+50                android:name="io.flutter.embedding.android.NormalTheme"
+51                android:resource="@style/NormalTheme" />
+52
+53            <intent-filter>
+54                <action android:name="android.intent.action.MAIN" />
+55
+56                <category android:name="android.intent.category.LAUNCHER" />
+57            </intent-filter>
+58        </activity>
+59        <!--
+60             Don't delete the meta-data below.
+61             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
+62        -->
+63        <meta-data
+64            android:name="flutterEmbedding"
+65            android:value="2" />
+66
+67        <service
+67-->[:firebase_database] /Users/k1ra/Dayalbagh-Id-Card/build/firebase_database/intermediates/library_manifest/debug/AndroidManifest.xml:8:9-12:19
+68            android:name="com.google.firebase.components.ComponentDiscoveryService"
+68-->[:firebase_database] /Users/k1ra/Dayalbagh-Id-Card/build/firebase_database/intermediates/library_manifest/debug/AndroidManifest.xml:8:18-89
+69            android:directBootAware="true"
+69-->[com.google.firebase:firebase-common:20.0.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/be1f31d795f15c1bd24708ca9c440629/jetified-firebase-common-20.0.0/AndroidManifest.xml:35:13-43
+70            android:exported="false" >
+70-->[com.google.firebase:firebase-database:20.0.3] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/b6d24f29457a21d3568e9b5830c007b6/jetified-firebase-database-20.0.3/AndroidManifest.xml:31:13-37
+71            <meta-data
+71-->[:firebase_database] /Users/k1ra/Dayalbagh-Id-Card/build/firebase_database/intermediates/library_manifest/debug/AndroidManifest.xml:9:13-11:85
+72                android:name="com.google.firebase.components:io.flutter.plugins.firebase.database.FlutterFirebaseAppRegistrar"
+72-->[:firebase_database] /Users/k1ra/Dayalbagh-Id-Card/build/firebase_database/intermediates/library_manifest/debug/AndroidManifest.xml:10:17-127
+73                android:value="com.google.firebase.components.ComponentRegistrar" />
+73-->[:firebase_database] /Users/k1ra/Dayalbagh-Id-Card/build/firebase_database/intermediates/library_manifest/debug/AndroidManifest.xml:11:17-82
+74            <meta-data
+74-->[:firebase_core] /Users/k1ra/Dayalbagh-Id-Card/build/firebase_core/intermediates/library_manifest/debug/AndroidManifest.xml:9:13-11:85
+75                android:name="com.google.firebase.components:io.flutter.plugins.firebase.core.FlutterFirebaseCoreRegistrar"
+75-->[:firebase_core] /Users/k1ra/Dayalbagh-Id-Card/build/firebase_core/intermediates/library_manifest/debug/AndroidManifest.xml:10:17-124
+76                android:value="com.google.firebase.components.ComponentRegistrar" />
+76-->[:firebase_core] /Users/k1ra/Dayalbagh-Id-Card/build/firebase_core/intermediates/library_manifest/debug/AndroidManifest.xml:11:17-82
+77            <meta-data
+77-->[com.google.firebase:firebase-database:20.0.3] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/b6d24f29457a21d3568e9b5830c007b6/jetified-firebase-database-20.0.3/AndroidManifest.xml:32:13-34:85
+78                android:name="com.google.firebase.components:com.google.firebase.database.DatabaseRegistrar"
+78-->[com.google.firebase:firebase-database:20.0.3] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/b6d24f29457a21d3568e9b5830c007b6/jetified-firebase-database-20.0.3/AndroidManifest.xml:33:17-109
+79                android:value="com.google.firebase.components.ComponentRegistrar" />
+79-->[com.google.firebase:firebase-database:20.0.3] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/b6d24f29457a21d3568e9b5830c007b6/jetified-firebase-database-20.0.3/AndroidManifest.xml:34:17-82
+80        </service>
+81
+82        <provider
+82-->[:image_picker] /Users/k1ra/Dayalbagh-Id-Card/build/image_picker/intermediates/library_manifest/debug/AndroidManifest.xml:8:9-16:20
+83            android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"
+83-->[:image_picker] /Users/k1ra/Dayalbagh-Id-Card/build/image_picker/intermediates/library_manifest/debug/AndroidManifest.xml:9:13-82
+84            android:authorities="com.example.dayalbaghidregistration.flutter.image_provider"
+84-->[:image_picker] /Users/k1ra/Dayalbagh-Id-Card/build/image_picker/intermediates/library_manifest/debug/AndroidManifest.xml:10:13-74
+85            android:exported="false"
+85-->[:image_picker] /Users/k1ra/Dayalbagh-Id-Card/build/image_picker/intermediates/library_manifest/debug/AndroidManifest.xml:11:13-37
+86            android:grantUriPermissions="true" >
+86-->[:image_picker] /Users/k1ra/Dayalbagh-Id-Card/build/image_picker/intermediates/library_manifest/debug/AndroidManifest.xml:12:13-47
+87            <meta-data
+87-->[:image_picker] /Users/k1ra/Dayalbagh-Id-Card/build/image_picker/intermediates/library_manifest/debug/AndroidManifest.xml:13:13-15:75
+88                android:name="android.support.FILE_PROVIDER_PATHS"
+88-->[:image_picker] /Users/k1ra/Dayalbagh-Id-Card/build/image_picker/intermediates/library_manifest/debug/AndroidManifest.xml:14:17-67
+89                android:resource="@xml/flutter_image_picker_file_paths" />
+89-->[:image_picker] /Users/k1ra/Dayalbagh-Id-Card/build/image_picker/intermediates/library_manifest/debug/AndroidManifest.xml:15:17-72
+90        </provider>
+91
+92        <uses-library
+92-->[androidx.window:window:1.0.0-beta04] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/9a30143a20a029e68d2a2c8980fee508/jetified-window-1.0.0-beta04/AndroidManifest.xml:25:9-27:40
+93            android:name="androidx.window.extensions"
+93-->[androidx.window:window:1.0.0-beta04] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/9a30143a20a029e68d2a2c8980fee508/jetified-window-1.0.0-beta04/AndroidManifest.xml:26:13-54
+94            android:required="false" />
+94-->[androidx.window:window:1.0.0-beta04] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/9a30143a20a029e68d2a2c8980fee508/jetified-window-1.0.0-beta04/AndroidManifest.xml:27:13-37
+95        <uses-library
+95-->[androidx.window:window:1.0.0-beta04] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/9a30143a20a029e68d2a2c8980fee508/jetified-window-1.0.0-beta04/AndroidManifest.xml:28:9-30:40
+96            android:name="androidx.window.sidecar"
+96-->[androidx.window:window:1.0.0-beta04] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/9a30143a20a029e68d2a2c8980fee508/jetified-window-1.0.0-beta04/AndroidManifest.xml:29:13-51
+97            android:required="false" />
+97-->[androidx.window:window:1.0.0-beta04] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/9a30143a20a029e68d2a2c8980fee508/jetified-window-1.0.0-beta04/AndroidManifest.xml:30:13-37
+98
+99        <provider
+99-->[com.google.firebase:firebase-common:20.0.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/be1f31d795f15c1bd24708ca9c440629/jetified-firebase-common-20.0.0/AndroidManifest.xml:26:9-31:39
+100            android:name="com.google.firebase.provider.FirebaseInitProvider"
+100-->[com.google.firebase:firebase-common:20.0.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/be1f31d795f15c1bd24708ca9c440629/jetified-firebase-common-20.0.0/AndroidManifest.xml:27:13-77
+101            android:authorities="com.example.dayalbaghidregistration.firebaseinitprovider"
+101-->[com.google.firebase:firebase-common:20.0.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/be1f31d795f15c1bd24708ca9c440629/jetified-firebase-common-20.0.0/AndroidManifest.xml:28:13-72
+102            android:directBootAware="true"
+102-->[com.google.firebase:firebase-common:20.0.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/be1f31d795f15c1bd24708ca9c440629/jetified-firebase-common-20.0.0/AndroidManifest.xml:29:13-43
+103            android:exported="false"
+103-->[com.google.firebase:firebase-common:20.0.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/be1f31d795f15c1bd24708ca9c440629/jetified-firebase-common-20.0.0/AndroidManifest.xml:30:13-37
+104            android:initOrder="100" />
+104-->[com.google.firebase:firebase-common:20.0.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/be1f31d795f15c1bd24708ca9c440629/jetified-firebase-common-20.0.0/AndroidManifest.xml:31:13-36
+105
+106        <activity
+106-->[com.google.android.gms:play-services-base:17.1.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/f3d1e61e48a3c4c2b9f4d2ffc401af39/jetified-play-services-base-17.1.0/AndroidManifest.xml:23:9-26:75
+107            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+107-->[com.google.android.gms:play-services-base:17.1.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/f3d1e61e48a3c4c2b9f4d2ffc401af39/jetified-play-services-base-17.1.0/AndroidManifest.xml:24:13-79
+108            android:exported="false"
+108-->[com.google.android.gms:play-services-base:17.1.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/f3d1e61e48a3c4c2b9f4d2ffc401af39/jetified-play-services-base-17.1.0/AndroidManifest.xml:25:13-37
+109            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+109-->[com.google.android.gms:play-services-base:17.1.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/f3d1e61e48a3c4c2b9f4d2ffc401af39/jetified-play-services-base-17.1.0/AndroidManifest.xml:26:13-72
+110
+111        <meta-data
+111-->[com.google.android.gms:play-services-basement:17.0.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/b8e5988e0bc615162088959e72f15f1d/jetified-play-services-basement-17.0.0/AndroidManifest.xml:23:9-25:69
+112            android:name="com.google.android.gms.version"
+112-->[com.google.android.gms:play-services-basement:17.0.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/b8e5988e0bc615162088959e72f15f1d/jetified-play-services-basement-17.0.0/AndroidManifest.xml:24:13-58
+113            android:value="@integer/google_play_services_version" />
+113-->[com.google.android.gms:play-services-basement:17.0.0] /Users/k1ra/.gradle/caches/transforms-2/files-2.1/b8e5988e0bc615162088959e72f15f1d/jetified-play-services-basement-17.0.0/AndroidManifest.xml:25:13-66
+114    </application>
+115
+116</manifest>

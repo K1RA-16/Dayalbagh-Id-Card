@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         "/menu": (context) => SatsangiMenu(),
         "/children": (context) => ManageChildren(),
         "/childrenList": (context) => ListChildren(),
-        //"/viewSatsangi": (context) => ViewSatsangi(),
+        "/viewSatsangi": (context) => ViewSatsangi(),
         "/viewChildren": (context) => ViewChildren(),
       },
     );

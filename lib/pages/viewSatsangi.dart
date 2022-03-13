@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:dayalbaghidregistration/data/SatsangiBiometricData.dart';
 import 'package:dayalbaghidregistration/data/childBiometricViewData.dart';
+import 'package:dayalbaghidregistration/data/satsangiGetBiometricData.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -12,18 +14,15 @@ class ViewSatsangi extends StatefulWidget {
 
 class _ViewSatsangiState extends State<ViewSatsangi> {
   late TextEditingController uidController;
-
+  late TextEditingController statusController;
+  late TextEditingController genderController;
+  late TextEditingController doisController;
   late TextEditingController mobileController;
-
-  late TextEditingController parentNameController;
-
+  late TextEditingController spouseNameController;
   late TextEditingController nameController;
-
   late TextEditingController dobController;
-
-  late TextEditingController uid1Controller;
-
-  late TextEditingController uid2Controller;
+  late TextEditingController doi1Controller;
+  late TextEditingController doi2Controller;
 
   bool finger1 = false;
   bool finger2 = false;
@@ -45,31 +44,55 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
 
   @override
   void initState() {
-    uidController = TextEditingController(text: ChildBiometricData.data["uid"]);
-    mobileController = TextEditingController();
-    parentNameController =
-        TextEditingController(text: ChildBiometricData.data["father_name"]);
-    nameController =
-        TextEditingController(text: ChildBiometricData.data["name"]);
-    dobController = TextEditingController(text: ChildBiometricData.data["dob"]);
-    uid1Controller =
-        TextEditingController(text: ChildBiometricData.data["parent_uid_one"]);
-    uid2Controller =
-        TextEditingController(text: ChildBiometricData.data["parent_uid_two"]);
+    try {
+      uidController =
+          TextEditingController(text: SatsangiGetBiometricMap.data["uid"]);
+      mobileController = TextEditingController(
+          text: "${SatsangiGetBiometricMap.data["mobile"]}");
+      spouseNameController = TextEditingController(
+          text: SatsangiGetBiometricMap.data["father_Or_Spouse_Name"]);
+      nameController =
+          TextEditingController(text: SatsangiGetBiometricMap.data["name"]);
+      statusController =
+          TextEditingController(text: SatsangiGetBiometricMap.data["status"]);
+      genderController =
+          TextEditingController(text: SatsangiGetBiometricMap.data["gender"]);
+      doisController = TextEditingController(
+          text: SatsangiGetBiometricMap.data["date_of_issue"]);
+      dobController =
+          TextEditingController(text: SatsangiGetBiometricMap.data["dob"]);
+      doi1Controller = TextEditingController(
+          text: SatsangiGetBiometricMap.data["doi_First"]);
+      doi2Controller = TextEditingController(
+          text: SatsangiGetBiometricMap.data["doi_Second"]);
+    } on Exception catch (e) {
+      // TODO
+    }
     loadData();
     super.initState();
   }
 
   loadData() {
-    loadIso(ChildBiometricData.data["isO_FP_1"], 1);
-    loadIso(ChildBiometricData.data["isO_FP_2"], 2);
-    loadIso(ChildBiometricData.data["isO_FP_3"], 3);
-    loadIso(ChildBiometricData.data["isO_FP_4"], 4);
-    fingerData1 = base64Decode(ChildBiometricData.data["fingerPrint_1"]);
-    fingerData2 = base64Decode(ChildBiometricData.data["fingerPrint_2"]);
-    fingerData3 = base64Decode(ChildBiometricData.data["fingerPrint_3"]);
-    fingerData4 = base64Decode(ChildBiometricData.data["fingerPrint_4"]);
-    imageFile = base64Decode(ChildBiometricData.data["image"]);
+    try {
+      loadIso(SatsangiGetBiometricMap.data["isO_FP_1"], 1);
+      loadIso(SatsangiGetBiometricMap.data["isO_FP_2"], 2);
+      loadIso(SatsangiGetBiometricMap.data["isO_FP_3"], 3);
+      loadIso(SatsangiGetBiometricMap.data["isO_FP_4"], 4);
+      fingerData1 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_1"]);
+      fingerData2 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_2"]);
+      fingerData3 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_3"]);
+      fingerData4 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_4"]);
+      imageFile = base64Decode(SatsangiGetBiometricMap.data["image"]);
+      try {
+        if (SatsangiGetBiometricMap.data["image"].toString().length > 5)
+          faceImage = true;
+      } on Exception catch (e) {
+        // TODO
+      }
+      setState(() {});
+    } on Exception catch (e) {
+      // TODO
+    }
   }
 
   loadIso(int key, int index) {
@@ -81,9 +104,9 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
     } else if (key == 4) {
       value = "Right ring finger";
     } else if (key == 7) {
-      value = "Left middle finger";
+      value = "Left index finger";
     } else if (key == 8) {
-      value = "Left ring finger";
+      value = "Left middle finger";
     } else if (key == 9) {
       value = "Left ring finger";
     }
@@ -276,6 +299,44 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
           20.heightBox,
           TextField(
             readOnly: true,
+            controller: statusController,
+            decoration: InputDecoration(
+                label: Text("Status"),
+                labelStyle: TextStyle(color: Colors.white),
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                )),
+          ),
+          20.heightBox,
+          TextField(
+            readOnly: true,
+            controller: genderController,
+            decoration: InputDecoration(
+                label: Text("Gender"),
+                labelStyle: TextStyle(color: Colors.white),
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                )),
+          ),
+          20.heightBox,
+          TextField(
+            readOnly: true,
             controller: mobileController,
             decoration: InputDecoration(
                 label: Text("Mobile Number"),
@@ -314,9 +375,9 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
           20.heightBox,
           TextField(
             readOnly: true,
-            controller: parentNameController,
+            controller: spouseNameController,
             decoration: InputDecoration(
-                label: Text("Parent Name"),
+                label: Text("Spouse Name"),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(
@@ -333,9 +394,9 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
           20.heightBox,
           TextField(
             readOnly: true,
-            controller: uid1Controller,
+            controller: doi1Controller,
             decoration: InputDecoration(
-                label: Text("Uid Of First Parent"),
+                label: Text("Date Of First Initiation"),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(
@@ -352,9 +413,28 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
           20.heightBox,
           TextField(
             readOnly: true,
-            controller: uid2Controller,
+            controller: doi2Controller,
             decoration: InputDecoration(
-                label: Text("Uid of Second Parent"),
+                label: Text("Date Of Second Initiation"),
+                labelStyle: TextStyle(color: Colors.white),
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                )),
+          ),
+          20.heightBox,
+          TextField(
+            readOnly: true,
+            controller: doisController,
+            decoration: InputDecoration(
+                label: Text("Date Of Issue"),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(

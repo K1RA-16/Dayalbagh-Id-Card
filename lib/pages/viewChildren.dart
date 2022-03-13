@@ -48,7 +48,8 @@ class _ViewChildrenState extends State<ViewChildren> {
   @override
   void initState() {
     try {
-      uidController = TextEditingController(text: ChildBiometricData.data["uid"]);
+      uidController =
+          TextEditingController(text: ChildBiometricData.data["uid"]);
       mobileController =
           TextEditingController(text: ChildBiometricData.data["mobile"]);
       parentNameController =
@@ -59,13 +60,14 @@ class _ViewChildrenState extends State<ViewChildren> {
           TextEditingController(text: ChildBiometricData.data["first_created"]);
       nameController =
           TextEditingController(text: ChildBiometricData.data["name"]);
-      dobController = TextEditingController(text: ChildBiometricData.data["dob"]);
-      uid1Controller =
-          TextEditingController(text: ChildBiometricData.data["parent_uid_one"]);
-      uid2Controller =
-          TextEditingController(text: ChildBiometricData.data["parent_uid_two"]);
+      dobController =
+          TextEditingController(text: ChildBiometricData.data["dob"]);
+      uid1Controller = TextEditingController(
+          text: ChildBiometricData.data["parent_uid_one"]);
+      uid2Controller = TextEditingController(
+          text: ChildBiometricData.data["parent_uid_two"]);
     } on Exception catch (e) {
-          // TODO
+      // TODO
     }
     loadData();
     super.initState();
@@ -83,7 +85,7 @@ class _ViewChildrenState extends State<ViewChildren> {
       fingerData4 = base64Decode(ChildBiometricData.data["fingerPrint_4"]);
       imageFile = base64Decode(ChildBiometricData.data["image"]);
     } on Exception catch (e) {
-          // TODO
+      // TODO
     }
   }
 
@@ -96,9 +98,9 @@ class _ViewChildrenState extends State<ViewChildren> {
     } else if (key == 4) {
       value = "Right ring finger";
     } else if (key == 7) {
-      value = "Left middle finger";
+      value = "Left index finger";
     } else if (key == 8) {
-      value = "Left ring finger";
+      value = "Left middle finger";
     } else if (key == 9) {
       value = "Left ring finger";
     }
