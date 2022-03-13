@@ -1,3 +1,4 @@
+import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -43,7 +44,7 @@ class SatsangiMenu extends StatelessWidget {
               ),
               const HeightBox(10),
               InkWell(
-                onTap: () => {Navigator.pushNamed(context, "/children")},
+                onTap: () => {PostApi().getChildList(context)},
                 //     "/connectRfid")), //SystemSetting.goto(SettingTarget.BLUETOOTH)),
                 child: Card(
                     margin: const EdgeInsets.all(8.0),

@@ -4,6 +4,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
+import 'package:dayalbaghidregistration/data/childBiometricViewData.dart';
+import 'package:dayalbaghidregistration/data/childListData.dart';
 import 'package:dayalbaghidregistration/data/satsangiData.dart';
 import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
@@ -21,14 +23,14 @@ Uint8List fingerData6 = Uint8List(0);
 int code = 0;
 //Uint8List testImage = Uint8List(0);
 
-class AddSatsangi extends StatefulWidget {
+class ManageChildren extends StatefulWidget {
   static const platform =
       const MethodChannel("com.example.dayalbaghidregistration/getBitmap");
   @override
-  State<AddSatsangi> createState() => _AddSatsangiState();
+  State<ManageChildren> createState() => _AddChildrenState();
 }
 
-class _AddSatsangiState extends State<AddSatsangi>
+class _AddChildrenState extends State<ManageChildren>
     with SingleTickerProviderStateMixin {
   int fingerScanned = 0;
   int index = satsangiListData.index;
@@ -49,8 +51,8 @@ class _AddSatsangiState extends State<AddSatsangi>
   late TextEditingController fatherNameController;
   late TextEditingController nameController;
   late TextEditingController dobController;
-  late TextEditingController doi1Controller;
-  late TextEditingController doi2Controller;
+  late TextEditingController uid1Controller;
+  late TextEditingController uid2Controller;
 
   File? imageFile;
 
@@ -61,20 +63,18 @@ class _AddSatsangiState extends State<AddSatsangi>
   //= File("assets/images/userDummyPhoto.png");
   @override
   void initState() {
-    uidController =
-        TextEditingController(text: satsangiListData.satsangiList[index].uid);
+    uidController = TextEditingController(
+        text:
+            "${satsangiListData.satsangiList[index].uid}C${(ChildList.childrenNo) + 1}");
     mobileController = TextEditingController(
         text: satsangiListData.satsangiList[index].mobile);
-    fatherNameController = TextEditingController(
-        text: satsangiListData.satsangiList[index].father_Or_Spouse_Name);
-    nameController =
+    fatherNameController =
         TextEditingController(text: satsangiListData.satsangiList[index].name);
-    dobController =
-        TextEditingController(text: satsangiListData.satsangiList[index].dob);
-    doi1Controller = TextEditingController(
-        text: satsangiListData.satsangiList[index].doi_First);
-    doi2Controller = TextEditingController(
-        text: satsangiListData.satsangiList[index].doi_Second);
+    nameController = TextEditingController();
+    dobController = TextEditingController();
+    uid1Controller =
+        TextEditingController(text: satsangiListData.satsangiList[index].uid);
+    uid2Controller = TextEditingController();
     initialiseReader();
     //getImage();
     _animationController = AnimationController(
@@ -116,7 +116,7 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   initialiseReader() async {
     try {
-      String x = await AddSatsangi.platform.invokeMethod("initialiseReader");
+      String x = await ManageChildren.platform.invokeMethod("initialiseReader");
       VxToast.show(context, msg: x);
 
       // ignore: empty_catches
@@ -129,13 +129,13 @@ class _AddSatsangiState extends State<AddSatsangi>
       loading = true;
     });
 
-    await AddSatsangi.platform.invokeMethod("startReading");
+    await ManageChildren.platform.invokeMethod("startReading");
   }
 
   getFingerprint(int fingerIso) async {
     try {
       final Uint8List result =
-          await AddSatsangi.platform.invokeMethod("getFingerprint");
+          await ManageChildren.platform.invokeMethod("getFingerprint");
       if (fingerIso == 1) {
         fingerData1 = result;
       } else if (fingerIso == 2) {
@@ -266,7 +266,7 @@ class _AddSatsangiState extends State<AddSatsangi>
   }
 
   updateData() async {
-    PostApi().updateSatsangiBiometric(
+    PostApi().updateChildBiometric(
         satsangiListData.satsangiList[satsangiListData.index].uid,
         iso[0],
         iso[1],
@@ -579,8 +579,6 @@ class _AddSatsangiState extends State<AddSatsangi>
           ),
           20.heightBox,
           TextField(
-            style: TextStyle(color: Colors.grey),
-            readOnly: true,
             controller: nameController,
             decoration: InputDecoration(
                 label: Text("Name"),
@@ -603,7 +601,7 @@ class _AddSatsangiState extends State<AddSatsangi>
             readOnly: true,
             controller: mobileController,
             decoration: InputDecoration(
-                label: Text("Mobile Number"),
+                label: Text("Parent Mobile Number"),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(
@@ -619,28 +617,6 @@ class _AddSatsangiState extends State<AddSatsangi>
           ),
           20.heightBox,
           TextField(
-            style: TextStyle(color: Colors.grey),
-            readOnly: true,
-            controller: fatherNameController,
-            decoration: InputDecoration(
-                label: Text("Father / Husband Name"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
-          20.heightBox,
-          TextField(
-            style: TextStyle(color: Colors.grey),
-            readOnly: true,
             controller: dobController,
             decoration: InputDecoration(
                 label: Text("Date Of Birth"),
@@ -661,9 +637,9 @@ class _AddSatsangiState extends State<AddSatsangi>
           TextField(
             style: TextStyle(color: Colors.grey),
             readOnly: true,
-            controller: doi1Controller,
+            controller: fatherNameController,
             decoration: InputDecoration(
-                label: Text("Date Of First Initiation"),
+                label: Text("Parent Name"),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(
@@ -681,9 +657,27 @@ class _AddSatsangiState extends State<AddSatsangi>
           TextField(
             style: TextStyle(color: Colors.grey),
             readOnly: true,
-            controller: doi2Controller,
+            controller: uid1Controller,
             decoration: InputDecoration(
-                label: Text("Date Of First Initiation"),
+                label: Text("Uid of First Parent"),
+                labelStyle: TextStyle(color: Colors.white),
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                )),
+          ),
+          20.heightBox,
+          TextField(
+            controller: uid2Controller,
+            decoration: InputDecoration(
+                label: Text("Uid of Second Parent"),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(
@@ -705,7 +699,6 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   Widget _buildPopupretakeFingerprint(BuildContext context, int fingerIso) {
     return AlertDialog(
-      titleTextStyle: TextStyle(fontSize: 18),
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("Improper finger placement Please take the scan again"),
@@ -739,7 +732,6 @@ class _AddSatsangiState extends State<AddSatsangi>
   Widget _buildPopupFinger1(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
-      titleTextStyle: TextStyle(fontSize: 18),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("$fingerScanned Fingers Scanned"),
       actions: <Widget>[
@@ -872,7 +864,6 @@ class _AddSatsangiState extends State<AddSatsangi>
   Widget _buildPopupFinger2(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
-      titleTextStyle: TextStyle(fontSize: 18),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("$fingerScanned Finger Scanned"),
       actions: <Widget>[
@@ -1005,7 +996,6 @@ class _AddSatsangiState extends State<AddSatsangi>
   Widget _buildPopupFinger3(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
-      titleTextStyle: TextStyle(fontSize: 18),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("$fingerScanned Finger Scanned"),
       actions: <Widget>[
@@ -1138,7 +1128,6 @@ class _AddSatsangiState extends State<AddSatsangi>
   Widget _buildPopupFinger4(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
-      titleTextStyle: TextStyle(fontSize: 18),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("$fingerScanned Finger Scanned"),
       actions: <Widget>[
@@ -1277,7 +1266,6 @@ class _AddSatsangiState extends State<AddSatsangi>
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("$fingerScanned Finger Scanned"),
-      titleTextStyle: TextStyle(fontSize: 18),
       actions: <Widget>[
         Center(
           child: Container(
@@ -1389,7 +1377,6 @@ class _AddSatsangiState extends State<AddSatsangi>
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("$fingerScanned Finger Scanned"),
-      titleTextStyle: TextStyle(fontSize: 18),
       actions: <Widget>[
         Center(
           child: Container(
@@ -1491,7 +1478,6 @@ class _AddSatsangiState extends State<AddSatsangi>
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("Please retrieve to check the image"),
-      titleTextStyle: TextStyle(fontSize: 18),
       actions: <Widget>[
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -1518,7 +1504,6 @@ class _AddSatsangiState extends State<AddSatsangi>
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text("Please take a photo"),
-      titleTextStyle: TextStyle(fontSize: 18),
       actions: <Widget>[
         if (imageFile != null)
           Center(
