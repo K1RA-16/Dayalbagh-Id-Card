@@ -9,8 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-int selectedLocation = 1;
-List<DropdownMenuItem<int>> dropdownItems = [];
+String selectedLocation = "select branch";
+List<DropdownMenuItem<String>> dropdownItems = [];
 
 class HomePage extends StatefulWidget {
   static const platform =
@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     // TODO: implement initState
+
     getPhoneData();
     getBranches();
     super.initState();
@@ -40,20 +41,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> getBranches() async {
-    var jsonData = await PostApi().getBranches(context);
+    int x = 1;
+    var jsonData = await PostApi().getBranches(context, 1);
     dropdownItems.clear();
     var baseItem = DropdownMenuItem(
       child: Text("select branch"),
-      value: 0,
+      value: "select branch",
     );
     dropdownItems.add(baseItem);
     for (var i in jsonData) {
       String branchName = i["branchName"];
-      int branchId = int.parse(i["branchId"]);
+
       var newItem = DropdownMenuItem(
         child: Text(branchName),
-        value: branchId,
+        value: branchName,
       );
+
       dropdownItems.add(newItem);
     }
     setState(() {});
@@ -93,21 +96,18 @@ class _HomePageState extends State<HomePage> {
                         items: dropdownItems,
                         onChanged: (value) {
                           setState(() {
-                            selectedLocation = int.parse(value.toString());
+                            selectedLocation = value.toString();
                           });
                         }).p(10),
                   ),
                 const HeightBox(20),
                 InkWell(
                   onTap: () => {
-                    if (selectedLocation > 0)
+                    if (selectedLocation != "select branch")
                       {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder: (BuildContext context) =>
-                                  ListSatsangis(branchId: selectedLocation),
-                            )),
+                        print(selectedLocation),
+                        PostApi().getSatsangisList(
+                            selectedLocation, 0, 50, context, 1),
                       }
                     else
                       {VxToast.show(context, msg: "please select a branch")}

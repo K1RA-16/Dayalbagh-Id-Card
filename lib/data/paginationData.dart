@@ -1,62 +1,63 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class PaginaionData {
-  final int branchid;
-  final int offset;
-  final int pageSize;
+  final String branch;
+  final int Offset;
+  final int PageSize;
   PaginaionData({
-    required this.branchid,
-    required this.offset,
-    required this.pageSize,
+    required this.branch,
+    required this.Offset,
+    required this.PageSize,
   });
 
   PaginaionData copyWith({
-    int? branchid,
-    int? offset,
-    int? pageSize,
+    String? branch,
+    int? Offset,
+    int? PageSize,
   }) {
     return PaginaionData(
-      branchid: branchid ?? this.branchid,
-      offset: offset ?? this.offset,
-      pageSize: pageSize ?? this.pageSize,
+      branch: branch ?? this.branch,
+      Offset: Offset ?? this.Offset,
+      PageSize: PageSize ?? this.PageSize,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'branchid': branchid,
-      'offset': offset,
-      'pageSize': pageSize,
+    return <String, dynamic>{
+      'branch': branch,
+      'Offset': Offset,
+      'PageSize': PageSize,
     };
   }
 
   factory PaginaionData.fromMap(Map<String, dynamic> map) {
     return PaginaionData(
-      branchid: map['branchid']?.toInt() ?? 0,
-      offset: map['offset']?.toInt() ?? 0,
-      pageSize: map['pageSize']?.toInt() ?? 0,
+      branch: map['branch'] as String,
+      Offset: map['Offset'] as int,
+      PageSize: map['PageSize'] as int,
     );
   }
 
   String toJson() => json.encode(toMap());
 
   factory PaginaionData.fromJson(String source) =>
-      PaginaionData.fromMap(json.decode(source));
+      PaginaionData.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() =>
-      'PaginaionData(branchid: $branchid, offset: $offset, pageSize: $pageSize)';
+      'PaginaionData(branch: $branch, Offset: $Offset, PageSize: $PageSize)';
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
     return other is PaginaionData &&
-        other.branchid == branchid &&
-        other.offset == offset &&
-        other.pageSize == pageSize;
+        other.branch == branch &&
+        other.Offset == Offset &&
+        other.PageSize == PageSize;
   }
 
   @override
-  int get hashCode => branchid.hashCode ^ offset.hashCode ^ pageSize.hashCode;
+  int get hashCode => branch.hashCode ^ Offset.hashCode ^ PageSize.hashCode;
 }

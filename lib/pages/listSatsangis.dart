@@ -3,6 +3,7 @@ import 'package:dayalbaghidregistration/data/satsangiData.dart';
 import 'package:dayalbaghidregistration/pages/satsangiMenu.dart';
 import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 TextEditingController search = TextEditingController();
@@ -11,7 +12,7 @@ int page = 0;
 List<SatsangiData> satsangiList = [];
 
 class ListSatsangis extends StatefulWidget {
-  final int branchId;
+  final String branchId;
 
   ListSatsangis({
     Key? key,
@@ -30,7 +31,6 @@ class _ListSatsangisState extends State<ListSatsangis> {
   void initState() {
     super.initState();
     _getMoreData(page);
-
     _sc.addListener(() {
       if (_sc.position.pixels == _sc.position.maxScrollExtent) {
         _getMoreData(page);
@@ -50,7 +50,7 @@ class _ListSatsangisState extends State<ListSatsangis> {
         isLoading = true;
       });
       print(page);
-      await PostApi().getSatsangisList(widget.branchId, page, 50, context);
+      await PostApi().getSatsangisList(widget.branchId, page, 50, context, 2);
       if (satsangiListData.satsangiList.isNotEmpty) {
         satsangiList = satsangiListData.satsangiList;
       } else {
@@ -61,6 +61,16 @@ class _ListSatsangisState extends State<ListSatsangis> {
         page++;
       });
     }
+  }
+
+  searchSatsangi() async {
+    await PostApi().search(widget.branchId, search.text, context);
+    if (satsangiListData.satsangiList.isNotEmpty) {
+      satsangiList = satsangiListData.satsangiList;
+    } else {
+      VxToast.show(context, msg: "no data present");
+    }
+    setState(() {});
   }
 
   @override
@@ -99,9 +109,9 @@ class _ListSatsangisState extends State<ListSatsangis> {
               ElevatedButton(
                   onPressed: () {
                     if (search.text.isEmpty) {
-                      VxToast.show(context, msg: "please enter a name");
+                      _getMoreData(0);
                     } else {
-                      //TODO: search for satsangi
+                      searchSatsangi();
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -177,22 +187,25 @@ class ListInflate extends StatelessWidget {
                               Icons.circle,
                               color: Colors.orange,
                             ),
-                      data.uid
-                          .toString()
-                          .text
-                          .black
-                          .bold
-                          .size(15)
-                          .make()
-                          .pOnly(left: 22),
-                      data.name
-                          .toString()
-                          .text
-                          .black
-                          .bold
-                          .size(15)
-                          .make()
-                          .pOnly(left: 22),
+                      Column(
+                        children: [
+                          "Name - ${data.name.toString()}"
+                              .text
+                              .black
+                              .bold
+                              .size(15)
+                              .make()
+                              .pOnly(left: 22),
+                          10.heightBox,
+                          "UID - ${data.uid.toString()}"
+                              .text
+                              .black
+                              .bold
+                              .size(15)
+                              .make()
+                              .pOnly(left: 22),
+                        ],
+                      ),
                     ],
                   ),
                 )

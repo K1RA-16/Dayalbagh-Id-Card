@@ -176,10 +176,18 @@ class _ViewChildrenState extends State<ViewChildren> {
         child: Column(children: [
           20.heightBox,
           if (faceImage)
-            CircleAvatar(
-              radius: 100,
-              backgroundImage: MemoryImage(imageFile),
-            ),
+            Card(
+                color: Colors.white,
+                child: Column(children: [
+                  "Face Image".text.black.make(),
+                  5.heightBox,
+                  Image.memory(
+                    imageFile,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  ),
+                ])),
           5.heightBox,
           "FingerPrints".text.bold.size(15).make(),
           10.heightBox,

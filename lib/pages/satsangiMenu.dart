@@ -1,4 +1,6 @@
 import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
+import 'package:dayalbaghidregistration/data/satsangiData.dart';
+import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -20,10 +22,13 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
     setState(() {
       progressIndicator = true;
     });
-    await PostApi().getstsangiData(context);
-    Navigator.pushNamed(context, "/viewSatsangi").then((value) => setState(() {
-          progressIndicator = false;
-        }));
+    bool status = await PostApi().getstsangiData(context);
+    if (status) {
+      Navigator.pushNamed(context, "/viewSatsangi")
+          .then((value) => setState(() {
+                progressIndicator = false;
+              }));
+    }
   }
 
   @override
@@ -67,7 +72,13 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
               ),
               const HeightBox(10),
               InkWell(
-                onTap: () => {getData()},
+                onTap: () => {
+                  if (satsangiListData
+                      .satsangiList[satsangiListData.index].bioMetric_Status)
+                    getData()
+                  else
+                    VxToast.show(context, msg: "biometric not yet updated")
+                },
                 //     "/connectRfid")), //SystemSetting.goto(SettingTarget.BLUETOOTH)),
                 child: Card(
                     margin: const EdgeInsets.all(8.0),

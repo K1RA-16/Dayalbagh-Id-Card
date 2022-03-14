@@ -17,6 +17,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velocity_x/velocity_x.dart';
 
+import '../data/search.dart';
+
 class PostApi {
   //logs in the user and saves the token to shared Pref...
   Future<void> login(
@@ -40,18 +42,21 @@ class PostApi {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString("token", jsonReceived["token"]);
           await prefs.setString("userid", username);
-          Navigator.pushNamed(context, "/home");
+          await prefs.setString("password", password);
         }
       }
     } on Exception catch (e) {
       // TODO
-      Map<String, dynamic> errLog = {"login error": e};
-      FirebaseLog().logError(errLog);
+
+      FirebaseLog().logError("login error", e.toString());
+      return;
     }
+    Navigator.pushNamed(context, "/home");
   }
 
   //gets the branch list of that particular user
-  Future<List<dynamic>> getBranches(BuildContext context) async {
+  Future<List<dynamic>> getBranches(BuildContext context, int index) async {
+    var jsonReceived;
     try {
       final pref = await SharedPreferences.getInstance();
       var token = pref.getString("token") ?? "";
@@ -62,20 +67,25 @@ class PostApi {
             'Content-type': 'application/json',
             'Authorization': 'Bearer $token',
           });
-      // // var jsonReceived = jsonDecode(response.body);
+      jsonReceived = jsonDecode(response.body);
       print(response.body);
-      return jsonDecode(response.body);
+      print(response.statusCode);
     } on Exception catch (e) {
       // TODO
-      Map<String, dynamic> errLog = {"branches get": e};
-      FirebaseLog().logError(errLog);
+
+      FirebaseLog().logError("get branches error", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
       List<dynamic> m = [];
       return m;
     }
+    if (index == 0) {
+      Navigator.pushNamed(context, "/home");
+    }
+    return jsonReceived;
   }
 
-  Future<void> getstsangiData(BuildContext context) async {
+  Future<bool> getstsangiData(BuildContext context) async {
+    var data;
     try {
       final pref = await SharedPreferences.getInstance();
       var token = pref.getString("token") ?? "";
@@ -90,39 +100,39 @@ class PostApi {
             'Content-type': 'application/json',
             'Authorization': 'Bearer $token',
           });
-      var data = jsonDecode(response.body);
-      print(data["uid"]);
-
-      SatsangiGetBiometricMap.data = SatsangiGetBiometric(
-        mobile: data["mobile"],
-        name: data["name"],
-        father_Or_Spouse_Name: data["father_Or_Spouse_Name"],
-        dob: data["dob"],
-        doi_First: data["doi_First"] ?? " ",
-        doi_Second: data["doi_Second"] ?? " ",
-        branchName: data["branchName"] ?? " ",
-        branch: data["branch"] ?? " ",
-        date_of_issue: data["date_of_issue"] ?? " ",
-        status: data["status"] ?? " ",
-        gender: data["gender"] ?? " ",
-        isO_FP_1: data["isO_FP_1"],
-        isO_FP_2: data["isO_FP_2"],
-        isO_FP_3: data["isO_FP_3"],
-        isO_FP_4: data["isO_FP_4"],
-        fingerPrint_1: data["fingerPrint_1"],
-        fingerPrint_2: data["fingerPrint_2"],
-        fingerPrint_3: data["fingerPrint_3"],
-        fingerPrint_4: data["fingerPrint_4"],
-        image: data["image"] ?? " ",
-        uid: data["uid"],
-      ).toMap();
-      print(data["image"]);
+      data = jsonDecode(response.body);
+      print(data);
     } on Exception catch (e) {
       // TODO
-      Map<String, dynamic> errLog = {"get Satsangi data": e};
-      FirebaseLog().logError(errLog);
+
+      FirebaseLog().logError("get Satsangi data", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
+      return false;
     }
+
+    SatsangiGetBiometricMap.data = SatsangiGetBiometric(
+      mobile: data["mobile"],
+      name: data["name"],
+      father_Or_Spouse_Name: data["father_Or_Spouse_Name"],
+      dob: data["dob"],
+      doi_First: data["doi_First"] ?? " ",
+      doi_Second: data["doi_Second"] ?? " ",
+      branch: data["branch"] ?? " ",
+      date_of_issue: data["date_of_issue"] ?? " ",
+      status: data["status"] ?? " ",
+      gender: data["gender"] ?? " ",
+      isO_FP_1: data["isO_FP_1"],
+      isO_FP_2: data["isO_FP_2"],
+      isO_FP_3: data["isO_FP_3"],
+      isO_FP_4: data["isO_FP_4"],
+      fingerPrint_1: data["fingerPrint_1"],
+      fingerPrint_2: data["fingerPrint_2"],
+      fingerPrint_3: data["fingerPrint_3"],
+      fingerPrint_4: data["fingerPrint_4"],
+      image: data["image"] ?? " ",
+      uid: data["uid"],
+    ).toMap();
+    return true;
   }
 
   Future<void> getChildList(BuildContext context) async {
@@ -144,9 +154,10 @@ class PostApi {
       jsonReceived = jsonDecode(response.body);
     } on Exception catch (e) {
       // TODO
-      Map<String, dynamic> errLog = {"get child list": e};
-      FirebaseLog().logError(errLog);
+
+      FirebaseLog().logError("get child list error", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
+      return;
     }
     if (jsonReceived != null) {
       ChildList.childList.clear();
@@ -157,14 +168,15 @@ class PostApi {
     }
   }
 
-  Future<void> getSatsangisList(
-      int branchid, int offset, int pageSize, BuildContext context) async {
+  Future<void> getSatsangisList(String branchid, int offset, int pageSize,
+      BuildContext context, int index) async {
+    var jsonReceived;
     try {
       final pref = await SharedPreferences.getInstance();
       var token = pref.getString("token") ?? "";
 
       var jsonData =
-          PaginaionData(branchid: branchid, offset: offset, pageSize: pageSize)
+          PaginaionData(branch: branchid, Offset: offset, PageSize: pageSize)
               .toJson();
       print(jsonData);
       http.Response response = await http.post(
@@ -174,19 +186,56 @@ class PostApi {
             'Content-type': 'application/json',
             'Authorization': 'Bearer $token',
           });
-      // // var jsonReceived = jsonDecode(response.body);
+      jsonReceived = jsonDecode(response.body);
       print(response.body);
-      satsangiListData.satsangiList.clear();
-      satsangiListData.satsangiList = List.from(jsonDecode(response.body))
-          .map<SatsangiData>((item) => SatsangiData.fromMap(item))
-          .toList();
     } on Exception catch (e) {
-      // TODO
-      Map<String, dynamic> errLog = {"get satsangi list": e};
-      FirebaseLog().logError(errLog);
+      FirebaseLog().logError("get satsangi list error", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
+      return;
     }
+    satsangiListData.satsangiList.clear();
+    satsangiListData.satsangiList = List.from(jsonReceived)
+        .map<SatsangiData>((item) => SatsangiData.fromMap(item))
+        .toList();
+    if (index == 1) {
+      Navigator.push(
+          context,
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) =>
+                ListSatsangis(branchId: branchid),
+          ));
+    }
+
     //print(satsangiListData.satsangiList[0].bioMetric_Status);
+  }
+
+  Future<void> search(
+      String branchid, String name, BuildContext context) async {
+    var jsonReceived;
+    try {
+      final pref = await SharedPreferences.getInstance();
+      var token = pref.getString("token") ?? "";
+
+      var jsonData = Search(branch: branchid, Name: name).toJson();
+      print(jsonData);
+      http.Response response = await http.post(
+          Uri.parse("https://api.dbidentity.in/api/uid/search"),
+          body: jsonData,
+          headers: {
+            'Content-type': 'application/json',
+            'Authorization': 'Bearer $token',
+          });
+      jsonReceived = jsonDecode(response.body);
+      print(response.body);
+    } on Exception catch (e) {
+      FirebaseLog().logError("search satsangi error", e.toString());
+      Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
+      return;
+    }
+    satsangiListData.satsangiList.clear();
+    satsangiListData.satsangiList = List.from(jsonReceived)
+        .map<SatsangiData>((item) => SatsangiData.fromMap(item))
+        .toList();
   }
 
   Future<bool> checkFace(String image) async {
@@ -204,6 +253,7 @@ class PostApi {
   }
 
   getChildInfo(BuildContext context) async {
+    var data;
     try {
       final pref = await SharedPreferences.getInstance();
       var token = pref.getString("token") ?? "";
@@ -218,45 +268,46 @@ class PostApi {
             'Content-type': 'application/json',
             'Authorization': 'Bearer $token',
           });
-      var data = jsonDecode(response.body);
+      data = jsonDecode(response.body);
       print(response.body);
       print(data["id"]);
-      ChildBiometricData.data = ChildBiometricView(
-        id: data["id"],
-        name: data["name"],
-        father_name: data["father_name"],
-        image: data["image"],
-        uid: data["uid"],
-        gender: data["gender"],
-        mobile: data["mobile"],
-        dob: data["dob"],
-        parent_uid_one: data["parent_uid_one"],
-        parent_uid_two: data["parent_uid_two"],
-        branch: data["branch"],
-        first_created: data["first_created"],
-        last_updated: data["last_updated"],
-        isO_FP_1: data["isO_FP_1"],
-        isO_FP_2: data["isO_FP_2"],
-        isO_FP_3: data["isO_FP_3"],
-        isO_FP_4: data["isO_FP_4"],
-        fingerPrint_1: data["fingerPrint_1"],
-        fingerPrint_2: data["fingerPrint_2"],
-        fingerPrint_3: data["fingerPrint_3"],
-        fingerPrint_4: data["fingerPrint_4"],
-      ).toMap();
-      //Navigator.pop(context);
-      if (ChildBiometricData.data["id"] != 0 ||
-          ChildBiometricData.data.isNotEmpty) {
-        Navigator.pushNamed(context, "/viewChildren");
-      } else {
-        Navigator.pop(context);
-        VxToast.show(context, msg: "child data not available");
-      }
     } on Exception catch (e) {
       // TODO
-      Map<String, dynamic> errLog = {"get child info": e};
-      FirebaseLog().logError(errLog);
+      //Map<String, dynamic> errLog = {"get child info": e};
+      FirebaseLog().logError("get child info", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
+      return;
+    }
+    ChildBiometricData.data = ChildBiometricView(
+      id: data["id"],
+      name: data["name"],
+      father_name: data["father_name"],
+      image: data["image"],
+      uid: data["uid"],
+      gender: data["gender"],
+      mobile: data["mobile"],
+      dob: data["dob"],
+      parent_uid_one: data["parent_uid_one"],
+      parent_uid_two: data["parent_uid_two"],
+      branch: data["branch"],
+      first_created: data["first_created"],
+      last_updated: data["last_updated"],
+      isO_FP_1: data["isO_FP_1"],
+      isO_FP_2: data["isO_FP_2"],
+      isO_FP_3: data["isO_FP_3"],
+      isO_FP_4: data["isO_FP_4"],
+      fingerPrint_1: data["fingerPrint_1"],
+      fingerPrint_2: data["fingerPrint_2"],
+      fingerPrint_3: data["fingerPrint_3"],
+      fingerPrint_4: data["fingerPrint_4"],
+    ).toMap();
+    //Navigator.pop(context);
+    if (ChildBiometricData.data["id"] != 0 ||
+        ChildBiometricData.data.isNotEmpty) {
+      Navigator.pushNamed(context, "/viewChildren");
+    } else {
+      Navigator.pop(context);
+      VxToast.show(context, msg: "child data not available");
     }
   }
 
@@ -299,9 +350,10 @@ class PostApi {
       print("${response.body}");
     } on Exception catch (e) {
       // TODO\
-      Map<String, dynamic> errLog = {"update satsangi biometric": e};
-      FirebaseLog().logError(errLog);
+      //Map<String, dynamic> errLog = {: e};
+      FirebaseLog().logError("update satsangi biometric", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
+      return;
     }
   }
 
@@ -362,9 +414,10 @@ class PostApi {
       print("${response.body}");
     } on Exception catch (e) {
       // TODO
-      Map<String, dynamic> errLog = {"update child biometric": e};
-      FirebaseLog().logError(errLog);
+      // Map<String, dynamic> errLog = {"update child biometric": e};
+      FirebaseLog().logError("update child biometric", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
+      return;
     }
   }
   // Future<Uint8List> getTestImage() async {

@@ -13,8 +13,8 @@ class SatsangiGetBiometric {
   final String dob;
   final String doi_First;
   final String doi_Second;
-  final String branchName;
-  final int branch;
+  final String branch;
+
   final String date_of_issue;
   final String status;
   final String gender;
@@ -35,7 +35,6 @@ class SatsangiGetBiometric {
     required this.dob,
     required this.doi_First,
     required this.doi_Second,
-    required this.branchName,
     required this.branch,
     required this.date_of_issue,
     required this.status,
@@ -59,8 +58,7 @@ class SatsangiGetBiometric {
     String? dob,
     String? doi_First,
     String? doi_Second,
-    String? branchName,
-    int? branch,
+    String? branch,
     String? date_of_issue,
     String? status,
     String? gender,
@@ -83,7 +81,6 @@ class SatsangiGetBiometric {
       dob: dob ?? this.dob,
       doi_First: doi_First ?? this.doi_First,
       doi_Second: doi_Second ?? this.doi_Second,
-      branchName: branchName ?? this.branchName,
       branch: branch ?? this.branch,
       date_of_issue: date_of_issue ?? this.date_of_issue,
       status: status ?? this.status,
@@ -109,7 +106,6 @@ class SatsangiGetBiometric {
       'dob': dob,
       'doi_First': doi_First,
       'doi_Second': doi_Second,
-      'branchName': branchName,
       'branch': branch,
       'date_of_issue': date_of_issue,
       'status': status,
@@ -135,8 +131,7 @@ class SatsangiGetBiometric {
       dob: map['dob'] as String,
       doi_First: map['doi_First'] as String,
       doi_Second: map['doi_Second'] as String,
-      branchName: map['branchName'] as String,
-      branch: map['branch'] as int,
+      branch: map['branch'] as String,
       date_of_issue: map['date_of_issue'] as String,
       status: map['status'] as String,
       gender: map['gender'] as String,
@@ -160,7 +155,7 @@ class SatsangiGetBiometric {
 
   @override
   String toString() {
-    return 'SatsangiGetBiometric(mobile: $mobile, name: $name, father_Or_Spouse_Name: $father_Or_Spouse_Name, dob: $dob, doi_First: $doi_First, doi_Second: $doi_Second, branchName: $branchName, branch: $branch, date_of_issue: $date_of_issue, status: $status, gender: $gender, isO_FP_1: $isO_FP_1, isO_FP_2: $isO_FP_2, isO_FP_3: $isO_FP_3, isO_FP_4: $isO_FP_4, fingerPrint_1: $fingerPrint_1, fingerPrint_2: $fingerPrint_2, fingerPrint_3: $fingerPrint_3, fingerPrint_4: $fingerPrint_4, image: $image, uid: $uid)';
+    return 'SatsangiGetBiometric(mobile: $mobile, name: $name, father_Or_Spouse_Name: $father_Or_Spouse_Name, dob: $dob, doi_First: $doi_First, doi_Second: $doi_Second, branch: $branch, date_of_issue: $date_of_issue, status: $status, gender: $gender, isO_FP_1: $isO_FP_1, isO_FP_2: $isO_FP_2, isO_FP_3: $isO_FP_3, isO_FP_4: $isO_FP_4, fingerPrint_1: $fingerPrint_1, fingerPrint_2: $fingerPrint_2, fingerPrint_3: $fingerPrint_3, fingerPrint_4: $fingerPrint_4, image: $image, uid: $uid)';
   }
 
   @override
@@ -174,7 +169,6 @@ class SatsangiGetBiometric {
         other.dob == dob &&
         other.doi_First == doi_First &&
         other.doi_Second == doi_Second &&
-        other.branchName == branchName &&
         other.branch == branch &&
         other.date_of_issue == date_of_issue &&
         other.status == status &&
@@ -199,7 +193,6 @@ class SatsangiGetBiometric {
         dob.hashCode ^
         doi_First.hashCode ^
         doi_Second.hashCode ^
-        branchName.hashCode ^
         branch.hashCode ^
         date_of_issue.hashCode ^
         status.hashCode ^
