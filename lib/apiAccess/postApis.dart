@@ -21,25 +21,32 @@ class PostApi {
   //logs in the user and saves the token to shared Pref...
   Future<void> login(
       String username, String password, BuildContext context) async {
-    if (username.isNotEmpty && password.isNotEmpty) {
-      var jsonData = AuthData(username: username, password: password).toJson();
-      http.Response response = await http.post(
-          Uri.parse("https://api.dbidentity.in/api/login/authenticate"),
-          body: jsonData,
-          headers: {
-            'Content-type': 'application/json',
-          });
-      var jsonReceived = jsonDecode(response.body);
-      print(jsonReceived);
-      if (jsonReceived["message"] == "Username or password is incorrect")
-        VxToast.show(context, msg: "Username or password is incorrect");
-      else {
-        // Obtain shared preferences.
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString("token", jsonReceived["token"]);
-        await prefs.setString("userid", username);
-        Navigator.pushNamed(context, "/home");
+    try {
+      if (username.isNotEmpty && password.isNotEmpty) {
+        var jsonData =
+            AuthData(username: username, password: password).toJson();
+        http.Response response = await http.post(
+            Uri.parse("https://api.dbidentity.in/api/login/authenticate"),
+            body: jsonData,
+            headers: {
+              'Content-type': 'application/json',
+            });
+        var jsonReceived = jsonDecode(response.body);
+        print(jsonReceived);
+        if (jsonReceived["message"] == "Username or password is incorrect")
+          VxToast.show(context, msg: "Username or password is incorrect");
+        else {
+          // Obtain shared preferences.
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("token", jsonReceived["token"]);
+          await prefs.setString("userid", username);
+          Navigator.pushNamed(context, "/home");
+        }
       }
+    } on Exception catch (e) {
+      // TODO
+      Map<String, dynamic> errLog = {"login error": e};
+      FirebaseLog().logError(errLog);
     }
   }
 
