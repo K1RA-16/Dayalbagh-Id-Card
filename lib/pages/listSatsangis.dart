@@ -50,7 +50,7 @@ class _ListSatsangisState extends State<ListSatsangis> {
         isLoading = true;
       });
       print(page);
-      await PostApi().getSatsangisList(widget.branchId, page, 50);
+      await PostApi().getSatsangisList(widget.branchId, page, 50, context);
       if (satsangiListData.satsangiList.isNotEmpty) {
         satsangiList = satsangiListData.satsangiList;
       } else {

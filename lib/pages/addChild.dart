@@ -26,17 +26,19 @@ int code = 0;
 class ManageChildren extends StatefulWidget {
   static const platform =
       const MethodChannel("com.example.dayalbaghidregistration/getBitmap");
+  final action;
+  ManageChildren({Key? key, this.action}) : super(key: key);
   @override
-  State<ManageChildren> createState() => _AddChildrenState();
+  State<ManageChildren> createState() => _AddChildrenState(action);
 }
-
-enum SingingCharacter { male, female }
 
 class _AddChildrenState extends State<ManageChildren>
     with SingleTickerProviderStateMixin {
-  SingingCharacter? _character = SingingCharacter.male;
+  String? _character = "male";
   int fingerScanned = 0;
   int index = satsangiListData.index;
+  String _action = "";
+  int uid = ChildList.childrenNo;
   bool photoTaken = false;
   bool finger1 = false;
   bool finger2 = false;
@@ -64,11 +66,16 @@ class _AddChildrenState extends State<ManageChildren>
   bool error = false;
   bool loading = false;
   //= File("assets/images/userDummyPhoto.png");
+
+  _AddChildrenState(action) {
+    _action = action;
+  }
   @override
   void initState() {
+    print(_action);
+    if (_action == "update") uid = ChildList.index;
     uidController = TextEditingController(
-        text:
-            "${satsangiListData.satsangiList[index].uid}C${(ChildList.childrenNo) + 1}");
+        text: "${satsangiListData.satsangiList[index].uid}C${(uid) + 1}");
     mobileController = TextEditingController(
         text: satsangiListData.satsangiList[index].mobile);
     fatherNameController =
@@ -275,7 +282,7 @@ class _AddChildrenState extends State<ManageChildren>
     PostApi().updateChildBiometric(
         nameController.text,
         dateSelected,
-        _character.toString(),
+        _character!,
         uidController.text,
         fatherNameController.text,
         uid1Controller.text,
@@ -289,7 +296,8 @@ class _AddChildrenState extends State<ManageChildren>
         fingerprints[1],
         fingerprints[2],
         fingerprints[3],
-        faceImage);
+        faceImage,
+        context);
     Navigator.pop(context);
   }
 
@@ -613,10 +621,10 @@ class _AddChildrenState extends State<ManageChildren>
           10.heightBox,
           ListTile(
             title: const Text('Male'),
-            leading: Radio<SingingCharacter>(
-              value: SingingCharacter.male,
+            leading: Radio<String>(
+              value: 'male',
               groupValue: _character,
-              onChanged: (SingingCharacter? value) {
+              onChanged: (String? value) {
                 setState(() {
                   _character = value;
                 });
@@ -625,10 +633,10 @@ class _AddChildrenState extends State<ManageChildren>
           ),
           ListTile(
             title: const Text('Female'),
-            leading: Radio<SingingCharacter>(
-              value: SingingCharacter.female,
+            leading: Radio<String>(
+              value: 'female',
               groupValue: _character,
-              onChanged: (SingingCharacter? value) {
+              onChanged: (String? value) {
                 setState(() {
                   _character = value;
                 });
