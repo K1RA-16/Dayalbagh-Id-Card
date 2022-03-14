@@ -17,14 +17,14 @@ class FirebaseLog {
     }
   }
 
-  logError(String key, String value) async {
+  logError(String error, String value) async {
     try {
       final pref = await SharedPreferences.getInstance();
       var key = pref.getString("userid") ?? "";
 
       final DatabaseReference _logData =
           FirebaseDatabase.instance.ref().child('Data');
-      _logData.child(key).child("error").child(key).set(value);
+      _logData.child(key).child("error").child(error).set(value);
     } on Exception catch (e) {
       // TODO
     }

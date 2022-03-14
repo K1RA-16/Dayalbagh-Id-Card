@@ -55,7 +55,7 @@ class _AddChildrenState extends State<ManageChildren>
   late TextEditingController mobileController;
   late TextEditingController fatherNameController;
   late TextEditingController nameController;
-  late String dateSelected;
+  String dateSelected = "";
   late TextEditingController uid1Controller;
   late TextEditingController uid2Controller;
 
@@ -165,32 +165,64 @@ class _AddChildrenState extends State<ManageChildren>
     if (String.fromCharCodes(result) != "Finger not matched") {
       Navigator.pop(context);
       if (fingerIso == 1) {
+        if (!finger1) {
+          fingerScanned++;
+        }
         finger1 = true;
+        iso.add(7);
+        fingerprints.add(base64.encode(fingerData1));
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger1(context));
       } else if (fingerIso == 2) {
+        if (!finger2) {
+          fingerScanned++;
+        }
         finger2 = true;
+        iso.add(2);
+        fingerprints.add(base64.encode(fingerData2));
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger2(context));
       } else if (fingerIso == 3) {
+        if (!finger3) {
+          fingerScanned++;
+        }
         finger3 = true;
+        iso.add(8);
+        fingerprints.add(base64.encode(fingerData3));
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger3(context));
       } else if (fingerIso == 4) {
+        if (!finger4) {
+          fingerScanned++;
+        }
         finger4 = true;
+        iso.add(3);
+
+        fingerprints.add(base64.encode(fingerData4));
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger4(context));
-      } else if (fingerIso == 5) {
+      } else if (fingerIso == 5 && fingerScanned < 4) {
+        if (!finger5) {
+          fingerScanned++;
+        }
+
         finger5 = true;
+        iso.add(9);
+        fingerprints.add(base64.encode(fingerData5));
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger5(context));
-      } else if (fingerIso == 6) {
+      } else if (fingerIso == 6 && fingerScanned < 4) {
+        if (!finger6) {
+          fingerScanned++;
+        }
         finger6 = true;
+        iso.add(4);
+        fingerprints.add(base64.encode(fingerData6));
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger6(context));
@@ -355,6 +387,7 @@ class _AddChildrenState extends State<ManageChildren>
         fingerprints[3],
         faceImage,
         context);
+
     Navigator.pop(context);
   }
 
@@ -373,9 +406,13 @@ class _AddChildrenState extends State<ManageChildren>
               //VxToast.show(context, msg: "Details Updated");
               print(iso);
               print(fingerprints);
+
               if (fingerprints.length == 4 &&
                   iso.length == 4 &&
-                  faceImage != "") {
+                  faceImage != "" &&
+                  dateSelected != "" &&
+                  nameController.text != "" &&
+                  uid2Controller.text != "") {
                 updateData();
                 VxToast.show(context, msg: "details updated");
               } else {
@@ -502,10 +539,18 @@ class _AddChildrenState extends State<ManageChildren>
           ),
           10.heightBox,
           if (imageFile != null)
-            CircleAvatar(
-              radius: 100,
-              backgroundImage: FileImage(imageFile!),
-            ),
+            Card(
+                color: Colors.orange.shade200,
+                child: Column(children: [
+                  "Face Image".text.black.make(),
+                  5.heightBox,
+                  Image.file(
+                    imageFile!,
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.contain,
+                  ).pOnly(bottom: 10),
+                ])),
           if (imageFile == null)
             InkWell(
               onTap: () {
@@ -524,7 +569,7 @@ class _AddChildrenState extends State<ManageChildren>
             children: [
               if (finger1)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       "left index finger".text.black.make(),
@@ -540,7 +585,7 @@ class _AddChildrenState extends State<ManageChildren>
                 ),
               if (finger3)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       "left middle finger".text.black.make(),
@@ -564,7 +609,7 @@ class _AddChildrenState extends State<ManageChildren>
             children: [
               if (finger2)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       "right index finger".text.black.make(),
@@ -580,7 +625,7 @@ class _AddChildrenState extends State<ManageChildren>
                 ),
               if (finger4)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       "Right middle finger".text.black.make(),
@@ -603,7 +648,7 @@ class _AddChildrenState extends State<ManageChildren>
             children: [
               if (finger5)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       "left ring finger".text.black.make(),
@@ -619,7 +664,7 @@ class _AddChildrenState extends State<ManageChildren>
                 ),
               if (finger6)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       "Right ring finger".text.black.make(),
@@ -971,10 +1016,7 @@ class _AddChildrenState extends State<ManageChildren>
               ),
               onPressed: () {
                 if (finger1) {
-                  fingerScanned++;
                   Navigator.pop(context);
-                  iso.add(7);
-                  fingerprints.add(base64.encode(fingerData1));
                   showDialog(
                       context: context,
                       builder: (BuildContext context) =>
@@ -1105,9 +1147,6 @@ class _AddChildrenState extends State<ManageChildren>
               ),
               onPressed: () {
                 if (finger2) {
-                  fingerScanned++;
-                  iso.add(2);
-                  fingerprints.add(base64.encode(fingerData2));
                   Navigator.pop(context);
                   showDialog(
                       context: context,
@@ -1239,9 +1278,6 @@ class _AddChildrenState extends State<ManageChildren>
               ),
               onPressed: () {
                 if (finger3) {
-                  fingerScanned++;
-                  iso.add(8);
-                  fingerprints.add(base64.encode(fingerData3));
                   Navigator.pop(context);
                   showDialog(
                       context: context,
@@ -1373,9 +1409,6 @@ class _AddChildrenState extends State<ManageChildren>
               ),
               onPressed: () {
                 if (finger4 && fingerScanned < 4) {
-                  iso.add(3);
-                  fingerScanned++;
-                  fingerprints.add(base64.encode(fingerData4));
                   Navigator.pop(context);
                   showDialog(
                       context: context,
@@ -1486,7 +1519,6 @@ class _AddChildrenState extends State<ManageChildren>
               ),
               onPressed: () {
                 if (finger5 && fingerScanned < 4) {
-                  fingerScanned++;
                   iso.add(9);
                   fingerprints.add(base64.encode(fingerData5));
                   Navigator.pop(context);
@@ -1599,9 +1631,6 @@ class _AddChildrenState extends State<ManageChildren>
               ),
               onPressed: () {
                 if (finger6 && fingerScanned < 4) {
-                  fingerScanned++;
-                  iso.add(4);
-                  fingerprints.add(base64.encode(fingerData6));
                   Navigator.pop(context);
                 } else if (fingerScanned >= 4) {
                   Navigator.pop(context);
@@ -1757,9 +1786,21 @@ class _AddChildrenState extends State<ManageChildren>
       actions: <Widget>[
         if (imageFile != null)
           Center(
-            child: CircleAvatar(
-              radius: 100,
-              backgroundImage: FileImage(imageFile!),
+            child: Container(
+              height: 300,
+              width: 250,
+              child: Card(
+                  color: Colors.orange.shade200,
+                  child: Column(children: [
+                    "Face Image".text.black.make(),
+                    5.heightBox,
+                    Image.file(
+                      imageFile!,
+                      width: 250,
+                      height: 250,
+                      fit: BoxFit.contain,
+                    ).pOnly(bottom: 10),
+                  ])),
             ),
           ),
         10.heightBox,

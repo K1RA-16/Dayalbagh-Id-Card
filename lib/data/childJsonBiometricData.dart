@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class ChildJsonBiometric {
@@ -9,7 +10,7 @@ class ChildJsonBiometric {
   final String parent_uid_one;
   final String parent_uid_two;
   final String mobile;
-  final int branch;
+  final String branch;
   final int ISO_FP_1;
   final int ISO_FP_2;
   final int ISO_FP_3;
@@ -49,7 +50,7 @@ class ChildJsonBiometric {
     String? parent_uid_one,
     String? parent_uid_two,
     String? mobile,
-    int? branch,
+    String? branch,
     int? ISO_FP_1,
     int? ISO_FP_2,
     int? ISO_FP_3,
@@ -83,7 +84,7 @@ class ChildJsonBiometric {
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'name': name,
       'dob': dob,
       'Gender': Gender,
@@ -107,31 +108,31 @@ class ChildJsonBiometric {
 
   factory ChildJsonBiometric.fromMap(Map<String, dynamic> map) {
     return ChildJsonBiometric(
-      name: map['name'] ?? '',
-      dob: map['dob'] ?? '',
-      Gender: map['Gender'] ?? '',
-      uid: map['uid'] ?? '',
-      father_name: map['father_name'] ?? '',
-      parent_uid_one: map['parent_uid_one'] ?? '',
-      parent_uid_two: map['parent_uid_two'] ?? '',
-      mobile: map['mobile'] ?? '',
-      branch: map['branch']?.toInt() ?? 0,
-      ISO_FP_1: map['ISO_FP_1']?.toInt() ?? 0,
-      ISO_FP_2: map['ISO_FP_2']?.toInt() ?? 0,
-      ISO_FP_3: map['ISO_FP_3']?.toInt() ?? 0,
-      ISO_FP_4: map['ISO_FP_4']?.toInt() ?? 0,
-      FingerPrint_1: map['FingerPrint_1'] ?? '',
-      FingerPrint_2: map['FingerPrint_2'] ?? '',
-      FingerPrint_3: map['FingerPrint_3'] ?? '',
-      FingerPrint_4: map['FingerPrint_4'] ?? '',
-      FaceImage: map['FaceImage'] ?? '',
+      name: map['name'] as String,
+      dob: map['dob'] as String,
+      Gender: map['Gender'] as String,
+      uid: map['uid'] as String,
+      father_name: map['father_name'] as String,
+      parent_uid_one: map['parent_uid_one'] as String,
+      parent_uid_two: map['parent_uid_two'] as String,
+      mobile: map['mobile'] as String,
+      branch: map['branch'] as String,
+      ISO_FP_1: map['ISO_FP_1'] as int,
+      ISO_FP_2: map['ISO_FP_2'] as int,
+      ISO_FP_3: map['ISO_FP_3'] as int,
+      ISO_FP_4: map['ISO_FP_4'] as int,
+      FingerPrint_1: map['FingerPrint_1'] as String,
+      FingerPrint_2: map['FingerPrint_2'] as String,
+      FingerPrint_3: map['FingerPrint_3'] as String,
+      FingerPrint_4: map['FingerPrint_4'] as String,
+      FaceImage: map['FaceImage'] as String,
     );
   }
 
   String toJson() => json.encode(toMap());
 
   factory ChildJsonBiometric.fromJson(String source) =>
-      ChildJsonBiometric.fromMap(json.decode(source));
+      ChildJsonBiometric.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {

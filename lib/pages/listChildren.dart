@@ -1,5 +1,6 @@
 import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
 import 'package:dayalbaghidregistration/data/childListData.dart';
+import 'package:dayalbaghidregistration/pages/addChild.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -44,7 +45,10 @@ class _ListChildrenState extends State<ListChildren> {
         child: Icon(Icons.add),
         backgroundColor: Colors.orange,
         onPressed: (() {
-          Navigator.pushNamed(context, "/children");
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ManageChildren(action: "new")));
         }),
       ),
       body: Column(
@@ -231,7 +235,11 @@ class _ListInflateState extends State<ListInflate> {
                   primary: Colors.orange,
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, "/children");
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ManageChildren(action: "update")));
                 },
                 child: const Padding(
                   padding: EdgeInsets.all(8.0),

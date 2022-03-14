@@ -129,7 +129,7 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: "Child Info".text.make(),
+        title: "Satsangi Info".text.make(),
       ),
       // floatingActionButton: FloatingActionBubble(
       //   items: <Bubble>[
@@ -177,16 +177,16 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
           20.heightBox,
           if (faceImage)
             Card(
-                color: Colors.white,
+                color: Colors.orange.shade200,
                 child: Column(children: [
                   "Face Image".text.black.make(),
                   5.heightBox,
                   Image.memory(
                     imageFile,
-                    width: 100,
-                    height: 100,
+                    width: 200,
+                    height: 200,
                     fit: BoxFit.contain,
-                  ),
+                  ).pOnly(bottom: 10),
                 ])),
           // CircleAvatar(
           //   radius: 100,
@@ -200,7 +200,7 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
             children: [
               if (finger1)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       fingerIso1.text.black.make(),
@@ -216,7 +216,7 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
                 ),
               if (finger2)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       fingerIso2.text.black.make(),
@@ -238,7 +238,7 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
             children: [
               if (finger3)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       fingerIso3.text.black.make(),
@@ -254,7 +254,7 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
                 ),
               if (finger4)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       fingerIso4.text.black.make(),

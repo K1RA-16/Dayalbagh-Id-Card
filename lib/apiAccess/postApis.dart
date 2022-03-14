@@ -174,7 +174,7 @@ class PostApi {
     try {
       final pref = await SharedPreferences.getInstance();
       var token = pref.getString("token") ?? "";
-
+      await pref.setString("branch", branchid);
       var jsonData =
           PaginaionData(branch: branchid, Offset: offset, PageSize: pageSize)
               .toJson();
@@ -379,7 +379,7 @@ class PostApi {
     try {
       final pref = await SharedPreferences.getInstance();
       var token = pref.getString("token") ?? "";
-      int branch = pref.getInt("branch") ?? 1;
+      var branch = pref.getString("branch") ?? "";
       print(branch);
       var json = ChildJsonBiometric(
               name: name,

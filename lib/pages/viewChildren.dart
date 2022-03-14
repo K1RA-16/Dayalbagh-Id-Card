@@ -177,16 +177,16 @@ class _ViewChildrenState extends State<ViewChildren> {
           20.heightBox,
           if (faceImage)
             Card(
-                color: Colors.white,
+                color: Colors.orange.shade200,
                 child: Column(children: [
                   "Face Image".text.black.make(),
                   5.heightBox,
                   Image.memory(
                     imageFile,
-                    width: 100,
-                    height: 100,
+                    width: 200,
+                    height: 200,
                     fit: BoxFit.contain,
-                  ),
+                  ).pOnly(bottom: 10),
                 ])),
           5.heightBox,
           "FingerPrints".text.bold.size(15).make(),
@@ -196,7 +196,7 @@ class _ViewChildrenState extends State<ViewChildren> {
             children: [
               if (finger1)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       fingerIso1.text.black.make(),
@@ -212,7 +212,7 @@ class _ViewChildrenState extends State<ViewChildren> {
                 ),
               if (finger2)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       fingerIso2.text.black.make(),
@@ -234,7 +234,7 @@ class _ViewChildrenState extends State<ViewChildren> {
             children: [
               if (finger3)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       fingerIso3.text.black.make(),
@@ -250,7 +250,7 @@ class _ViewChildrenState extends State<ViewChildren> {
                 ),
               if (finger4)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       fingerIso4.text.black.make(),

@@ -22,12 +22,19 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
     setState(() {
       progressIndicator = true;
     });
-    bool status = await PostApi().getstsangiData(context);
-    if (status) {
-      Navigator.pushNamed(context, "/viewSatsangi")
-          .then((value) => setState(() {
-                progressIndicator = false;
-              }));
+    VxToast.show(context, msg: "please wait", showTime: 6000);
+    try {
+      bool status = await PostApi().getstsangiData(context);
+
+      if (status) {
+        Navigator.pushNamed(context, "/viewSatsangi")
+            .then((value) => setState(() {
+                  progressIndicator = false;
+                }));
+      }
+    } on Exception catch (e) {
+      // TODO
+
     }
   }
 

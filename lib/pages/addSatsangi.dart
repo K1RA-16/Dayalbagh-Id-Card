@@ -160,33 +160,66 @@ class _AddSatsangiState extends State<AddSatsangi>
     Navigator.pop(context);
     if (String.fromCharCodes(result) != "Finger not matched") {
       Navigator.pop(context);
+
       if (fingerIso == 1) {
+        if (!finger1) {
+          fingerScanned++;
+        }
         finger1 = true;
+        iso.add(7);
+        fingerprints.add(base64.encode(fingerData1));
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger1(context));
       } else if (fingerIso == 2) {
+        if (!finger2) {
+          fingerScanned++;
+        }
         finger2 = true;
+        iso.add(2);
+        fingerprints.add(base64.encode(fingerData2));
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger2(context));
       } else if (fingerIso == 3) {
+        if (!finger3) {
+          fingerScanned++;
+        }
         finger3 = true;
+        iso.add(8);
+        fingerprints.add(base64.encode(fingerData3));
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger3(context));
       } else if (fingerIso == 4) {
+        if (!finger4) {
+          fingerScanned++;
+        }
         finger4 = true;
+        iso.add(3);
+
+        fingerprints.add(base64.encode(fingerData4));
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger4(context));
       } else if (fingerIso == 5) {
+        if (!finger5) {
+          fingerScanned++;
+        }
         finger5 = true;
+        iso.add(9);
+        fingerprints.add(base64.encode(fingerData5));
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger5(context));
       } else if (fingerIso == 6) {
+        if (!finger6) {
+          fingerScanned++;
+        }
         finger6 = true;
+        iso.add(4);
+        fingerprints.add(base64.encode(fingerData6));
+
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger6(context));
@@ -329,6 +362,9 @@ class _AddSatsangiState extends State<AddSatsangi>
   resetData() {
     setState(() {
       imageFile = null;
+      photoTaken = false;
+      iso.clear();
+      fingerprints.clear();
       finger1 = finger2 = finger3 = finger4 = finger5 = finger6 = false;
       fingerScanned = 0;
     });
@@ -494,10 +530,18 @@ class _AddSatsangiState extends State<AddSatsangi>
           ),
           10.heightBox,
           if (imageFile != null)
-            CircleAvatar(
-              radius: 100,
-              backgroundImage: FileImage(imageFile!),
-            ),
+            Card(
+                color: Colors.orange.shade200,
+                child: Column(children: [
+                  "Face Image".text.black.make(),
+                  5.heightBox,
+                  Image.file(
+                    imageFile!,
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.contain,
+                  ).pOnly(bottom: 10),
+                ])),
           if (imageFile == null)
             InkWell(
               onTap: () {
@@ -516,7 +560,7 @@ class _AddSatsangiState extends State<AddSatsangi>
             children: [
               if (finger1)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       "left index finger".text.black.make(),
@@ -532,7 +576,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                 ),
               if (finger3)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       "left middle finger".text.black.make(),
@@ -556,7 +600,7 @@ class _AddSatsangiState extends State<AddSatsangi>
             children: [
               if (finger2)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       "right index finger".text.black.make(),
@@ -572,7 +616,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                 ),
               if (finger4)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       "Right middle finger".text.black.make(),
@@ -595,7 +639,7 @@ class _AddSatsangiState extends State<AddSatsangi>
             children: [
               if (finger5)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       "left ring finger".text.black.make(),
@@ -611,7 +655,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                 ),
               if (finger6)
                 Card(
-                  color: Colors.white,
+                  color: Colors.orange.shade200,
                   child: Column(
                     children: [
                       "Right ring finger".text.black.make(),
@@ -940,10 +984,8 @@ class _AddSatsangiState extends State<AddSatsangi>
               ),
               onPressed: () {
                 if (finger1) {
-                  fingerScanned++;
                   Navigator.pop(context);
-                  iso.add(7);
-                  fingerprints.add(base64.encode(fingerData1));
+
                   showDialog(
                       context: context,
                       builder: (BuildContext context) =>
@@ -1074,9 +1116,6 @@ class _AddSatsangiState extends State<AddSatsangi>
               ),
               onPressed: () {
                 if (finger2) {
-                  fingerScanned++;
-                  iso.add(2);
-                  fingerprints.add(base64.encode(fingerData2));
                   Navigator.pop(context);
                   showDialog(
                       context: context,
@@ -1208,9 +1247,6 @@ class _AddSatsangiState extends State<AddSatsangi>
               ),
               onPressed: () {
                 if (finger3) {
-                  fingerScanned++;
-                  iso.add(8);
-                  fingerprints.add(base64.encode(fingerData3));
                   Navigator.pop(context);
                   showDialog(
                       context: context,
@@ -1341,10 +1377,8 @@ class _AddSatsangiState extends State<AddSatsangi>
                 primary: Colors.orange,
               ),
               onPressed: () {
+                print(fingerScanned);
                 if (finger4 && fingerScanned < 4) {
-                  iso.add(3);
-                  fingerScanned++;
-                  fingerprints.add(base64.encode(fingerData4));
                   Navigator.pop(context);
                   showDialog(
                       context: context,
@@ -1454,10 +1488,8 @@ class _AddSatsangiState extends State<AddSatsangi>
                 primary: Colors.orange,
               ),
               onPressed: () {
+                print(fingerScanned);
                 if (finger5 && fingerScanned < 4) {
-                  fingerScanned++;
-                  iso.add(9);
-                  fingerprints.add(base64.encode(fingerData5));
                   Navigator.pop(context);
                   showDialog(
                       context: context,
@@ -1568,9 +1600,6 @@ class _AddSatsangiState extends State<AddSatsangi>
               ),
               onPressed: () {
                 if (finger6 && fingerScanned < 4) {
-                  fingerScanned++;
-                  iso.add(4);
-                  fingerprints.add(base64.encode(fingerData6));
                   Navigator.pop(context);
                 } else if (fingerScanned >= 4) {
                   Navigator.pop(context);
@@ -1726,9 +1755,21 @@ class _AddSatsangiState extends State<AddSatsangi>
       actions: <Widget>[
         if (imageFile != null)
           Center(
-            child: CircleAvatar(
-              radius: 100,
-              backgroundImage: FileImage(imageFile!),
+            child: Container(
+              height: 300,
+              width: 250,
+              child: Card(
+                  color: Colors.orange.shade200,
+                  child: Column(children: [
+                    "Face Image".text.black.make(),
+                    5.heightBox,
+                    Image.file(
+                      imageFile!,
+                      width: 250,
+                      height: 250,
+                      fit: BoxFit.contain,
+                    ).pOnly(bottom: 10),
+                  ])),
             ),
           ),
         10.heightBox,
