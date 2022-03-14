@@ -32,6 +32,7 @@ class MainActivity: FlutterActivity() , MFS100Event {
     enum class ScannerAction {
         Capture, Verify
     }
+
     private val REQUEST_READ_PHONE_STATE = 1;
     lateinit var Enroll_Template: ByteArray
     lateinit var Verify_Template: ByteArray
@@ -43,8 +44,12 @@ class MainActivity: FlutterActivity() , MFS100Event {
 
 
     private var isCaptureRunning = false
-
-    private var byteArray = ByteArray(0)
+    private var iso1= ByteArray(0)
+    private var iso2 = ByteArray(0)
+    private var byteArray2 = ByteArray(0)
+    private var byteArray1 = ByteArray(0)
+    private var nfiq1:Int? = null
+    private var nfiq2:Int? = null
     private var image: Byte? = null;
     private val CHANNEL = "com.example.dayalbaghidregistration/getBitmap";
     @RequiresApi(Build.VERSION_CODES.O)
@@ -58,15 +63,28 @@ class MainActivity: FlutterActivity() , MFS100Event {
             // Note: this method is invoked on the main thread.
             // TODO
 
-            if (call.method == "startReading") {
+            if (call.method == "startReading1") {
 
                 InitScanner(this);
-                byteArray = ByteArray(0);
-                StartSyncCapture();
+                byteArray1 = ByteArray(0);
+                StartSyncCapture(1);
                 //result.success(list);
                 //MFS100Test().Stop();
 
-            }else if (call.method == "getPhoneData") {
+            }else if(call.method == "startReading2"){
+                InitScanner(this);
+                byteArray2 = ByteArray(0);
+                StartSyncCapture(2);
+            }
+            else if(call.method == "firstFingerPrint"){
+                Stop()
+                result.success(byteArray1)
+            }
+            else if(call.method == "secondFingerPrint"){
+                Stop()
+                result.success(byteArray2)
+            }
+            else if (call.method == "getPhoneData") {
 
                 var m:MutableMap<String, String> = mutableMapOf();
                 val manager: TelephonyManager =
@@ -103,10 +121,27 @@ class MainActivity: FlutterActivity() , MFS100Event {
 
 
             }
-            else if(call.method == "getFingerprint"){
-                Stop()
-                result.success(byteArray)
+            else if(call.method == "getFingerprint") {
+                val ret = mfs100?.MatchISO(iso1, iso2);
+                if (ret != null) {
+                    if (ret >= 0) {
+                        if (ret >= 96) {
+                            if (nfiq1!! > nfiq2!!) {
+                                result.success(byteArray2)
+                            } else if (nfiq2!! > nfiq1!!) {
+                                result.success(byteArray1)
+                            }
+                        } else {
+                            Log.d("finger","not matched")
+                            var bytearray = ByteArray(0);
+                            bytearray = "Finger not matched".toByteArray()
+                            result.success(bytearray)
+                        }
+                    } else{var bytearray = ByteArray(0);
+                        bytearray = (mfs100?.GetErrorMsg(ret)).toString().toByteArray()
+                        result.success(bytearray)}
 
+                };
             }
             else if(call.method == "initialiseReader"){
                 onStart(this);
@@ -174,7 +209,7 @@ Certificate: ${mfs100!!.GetCertification()}"""
         }
     }
 
-    protected fun StartSyncCapture() {
+    protected fun StartSyncCapture(index:Int) {
         Thread{
             //  SetTextOnUIThread("");
             isCaptureRunning = true
@@ -184,15 +219,24 @@ Certificate: ${mfs100!!.GetCertification()}"""
                 Log.e("StartSyncCapture.RET", "" +ret+ mfs100!!.GetErrorMsg(ret))
                 if(ret == -1324) {
                     val strError = mfs100!!.GetErrorMsg(ret);
-                    byteArray = strError.toByteArray()
+                    if(index == 1)
+                        byteArray1 = strError.toByteArray()
+                    else if(index == 2)
+                        byteArray2 = strError.toByteArray()
                 }
                 else if(ret == -1307) {
                     val strError = mfs100!!.GetErrorMsg(ret);
-                    byteArray = strError.toByteArray()
+                    if(index == 1)
+                        byteArray1 = strError.toByteArray()
+                    else if(index == 2)
+                        byteArray2 = strError.toByteArray()
                 }
                 else if(ret == -1319){
                     val strError = mfs100!!.GetErrorMsg(ret);
-                    byteArray = strError.toByteArray()
+                    if(index == 1)
+                        byteArray1 = strError.toByteArray()
+                    else if(index == 2)
+                        byteArray2 = strError.toByteArray()
                 }
                 if (ret != 0) {
                     //   SetTextOnUIThread(mfs100.GetErrorMsg(ret));
@@ -207,10 +251,23 @@ Certificate: ${mfs100!!.GetCertification()}"""
 //                    byteArray = stream.toByteArray()
 //                    bitmap.recycle()
                     Log.d("nfiq","${fingerData.Nfiq()}");
-                    byteArray = if(fingerData.Nfiq() > 3)
-                        "bad image".toByteArray()
-                    else
-                        fingerData.FingerImage();
+                    if(index == 1) {
+                        nfiq1 = fingerData.Nfiq()
+                        byteArray1 = if (fingerData.Nfiq() > 3)
+                            "bad image".toByteArray()
+                        else
+                            fingerData.FingerImage();
+                        iso1 = fingerData.ISOTemplate()
+                    }
+                    else if(index == 2) {
+                        nfiq2 = fingerData.Nfiq()
+                        byteArray2 = if (fingerData.Nfiq() > 3)
+                            "bad image".toByteArray()
+                        else
+                            fingerData.FingerImage();
+                        iso2 = fingerData.ISOTemplate()
+                    }
+
                 }
             } catch (ex: Exception) {
 

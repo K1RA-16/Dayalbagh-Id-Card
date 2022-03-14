@@ -54,7 +54,8 @@ class LoginPage extends StatelessWidget {
             50.heightBox,
             ElevatedButton(
                 onPressed: () =>
-                    {PostApi().login(username.text, password.text, context)},
+                    {
+                      PostApi().login(username.text, password.text, context)},
                 child: "Login".text.bold.lg.make())
           ],
         ),

@@ -84,6 +84,12 @@ class _ViewChildrenState extends State<ViewChildren> {
       fingerData3 = base64Decode(ChildBiometricData.data["fingerPrint_3"]);
       fingerData4 = base64Decode(ChildBiometricData.data["fingerPrint_4"]);
       imageFile = base64Decode(ChildBiometricData.data["image"]);
+      try {
+        if (ChildBiometricData.data["image"].toString().length > 5)
+          faceImage = true;
+      } on Exception catch (e) {
+        // TODO
+      }
     } on Exception catch (e) {
       // TODO
     }
