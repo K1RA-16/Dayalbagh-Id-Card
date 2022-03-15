@@ -69,10 +69,19 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
-            title: const Text(
-          "Dayalbagh Id Registration",
-          style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
-        )),
+          title: const Text(
+            "Home",
+            style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+          ),
+          actions: [
+            InkWell(
+                onTap: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, "/login", (r) => false);
+                },
+                child: Icon(Icons.logout).pOnly(right: 20)),
+          ],
+        ),
         body: Padding(
           padding: const EdgeInsets.only(left: 10, right: 10),
           child: Container(
@@ -81,25 +90,27 @@ class _HomePageState extends State<HomePage> {
               children: [
                 if (dropdownItems.isNotEmpty)
                   Card(
-                    color: Colors.black,
+                    color: Colors.blueGrey,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16)),
-                    child: DropdownButton(
-                        dropdownColor: Colors.black,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                        borderRadius: BorderRadius.circular(15),
-                        value: selectedLocation,
-                        items: dropdownItems,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedLocation = value.toString();
-                          });
-                        }).p(10),
-                  ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton(
+                          dropdownColor: Colors.blueGrey,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 19,
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                          value: selectedLocation,
+                          items: dropdownItems,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedLocation = value.toString();
+                            });
+                          }).p(10),
+                    ),
+                  ).pOnly(left: 5, top: 20),
                 const HeightBox(20),
                 InkWell(
                   onTap: () => {

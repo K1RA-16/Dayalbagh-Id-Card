@@ -44,7 +44,7 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
       backgroundColor: Colors.black,
       appBar: AppBar(
           title: Text(
-        "Dayalbagh Id Registration",
+        "Actions",
         style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
       )),
       body: Padding(

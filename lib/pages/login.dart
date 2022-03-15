@@ -52,21 +52,16 @@ class LoginPage extends StatelessWidget {
                   )),
             ).pOnly(left: 20, right: 20),
             50.heightBox,
-            ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18.0),
-                      side: BorderSide(color: Colors.orange)),
-                  elevation: 5,
-                  primary: Colors.orange,
-                ),
-                onPressed: () =>
-                    {PostApi().login(username.text, password.text, context)},
-                child: Icon(
-                  Icons.arrow_circle_right,
-                  size: 40,
-                  color: Colors.black,
-                ))
+            InkWell(
+              onTap: () {
+                PostApi().login(username.text, password.text, context);
+              },
+              child: Icon(
+                Icons.arrow_circle_right,
+                size: 60,
+                color: Colors.white,
+              ),
+            ),
           ],
         ),
       ),

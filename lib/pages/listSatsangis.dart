@@ -76,6 +76,7 @@ class _ListSatsangisState extends State<ListSatsangis> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: "Select Satsangi".text.make(),
       ),

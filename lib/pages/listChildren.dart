@@ -38,6 +38,7 @@ class _ListChildrenState extends State<ListChildren> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: "Select Satsangi".text.make(),
       ),
