@@ -1565,7 +1565,7 @@ class _AddChildrenState extends State<ManageChildren>
             width: 250,
             height: 250,
             child: Image.asset(
-              "assets/RI.png",
+              "assets/RR.png",
               fit: BoxFit.contain,
             ),
           ),

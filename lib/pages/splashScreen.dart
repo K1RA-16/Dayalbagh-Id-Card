@@ -49,6 +49,7 @@ class _SplashState extends State<Splash> {
   }
 
   startTime() async {
+    Future.delayed(Duration(seconds: 2));
     await PostApi().getBranches(context, 0);
     //Navigator.pushNamed(context, page);
   }
