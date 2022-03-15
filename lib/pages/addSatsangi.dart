@@ -45,7 +45,7 @@ class _AddSatsangiState extends State<AddSatsangi>
   String faceImage = "";
 
   late TextEditingController uidController;
-  late TextEditingController mobileController;
+
   late TextEditingController fatherNameController;
   late TextEditingController nameController;
   late TextEditingController dobController;
@@ -63,18 +63,14 @@ class _AddSatsangiState extends State<AddSatsangi>
   void initState() {
     uidController =
         TextEditingController(text: satsangiListData.satsangiList[index].uid);
-    mobileController = TextEditingController(
-        text: satsangiListData.satsangiList[index].mobile);
+
     fatherNameController = TextEditingController(
         text: satsangiListData.satsangiList[index].father_Or_Spouse_Name);
     nameController =
         TextEditingController(text: satsangiListData.satsangiList[index].name);
     dobController =
         TextEditingController(text: satsangiListData.satsangiList[index].dob);
-    doi1Controller = TextEditingController(
-        text: satsangiListData.satsangiList[index].doi_First);
-    doi2Controller = TextEditingController(
-        text: satsangiListData.satsangiList[index].doi_Second);
+
     initialiseReader();
     //getImage();
     _animationController = AnimationController(
@@ -103,10 +99,14 @@ class _AddSatsangiState extends State<AddSatsangi>
       // showDialog(
       //     context: context,
       //     builder: (BuildContext context) => _buildPopUpWait(context));
-      // bool faceCorrect =
-      //await PostApi().checkFace("data:image/jpeg;base64,$faceImage");
+      bool faceCorrect =
+          await PostApi().checkFace("data:image/jpeg;base64,$faceImage");
       //  faceapi not working
-      if (image != null) {
+      print(faceCorrect);
+      if (!faceCorrect) {
+        VxToast.show(context, msg: "please capture image again");
+      }
+      if (image != null && faceCorrect) {
         imageFile = File(image.path);
         photoTaken = true;
         Navigator.pop(context);
@@ -392,40 +392,41 @@ class _AddSatsangiState extends State<AddSatsangi>
       appBar: AppBar(
         title: "Registration".text.make(),
         actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 5,
-              primary: Colors.black,
-            ),
-            onPressed: () {
-              //VxToast.show(context, msg: "Details Updated");
-              print(iso);
-              print(fingerprints);
-              if (fingerprints.length == 4 &&
-                  iso.length == 4 &&
-                  faceImage != "") {
-                updateData();
-                VxToast.show(context, msg: "details updated");
-              } else {
-                VxToast.show(context,
-                    msg: "error updating (try again after resetting data)");
-              }
-            },
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Done',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
-                  ),
-                  5.widthBox,
-                  Icon(Icons.forward, color: Colors.green),
-                ]),
-          ).p(5),
+          if (fingerScanned >= 4)
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.black,
+              ),
+              onPressed: () {
+                //VxToast.show(context, msg: "Details Updated");
+                print(iso);
+                print(fingerprints);
+                if (fingerprints.length == 4 &&
+                    iso.length == 4 &&
+                    faceImage != "") {
+                  updateData();
+                  VxToast.show(context, msg: "details updated");
+                } else {
+                  VxToast.show(context,
+                      msg: "error updating (try again after resetting data)");
+                }
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Done',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
+                    ),
+                    5.widthBox,
+                    Icon(Icons.forward, color: Colors.green),
+                  ]),
+            ).p(5),
         ],
       ),
       // floatingActionButton: FloatingActionBubble(
@@ -715,26 +716,6 @@ class _AddSatsangiState extends State<AddSatsangi>
           TextField(
             style: TextStyle(color: Colors.grey),
             readOnly: true,
-            controller: mobileController,
-            decoration: InputDecoration(
-                label: Text("Mobile Number"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
-          20.heightBox,
-          TextField(
-            style: TextStyle(color: Colors.grey),
-            readOnly: true,
             controller: fatherNameController,
             decoration: InputDecoration(
                 label: Text("Father / Husband Name"),
@@ -758,46 +739,6 @@ class _AddSatsangiState extends State<AddSatsangi>
             controller: dobController,
             decoration: InputDecoration(
                 label: Text("Date Of Birth"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
-          20.heightBox,
-          TextField(
-            style: TextStyle(color: Colors.grey),
-            readOnly: true,
-            controller: doi1Controller,
-            decoration: InputDecoration(
-                label: Text("Date Of First Initiation"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
-          20.heightBox,
-          TextField(
-            style: TextStyle(color: Colors.grey),
-            readOnly: true,
-            controller: doi2Controller,
-            decoration: InputDecoration(
-                label: Text("Date Of Second Initiation"),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(

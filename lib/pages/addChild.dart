@@ -52,7 +52,7 @@ class _AddChildrenState extends State<ManageChildren>
   String faceImage = "";
 
   late TextEditingController uidController;
-  late TextEditingController mobileController;
+
   late TextEditingController fatherNameController;
   late TextEditingController nameController;
   String dateSelected = "";
@@ -76,8 +76,7 @@ class _AddChildrenState extends State<ManageChildren>
     if (_action == "update") uid = ChildList.index;
     uidController = TextEditingController(
         text: "${satsangiListData.satsangiList[index].uid}C${(uid) + 1}");
-    mobileController = TextEditingController(
-        text: satsangiListData.satsangiList[index].mobile);
+
     fatherNameController =
         TextEditingController(text: satsangiListData.satsangiList[index].name);
     nameController = TextEditingController();
@@ -376,7 +375,6 @@ class _AddChildrenState extends State<ManageChildren>
         fatherNameController.text,
         uid1Controller.text,
         uid2Controller.text,
-        mobileController.text,
         iso[0],
         iso[1],
         iso[2],
@@ -397,44 +395,45 @@ class _AddChildrenState extends State<ManageChildren>
       appBar: AppBar(
         title: "Registration".text.make(),
         actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 5,
-              primary: Colors.black,
-            ),
-            onPressed: () {
-              //VxToast.show(context, msg: "Details Updated");
-              print(iso);
-              print(fingerprints);
+          if (fingerScanned >= 4)
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.black,
+              ),
+              onPressed: () {
+                //VxToast.show(context, msg: "Details Updated");
+                print(iso);
+                print(fingerprints);
 
-              if (fingerprints.length == 4 &&
-                  iso.length == 4 &&
-                  faceImage != "" &&
-                  dateSelected != "" &&
-                  nameController.text != "" &&
-                  uid2Controller.text != "") {
-                updateData();
-                VxToast.show(context, msg: "details updated");
-              } else {
-                VxToast.show(context,
-                    msg: "error updating (try again after resetting data)");
-              }
-            },
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Done',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
-                  ),
-                  5.widthBox,
-                  Icon(Icons.forward, color: Colors.green),
-                ]),
-          ).p(5),
+                if (fingerprints.length == 4 &&
+                    iso.length == 4 &&
+                    faceImage != "" &&
+                    dateSelected != "" &&
+                    nameController.text != "" &&
+                    uid2Controller.text != "") {
+                  updateData();
+                  VxToast.show(context, msg: "details updated");
+                } else {
+                  VxToast.show(context,
+                      msg: "error updating (try again after resetting data)");
+                }
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Done',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
+                    ),
+                    5.widthBox,
+                    Icon(Icons.forward, color: Colors.green),
+                  ]),
+            ).p(5),
         ],
       ),
       // floatingActionButton: FloatingActionBubble(
@@ -744,26 +743,6 @@ class _AddChildrenState extends State<ManageChildren>
                 });
               },
             ),
-          ),
-          20.heightBox,
-          TextField(
-            style: TextStyle(color: Colors.grey),
-            readOnly: true,
-            controller: mobileController,
-            decoration: InputDecoration(
-                label: Text("Parent Mobile Number"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
           ),
           20.heightBox,
           DateTimeFormField(

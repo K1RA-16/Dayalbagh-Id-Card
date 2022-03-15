@@ -17,7 +17,7 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
   late TextEditingController statusController;
   late TextEditingController genderController;
   late TextEditingController doisController;
-  late TextEditingController mobileController;
+
   late TextEditingController spouseNameController;
   late TextEditingController nameController;
   late TextEditingController dobController;
@@ -47,8 +47,7 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
     try {
       uidController =
           TextEditingController(text: SatsangiGetBiometricMap.data["uid"]);
-      mobileController = TextEditingController(
-          text: "${SatsangiGetBiometricMap.data["mobile"]}");
+
       spouseNameController = TextEditingController(
           text: SatsangiGetBiometricMap.data["father_Or_Spouse_Name"]);
       nameController =
@@ -308,63 +307,7 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
                   borderRadius: BorderRadius.circular(15.0),
                 )),
           ),
-          20.heightBox,
-          TextField(
-            readOnly: true,
-            controller: statusController,
-            decoration: InputDecoration(
-                label: Text("Status"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
-          20.heightBox,
-          TextField(
-            readOnly: true,
-            controller: genderController,
-            decoration: InputDecoration(
-                label: Text("Gender"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
-          20.heightBox,
-          TextField(
-            readOnly: true,
-            controller: mobileController,
-            decoration: InputDecoration(
-                label: Text("Mobile Number"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
+
           20.heightBox,
           TextField(
             readOnly: true,
@@ -403,44 +346,7 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
                   borderRadius: BorderRadius.circular(15.0),
                 )),
           ),
-          20.heightBox,
-          TextField(
-            readOnly: true,
-            controller: doi1Controller,
-            decoration: InputDecoration(
-                label: Text("Date Of First Initiation"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
-          20.heightBox,
-          TextField(
-            readOnly: true,
-            controller: doi2Controller,
-            decoration: InputDecoration(
-                label: Text("Date Of Second Initiation"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
+
           20.heightBox,
           TextField(
             readOnly: true,

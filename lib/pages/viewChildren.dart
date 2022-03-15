@@ -13,8 +13,6 @@ class ViewChildren extends StatefulWidget {
 class _ViewChildrenState extends State<ViewChildren> {
   late TextEditingController uidController;
 
-  late TextEditingController mobileController;
-
   late TextEditingController parentNameController;
 
   late TextEditingController nameController;
@@ -50,8 +48,7 @@ class _ViewChildrenState extends State<ViewChildren> {
     try {
       uidController =
           TextEditingController(text: ChildBiometricData.data["uid"]);
-      mobileController =
-          TextEditingController(text: ChildBiometricData.data["mobile"]);
+
       parentNameController =
           TextEditingController(text: ChildBiometricData.data["father_name"]);
       genderController =
@@ -310,25 +307,6 @@ class _ViewChildrenState extends State<ViewChildren> {
             controller: genderController,
             decoration: InputDecoration(
                 label: Text("Gender"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
-          20.heightBox,
-          TextField(
-            readOnly: true,
-            controller: mobileController,
-            decoration: InputDecoration(
-                label: Text("Mobile Number"),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(

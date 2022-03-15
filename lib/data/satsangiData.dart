@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class satsangiListData {
@@ -9,79 +10,87 @@ class SatsangiData {
   final String uid;
   final String name;
   final String dob;
-  final String doi_First;
-  final String doi_Second;
-  final String mobile;
+  final bool card_Print_Status;
+  final String region;
+
   final String father_Or_Spouse_Name;
   final bool bioMetric_Status;
+  final String branch;
+  final String title;
+
   SatsangiData({
     required this.uid,
     required this.name,
     required this.dob,
-    required this.doi_First,
-    required this.doi_Second,
-    required this.mobile,
+    required this.card_Print_Status,
+    required this.region,
     required this.father_Or_Spouse_Name,
     required this.bioMetric_Status,
+    required this.branch,
+    required this.title,
   });
 
   SatsangiData copyWith({
     String? uid,
     String? name,
     String? dob,
-    String? doi_First,
-    String? doi_Second,
-    String? mobile,
+    bool? card_Print_Status,
+    String? region,
     String? father_Or_Spouse_Name,
     bool? bioMetric_Status,
+    String? branch,
+    String? title,
   }) {
     return SatsangiData(
       uid: uid ?? this.uid,
       name: name ?? this.name,
       dob: dob ?? this.dob,
-      doi_First: doi_First ?? this.doi_First,
-      doi_Second: doi_Second ?? this.doi_Second,
-      mobile: mobile ?? this.mobile,
+      card_Print_Status: card_Print_Status ?? this.card_Print_Status,
+      region: region ?? this.region,
       father_Or_Spouse_Name:
           father_Or_Spouse_Name ?? this.father_Or_Spouse_Name,
       bioMetric_Status: bioMetric_Status ?? this.bioMetric_Status,
+      branch: branch ?? this.branch,
+      title: title ?? this.title,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'uid': uid,
       'name': name,
       'dob': dob,
-      'doi_First': doi_First,
-      'doi_Second': doi_Second,
-      'mobile': mobile,
+      'card_Print_Status': card_Print_Status,
+      'region': region,
       'father_Or_Spouse_Name': father_Or_Spouse_Name,
       'bioMetric_Status': bioMetric_Status,
+      'branch': branch,
+      'title': title,
     };
   }
 
   factory SatsangiData.fromMap(Map<String, dynamic> map) {
     return SatsangiData(
-      uid: map['uid'] ?? '',
-      name: map['name'] ?? '',
-      dob: map['dob'] ?? '',
-      doi_First: map['doi_First'] ?? '',
-      doi_Second: map['doi_Second'] ?? '',
-      mobile: map['mobile'] ?? '',
-      father_Or_Spouse_Name: map['father_Or_Spouse_Name'] ?? '',
-      bioMetric_Status: map['bioMetric_Status'] ?? false,
+      uid: map['uid'] as String,
+      name: map['name'] as String,
+      dob: map['dob'] as String,
+      card_Print_Status: map['card_Print_Status'] as bool,
+      region: map['region'] as String,
+      father_Or_Spouse_Name: map['father_Or_Spouse_Name'] as String,
+      bioMetric_Status: map['bioMetric_Status'] as bool,
+      branch: map['branch'] as String,
+      title: map['title'] as String,
     );
   }
 
   String toJson() => json.encode(toMap());
 
   factory SatsangiData.fromJson(String source) =>
-      SatsangiData.fromMap(json.decode(source));
+      SatsangiData.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
-    return 'SatsangiData(uid: $uid, name: $name, dob: $dob, doi_First: $doi_First, doi_Second: $doi_Second, mobile: $mobile, father_Or_Spouse_Name: $father_Or_Spouse_Name, bioMetric_Status: $bioMetric_Status)';
+    return 'SatsangiData(uid: $uid, name: $name, dob: $dob, card_Print_Status: $card_Print_Status, region: $region, father_Or_Spouse_Name: $father_Or_Spouse_Name, bioMetric_Status: $bioMetric_Status, branch: $branch, title: $title)';
   }
 
   @override
@@ -92,11 +101,12 @@ class SatsangiData {
         other.uid == uid &&
         other.name == name &&
         other.dob == dob &&
-        other.doi_First == doi_First &&
-        other.doi_Second == doi_Second &&
-        other.mobile == mobile &&
+        other.card_Print_Status == card_Print_Status &&
+        other.region == region &&
         other.father_Or_Spouse_Name == father_Or_Spouse_Name &&
-        other.bioMetric_Status == bioMetric_Status;
+        other.bioMetric_Status == bioMetric_Status &&
+        other.branch == branch &&
+        other.title == title;
   }
 
   @override
@@ -104,10 +114,11 @@ class SatsangiData {
     return uid.hashCode ^
         name.hashCode ^
         dob.hashCode ^
-        doi_First.hashCode ^
-        doi_Second.hashCode ^
-        mobile.hashCode ^
+        card_Print_Status.hashCode ^
+        region.hashCode ^
         father_Or_Spouse_Name.hashCode ^
-        bioMetric_Status.hashCode;
+        bioMetric_Status.hashCode ^
+        branch.hashCode ^
+        title.hashCode;
   }
 }

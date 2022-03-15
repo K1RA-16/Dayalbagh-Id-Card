@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:velocity_x/velocity_x.dart';
 import 'dart:async';
 
 import '../apiAccess/postApis.dart';
@@ -25,9 +25,11 @@ class _SplashState extends State<Splash> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyThemes.grad2,
-      body: ListView(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset("assets/splashScreen.png"),
+          Center(child: Image.asset("assets/splashScreen.png")),
+          30.heightBox,
           Container(
             alignment: Alignment.center,
             child: const Text(

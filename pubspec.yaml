@@ -48,6 +48,8 @@ dependencies:
   shared_preferences: ^2.0.13
   firebase_database: ^9.0.8
   firebase_core: ^1.13.1
+  url_launcher: ^6.0.20
+  encrypted_shared_preferences: ^3.0.0
 
 dev_dependencies:
   flutter_test:

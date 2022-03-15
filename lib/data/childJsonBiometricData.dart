@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+//update biometric
 
 class ChildJsonBiometric {
   final String name;
@@ -9,7 +10,6 @@ class ChildJsonBiometric {
   final String father_name;
   final String parent_uid_one;
   final String parent_uid_two;
-  final String mobile;
   final String branch;
   final int ISO_FP_1;
   final int ISO_FP_2;
@@ -28,7 +28,6 @@ class ChildJsonBiometric {
     required this.father_name,
     required this.parent_uid_one,
     required this.parent_uid_two,
-    required this.mobile,
     required this.branch,
     required this.ISO_FP_1,
     required this.ISO_FP_2,
@@ -49,7 +48,6 @@ class ChildJsonBiometric {
     String? father_name,
     String? parent_uid_one,
     String? parent_uid_two,
-    String? mobile,
     String? branch,
     int? ISO_FP_1,
     int? ISO_FP_2,
@@ -69,7 +67,6 @@ class ChildJsonBiometric {
       father_name: father_name ?? this.father_name,
       parent_uid_one: parent_uid_one ?? this.parent_uid_one,
       parent_uid_two: parent_uid_two ?? this.parent_uid_two,
-      mobile: mobile ?? this.mobile,
       branch: branch ?? this.branch,
       ISO_FP_1: ISO_FP_1 ?? this.ISO_FP_1,
       ISO_FP_2: ISO_FP_2 ?? this.ISO_FP_2,
@@ -92,7 +89,6 @@ class ChildJsonBiometric {
       'father_name': father_name,
       'parent_uid_one': parent_uid_one,
       'parent_uid_two': parent_uid_two,
-      'mobile': mobile,
       'branch': branch,
       'ISO_FP_1': ISO_FP_1,
       'ISO_FP_2': ISO_FP_2,
@@ -115,7 +111,6 @@ class ChildJsonBiometric {
       father_name: map['father_name'] as String,
       parent_uid_one: map['parent_uid_one'] as String,
       parent_uid_two: map['parent_uid_two'] as String,
-      mobile: map['mobile'] as String,
       branch: map['branch'] as String,
       ISO_FP_1: map['ISO_FP_1'] as int,
       ISO_FP_2: map['ISO_FP_2'] as int,
@@ -136,7 +131,7 @@ class ChildJsonBiometric {
 
   @override
   String toString() {
-    return 'ChildJsonBiometric(name: $name, dob: $dob, Gender: $Gender, uid: $uid, father_name: $father_name, parent_uid_one: $parent_uid_one, parent_uid_two: $parent_uid_two, mobile: $mobile, branch: $branch, ISO_FP_1: $ISO_FP_1, ISO_FP_2: $ISO_FP_2, ISO_FP_3: $ISO_FP_3, ISO_FP_4: $ISO_FP_4, FingerPrint_1: $FingerPrint_1, FingerPrint_2: $FingerPrint_2, FingerPrint_3: $FingerPrint_3, FingerPrint_4: $FingerPrint_4, FaceImage: $FaceImage)';
+    return 'ChildJsonBiometric(name: $name, dob: $dob, Gender: $Gender, uid: $uid, father_name: $father_name, parent_uid_one: $parent_uid_one, parent_uid_two: $parent_uid_two, branch: $branch, ISO_FP_1: $ISO_FP_1, ISO_FP_2: $ISO_FP_2, ISO_FP_3: $ISO_FP_3, ISO_FP_4: $ISO_FP_4, FingerPrint_1: $FingerPrint_1, FingerPrint_2: $FingerPrint_2, FingerPrint_3: $FingerPrint_3, FingerPrint_4: $FingerPrint_4, FaceImage: $FaceImage)';
   }
 
   @override
@@ -151,7 +146,6 @@ class ChildJsonBiometric {
         other.father_name == father_name &&
         other.parent_uid_one == parent_uid_one &&
         other.parent_uid_two == parent_uid_two &&
-        other.mobile == mobile &&
         other.branch == branch &&
         other.ISO_FP_1 == ISO_FP_1 &&
         other.ISO_FP_2 == ISO_FP_2 &&
@@ -173,7 +167,6 @@ class ChildJsonBiometric {
         father_name.hashCode ^
         parent_uid_one.hashCode ^
         parent_uid_two.hashCode ^
-        mobile.hashCode ^
         branch.hashCode ^
         ISO_FP_1.hashCode ^
         ISO_FP_2.hashCode ^

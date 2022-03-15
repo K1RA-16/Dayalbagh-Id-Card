@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:dayalbaghidregistration/apiAccess/firebaseLogApis.dart';
 import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
 import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 String selectedLocation = "select branch";
@@ -62,6 +64,14 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
+  logout() async {
+    EncryptedSharedPreferences encryptedSharedPreferences =
+        EncryptedSharedPreferences();
+    await encryptedSharedPreferences.setString("token", "");
+
+    Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -76,8 +86,7 @@ class _HomePageState extends State<HomePage> {
           actions: [
             InkWell(
                 onTap: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, "/login", (r) => false);
+                  logout();
                 },
                 child: Icon(Icons.logout).pOnly(right: 20)),
           ],

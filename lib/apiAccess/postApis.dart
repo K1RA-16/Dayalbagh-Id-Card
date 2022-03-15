@@ -1,70 +1,95 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:dayalbaghidregistration/apiAccess/firebaseLogApis.dart';
-import 'package:dayalbaghidregistration/data/authData.dart';
-import 'package:dayalbaghidregistration/data/SatsangiBiometricData.dart';
-import 'package:dayalbaghidregistration/data/childJsonBiometricData.dart';
-import 'package:dayalbaghidregistration/data/childBiometricViewData.dart';
-import 'package:dayalbaghidregistration/data/childListData.dart';
-import 'package:dayalbaghidregistration/data/paginationData.dart';
-import 'package:dayalbaghidregistration/data/satsangiData.dart';
-import 'package:dayalbaghidregistration/data/satsangiGetBiometricData.dart';
-import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
+import 'package:dayalbaghidregistration/apiAccess/keyEncrypt.dart';
+import 'package:dayalbaghidregistration/data/downloadLink.dart';
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velocity_x/velocity_x.dart';
 
+import 'package:dayalbaghidregistration/apiAccess/firebaseLogApis.dart';
+import 'package:dayalbaghidregistration/data/SatsangiBiometricData.dart';
+import 'package:dayalbaghidregistration/data/authData.dart';
+import 'package:dayalbaghidregistration/data/childBiometricViewData.dart';
+import 'package:dayalbaghidregistration/data/childJsonBiometricData.dart';
+import 'package:dayalbaghidregistration/data/childListData.dart';
+import 'package:dayalbaghidregistration/data/paginationData.dart';
+import 'package:dayalbaghidregistration/data/satsangiData.dart';
+import 'package:dayalbaghidregistration/data/satsangiGetBiometricData.dart';
+import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
+
 import '../data/search.dart';
+
+String version = "1.0.0.0";
 
 class PostApi {
   //logs in the user and saves the token to shared Pref...
-  Future<void> login(
+  Future<int> login(
       String username, String password, BuildContext context) async {
+    var jsonReceived;
     try {
       if (username.isNotEmpty && password.isNotEmpty) {
-        var jsonData =
-            AuthData(username: username, password: password).toJson();
+        var jsonData = AuthData(
+          username: username,
+          password: password,
+          version: version,
+        ).toJson();
         http.Response response = await http.post(
             Uri.parse("https://api.dbidentity.in/api/login/authenticate"),
             body: jsonData,
             headers: {
               'Content-type': 'application/json',
             });
-        var jsonReceived = jsonDecode(response.body);
+        jsonReceived = jsonDecode(response.body);
         print(jsonReceived);
-        if (jsonReceived["message"] == "Username or password is incorrect")
-          VxToast.show(context, msg: "Username or password is incorrect");
-        else {
-          // Obtain shared preferences.
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString("token", jsonReceived["token"]);
-          await prefs.setString("userid", username);
-          await prefs.setString("password", password);
+        if (response.statusCode == 400) {
+          //DownloadLink.link = response.body.toString();
+          print(response.body.toString());
+          if (response.body.toString().characters.first == '{') {
+            if (jsonReceived["message"] == "Username or password is incorrect")
+              VxToast.show(context, msg: "Username or password is incorrect");
+
+            return 300; // username/pass incorrect
+          }
+          return 400;
         }
       }
     } on Exception catch (e) {
       // TODO
 
       FirebaseLog().logError("login error", e.toString());
-      return;
+      return 401;
     }
+    EncryptedSharedPreferences encryptedSharedPreferences =
+        EncryptedSharedPreferences();
+    await encryptedSharedPreferences.setString("token", jsonReceived["token"]);
+    await encryptedSharedPreferences.setString("userid", username);
+
     if (username != "" && password != "")
       Navigator.pushNamed(context, "/home");
     else if (username == "")
       VxToast.show(context, msg: "Please enter username");
     else if (password == "")
       VxToast.show(context, msg: "Please enter password");
+    return 200;
   }
 
   //gets the branch list of that particular user
   Future<List<dynamic>> getBranches(BuildContext context, int index) async {
     var jsonReceived;
+    var token = " ";
     try {
-      final pref = await SharedPreferences.getInstance();
-      var token = pref.getString("token") ?? "";
+      try {
+        EncryptedSharedPreferences encryptedSharedPreferences =
+            EncryptedSharedPreferences();
+        token = await encryptedSharedPreferences.getString("token");
+      } catch (e) {
+        // TODO
+      }
 
       final response = await http.get(
           Uri.parse('https://api.dbidentity.in/api/branch/list'),
@@ -92,8 +117,10 @@ class PostApi {
   Future<bool> getstsangiData(BuildContext context) async {
     var data;
     try {
-      final pref = await SharedPreferences.getInstance();
-      var token = pref.getString("token") ?? "";
+      EncryptedSharedPreferences encryptedSharedPreferences =
+          EncryptedSharedPreferences();
+      var token = await encryptedSharedPreferences.getString("token");
+
       Map<String, String> m = new Map();
       m["uid"] = satsangiListData.satsangiList[satsangiListData.index].uid;
       var json = jsonEncode(m);
@@ -116,12 +143,9 @@ class PostApi {
     }
 
     SatsangiGetBiometricMap.data = SatsangiGetBiometric(
-      mobile: data["mobile"],
       name: data["name"],
       father_Or_Spouse_Name: data["father_Or_Spouse_Name"],
       dob: data["dob"],
-      doi_First: data["doi_First"] ?? " ",
-      doi_Second: data["doi_Second"] ?? " ",
       branch: data["branch"] ?? " ",
       date_of_issue: data["date_of_issue"] ?? " ",
       status: data["status"] ?? " ",
@@ -143,8 +167,10 @@ class PostApi {
   Future<void> getChildList(BuildContext context) async {
     var jsonReceived;
     try {
-      final pref = await SharedPreferences.getInstance();
-      var token = pref.getString("token") ?? "";
+      EncryptedSharedPreferences encryptedSharedPreferences =
+          EncryptedSharedPreferences();
+      var token = await encryptedSharedPreferences.getString("token");
+
       Map<String, String> m = new Map();
       m["uid"] = satsangiListData.satsangiList[satsangiListData.index].uid;
       var json = jsonEncode(m);
@@ -177,9 +203,11 @@ class PostApi {
       BuildContext context, int index) async {
     var jsonReceived;
     try {
-      final pref = await SharedPreferences.getInstance();
-      var token = pref.getString("token") ?? "";
-      await pref.setString("branch", branchid);
+      EncryptedSharedPreferences encryptedSharedPreferences =
+          EncryptedSharedPreferences();
+      var token = await encryptedSharedPreferences.getString("token");
+      await encryptedSharedPreferences.setString("branch", branchid);
+
       var jsonData =
           PaginaionData(branch: branchid, Offset: offset, PageSize: pageSize)
               .toJson();
@@ -202,6 +230,7 @@ class PostApi {
     satsangiListData.satsangiList = List.from(jsonReceived)
         .map<SatsangiData>((item) => SatsangiData.fromMap(item))
         .toList();
+    print(satsangiListData.satsangiList[0]);
     if (index == 1) {
       Navigator.push(
           context,
@@ -218,8 +247,10 @@ class PostApi {
       String branchid, String name, BuildContext context) async {
     var jsonReceived;
     try {
-      final pref = await SharedPreferences.getInstance();
-      var token = pref.getString("token") ?? "";
+      EncryptedSharedPreferences encryptedSharedPreferences =
+          EncryptedSharedPreferences();
+      var token = await encryptedSharedPreferences.getString("token");
+      // var branch = await encryptedSharedPreferences.getString("branch");
 
       var jsonData = Search(branch: branchid, Name: name).toJson();
       print(jsonData);
@@ -257,11 +288,12 @@ class PostApi {
     return data["result"];
   }
 
-  getChildInfo(BuildContext context) async {
+  Future<bool> getChildInfo(BuildContext context) async {
     var data;
     try {
-      final pref = await SharedPreferences.getInstance();
-      var token = pref.getString("token") ?? "";
+      EncryptedSharedPreferences encryptedSharedPreferences =
+          EncryptedSharedPreferences();
+      var token = await encryptedSharedPreferences.getString("token");
 
       var jsonData =
           jsonEncode({"uid": ChildList.childList[ChildList.index].uid});
@@ -281,7 +313,7 @@ class PostApi {
       //Map<String, dynamic> errLog = {"get child info": e};
       FirebaseLog().logError("get child info", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
-      return;
+      return false;
     }
     ChildBiometricData.data = ChildBiometricView(
       id: data["id"],
@@ -290,7 +322,6 @@ class PostApi {
       image: data["image"],
       uid: data["uid"],
       gender: data["gender"],
-      mobile: data["mobile"],
       dob: data["dob"],
       parent_uid_one: data["parent_uid_one"],
       parent_uid_two: data["parent_uid_two"],
@@ -309,10 +340,9 @@ class PostApi {
     //Navigator.pop(context);
     if (ChildBiometricData.data["id"] != 0 ||
         ChildBiometricData.data.isNotEmpty) {
-      Navigator.pushNamed(context, "/viewChildren");
+      return true;
     } else {
-      Navigator.pop(context);
-      VxToast.show(context, msg: "child data not available");
+      return false;
     }
   }
 
@@ -341,8 +371,11 @@ class PostApi {
               fingerprint4: finger4,
               faceimage: faceImage)
           .toJson();
-      final pref = await SharedPreferences.getInstance();
-      var token = pref.getString("token") ?? "";
+
+      EncryptedSharedPreferences encryptedSharedPreferences =
+          EncryptedSharedPreferences();
+      var token = await encryptedSharedPreferences.getString("token");
+      // var branch = await encryptedSharedPreferences.getString("branch");
 
       http.Response response = await http.post(
           Uri.parse("https://api.dbidentity.in/api/uidbio/Register"),
@@ -370,7 +403,6 @@ class PostApi {
       String parent,
       String uid1,
       String uid2,
-      String mobile,
       int iso1,
       int iso2,
       int iso3,
@@ -382,9 +414,11 @@ class PostApi {
       String faceimage,
       BuildContext context) async {
     try {
-      final pref = await SharedPreferences.getInstance();
-      var token = pref.getString("token") ?? "";
-      var branch = pref.getString("branch") ?? "";
+      EncryptedSharedPreferences encryptedSharedPreferences =
+          EncryptedSharedPreferences();
+      var token = await encryptedSharedPreferences.getString("token");
+      var branch = await encryptedSharedPreferences.getString("branch");
+
       print(branch);
       var json = ChildJsonBiometric(
               name: name,
@@ -394,7 +428,6 @@ class PostApi {
               father_name: parent,
               parent_uid_one: uid1,
               parent_uid_two: uid2,
-              mobile: mobile,
               branch: branch,
               ISO_FP_1: iso1,
               ISO_FP_2: iso2,
