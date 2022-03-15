@@ -797,7 +797,7 @@ class _AddSatsangiState extends State<AddSatsangi>
             readOnly: true,
             controller: doi2Controller,
             decoration: InputDecoration(
-                label: Text("Date Of First Initiation"),
+                label: Text("Date Of Second Initiation"),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(
