@@ -116,10 +116,15 @@ class PostApi {
 
   Future<bool> getstsangiData(BuildContext context) async {
     var data;
+    var token;
     try {
-      EncryptedSharedPreferences encryptedSharedPreferences =
-          EncryptedSharedPreferences();
-      var token = await encryptedSharedPreferences.getString("token");
+      try {
+        EncryptedSharedPreferences encryptedSharedPreferences =
+            EncryptedSharedPreferences();
+        token = await encryptedSharedPreferences.getString("token");
+      } catch (e) {
+        // TODO
+      }
 
       Map<String, String> m = new Map();
       m["uid"] = satsangiListData.satsangiList[satsangiListData.index].uid;
@@ -166,10 +171,15 @@ class PostApi {
 
   Future<void> getChildList(BuildContext context) async {
     var jsonReceived;
+    var token;
     try {
-      EncryptedSharedPreferences encryptedSharedPreferences =
-          EncryptedSharedPreferences();
-      var token = await encryptedSharedPreferences.getString("token");
+      try {
+        EncryptedSharedPreferences encryptedSharedPreferences =
+            EncryptedSharedPreferences();
+        token = await encryptedSharedPreferences.getString("token");
+      } catch (e) {
+        // TODO
+      }
 
       Map<String, String> m = new Map();
       m["uid"] = satsangiListData.satsangiList[satsangiListData.index].uid;
@@ -202,11 +212,16 @@ class PostApi {
   Future<void> getSatsangisList(String branchid, int offset, int pageSize,
       BuildContext context, int index) async {
     var jsonReceived;
+    var token;
     try {
-      EncryptedSharedPreferences encryptedSharedPreferences =
-          EncryptedSharedPreferences();
-      var token = await encryptedSharedPreferences.getString("token");
-      await encryptedSharedPreferences.setString("branch", branchid);
+      try {
+        EncryptedSharedPreferences encryptedSharedPreferences =
+            EncryptedSharedPreferences();
+        token = await encryptedSharedPreferences.getString("token");
+        await encryptedSharedPreferences.setString("branch", branchid);
+      } catch (e) {
+        // TODO
+      }
 
       var jsonData =
           PaginaionData(branch: branchid, Offset: offset, PageSize: pageSize)
@@ -246,10 +261,15 @@ class PostApi {
   Future<void> search(
       String branchid, String name, BuildContext context) async {
     var jsonReceived;
+    var token;
     try {
-      EncryptedSharedPreferences encryptedSharedPreferences =
-          EncryptedSharedPreferences();
-      var token = await encryptedSharedPreferences.getString("token");
+      try {
+        EncryptedSharedPreferences encryptedSharedPreferences =
+            EncryptedSharedPreferences();
+        token = await encryptedSharedPreferences.getString("token");
+      } catch (e) {
+        // TODO
+      }
       // var branch = await encryptedSharedPreferences.getString("branch");
 
       var jsonData = Search(branch: branchid, Name: name).toJson();
@@ -290,10 +310,15 @@ class PostApi {
 
   Future<bool> getChildInfo(BuildContext context) async {
     var data;
+    var token;
     try {
-      EncryptedSharedPreferences encryptedSharedPreferences =
-          EncryptedSharedPreferences();
-      var token = await encryptedSharedPreferences.getString("token");
+      try {
+        EncryptedSharedPreferences encryptedSharedPreferences =
+            EncryptedSharedPreferences();
+        token = await encryptedSharedPreferences.getString("token");
+      } catch (e) {
+        // TODO
+      }
 
       var jsonData =
           jsonEncode({"uid": ChildList.childList[ChildList.index].uid});
@@ -371,10 +396,14 @@ class PostApi {
               fingerprint4: finger4,
               faceimage: faceImage)
           .toJson();
-
-      EncryptedSharedPreferences encryptedSharedPreferences =
-          EncryptedSharedPreferences();
-      var token = await encryptedSharedPreferences.getString("token");
+      var token;
+      try {
+        EncryptedSharedPreferences encryptedSharedPreferences =
+            EncryptedSharedPreferences();
+        token = await encryptedSharedPreferences.getString("token");
+      } catch (e) {
+        // TODO
+      }
       // var branch = await encryptedSharedPreferences.getString("branch");
 
       http.Response response = await http.post(
@@ -413,11 +442,18 @@ class PostApi {
       String fingerprint4,
       String faceimage,
       BuildContext context) async {
+    var token;
+    var branch;
+
     try {
-      EncryptedSharedPreferences encryptedSharedPreferences =
-          EncryptedSharedPreferences();
-      var token = await encryptedSharedPreferences.getString("token");
-      var branch = await encryptedSharedPreferences.getString("branch");
+      try {
+        EncryptedSharedPreferences encryptedSharedPreferences =
+            EncryptedSharedPreferences();
+        var token = await encryptedSharedPreferences.getString("token");
+        var branch = await encryptedSharedPreferences.getString("branch");
+      } catch (e) {
+        // TODO
+      }
 
       print(branch);
       var json = ChildJsonBiometric(
