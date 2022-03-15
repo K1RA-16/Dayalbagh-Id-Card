@@ -186,7 +186,7 @@ class _ViewChildrenState extends State<ViewChildren> {
                     width: 200,
                     height: 200,
                     fit: BoxFit.contain,
-                  ).pOnly(bottom: 10),
+                  ).p(10),
                 ])),
           5.heightBox,
           "FingerPrints".text.bold.size(15).make(),

@@ -51,7 +51,12 @@ class PostApi {
       FirebaseLog().logError("login error", e.toString());
       return;
     }
-    Navigator.pushNamed(context, "/home");
+    if (username != "" && password != "")
+      Navigator.pushNamed(context, "/home");
+    else if (username == "")
+      VxToast.show(context, msg: "Please enter username");
+    else if (password == "")
+      VxToast.show(context, msg: "Please enter password");
   }
 
   //gets the branch list of that particular user

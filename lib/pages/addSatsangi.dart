@@ -1534,7 +1534,7 @@ class _AddSatsangiState extends State<AddSatsangi>
             width: 250,
             height: 250,
             child: Image.asset(
-              "assets/RI.png",
+              "assets/RR.png",
               fit: BoxFit.contain,
             ),
           ),
