@@ -67,6 +67,7 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
     } on Exception catch (e) {
       // TODO
     }
+
     loadData();
     super.initState();
   }
@@ -77,20 +78,24 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
       loadIso(SatsangiGetBiometricMap.data["isO_FP_2"], 2);
       loadIso(SatsangiGetBiometricMap.data["isO_FP_3"], 3);
       loadIso(SatsangiGetBiometricMap.data["isO_FP_4"], 4);
-      fingerData1 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_1"]);
-      fingerData2 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_2"]);
-      fingerData3 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_3"]);
-      fingerData4 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_4"]);
+      fingerData1 = base64Decode(ChildBiometricData.data["fingerPrint_1"]);
+      fingerData2 = base64Decode(ChildBiometricData.data["fingerPrint_2"]);
+      fingerData3 = base64Decode(ChildBiometricData.data["fingerPrint_3"]);
+      fingerData4 = base64Decode(ChildBiometricData.data["fingerPrint_4"]);
       imageFile = base64Decode(SatsangiGetBiometricMap.data["image"]);
+
       try {
         if (SatsangiGetBiometricMap.data["image"].toString().length > 5)
-          faceImage = true;
+          print("check2");
+        faceImage = true;
+        print(SatsangiGetBiometricMap.data["image"].toString().length);
+        setState(() {});
       } on Exception catch (e) {
         // TODO
       }
-      setState(() {});
     } on Exception catch (e) {
       // TODO
+      print("check");
     }
   }
 
@@ -206,8 +211,8 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
                       5.heightBox,
                       Image.memory(
                         fingerData1,
-                        width: 100,
-                        height: 100,
+                        width: 50,
+                        height: 50,
                         fit: BoxFit.contain,
                       ),
                     ],
@@ -222,8 +227,8 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
                       5.heightBox,
                       Image.memory(
                         fingerData3,
-                        width: 100,
-                        height: 100,
+                        width: 50,
+                        height: 50,
                         fit: BoxFit.contain,
                       ),
                     ],
@@ -244,8 +249,8 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
                       5.heightBox,
                       Image.memory(
                         fingerData2,
-                        width: 100,
-                        height: 100,
+                        width: 50,
+                        height: 50,
                         fit: BoxFit.contain,
                       ),
                     ],
@@ -260,8 +265,8 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
                       5.heightBox,
                       Image.memory(
                         fingerData4,
-                        width: 100,
-                        height: 100,
+                        width: 50,
+                        height: 50,
                         fit: BoxFit.contain,
                       ),
                     ],

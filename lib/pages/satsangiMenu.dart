@@ -31,6 +31,9 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
             .then((value) => setState(() {
                   progressIndicator = false;
                 }));
+      } else {
+        progressIndicator = false;
+        setState(() {});
       }
     } on Exception catch (e) {
       // TODO

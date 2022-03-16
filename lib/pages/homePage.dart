@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
   logout() async {
     EncryptedSharedPreferences encryptedSharedPreferences =
         EncryptedSharedPreferences();
-    await encryptedSharedPreferences.setString("token", "");
+    await encryptedSharedPreferences.setString("token", " ");
 
     Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
   }

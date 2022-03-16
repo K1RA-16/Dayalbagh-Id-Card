@@ -114,8 +114,8 @@ class _AddChildrenState extends State<ManageChildren>
         VxToast.show(context, msg: "please wait until we process the image");
         faceLoading = true;
       });
-      bool faceCorrect =
-          await PostApi().checkFace("data:image/jpeg;base64,$faceImage");
+      bool faceCorrect = await PostApi()
+          .checkFace("data:image/jpeg;base64,$faceImage", context);
       setState(() {
         faceLoading = false;
       });

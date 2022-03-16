@@ -200,8 +200,8 @@ class _ViewChildrenState extends State<ViewChildren> {
                       5.heightBox,
                       Image.memory(
                         fingerData1,
-                        width: 100,
-                        height: 100,
+                        width: 50,
+                        height: 50,
                         fit: BoxFit.contain,
                       ),
                     ],
@@ -216,8 +216,8 @@ class _ViewChildrenState extends State<ViewChildren> {
                       5.heightBox,
                       Image.memory(
                         fingerData3,
-                        width: 100,
-                        height: 100,
+                        width: 50,
+                        height: 50,
                         fit: BoxFit.contain,
                       ),
                     ],
@@ -238,8 +238,8 @@ class _ViewChildrenState extends State<ViewChildren> {
                       5.heightBox,
                       Image.memory(
                         fingerData2,
-                        width: 100,
-                        height: 100,
+                        width: 50,
+                        height: 50,
                         fit: BoxFit.contain,
                       ),
                     ],
@@ -254,8 +254,8 @@ class _ViewChildrenState extends State<ViewChildren> {
                       5.heightBox,
                       Image.memory(
                         fingerData4,
-                        width: 100,
-                        height: 100,
+                        width: 50,
+                        height: 50,
                         fit: BoxFit.contain,
                       ),
                     ],

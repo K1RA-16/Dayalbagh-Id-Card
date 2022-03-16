@@ -46,9 +46,7 @@ class _LoginPageState extends State<LoginPage> {
             TextField(
               controller: username,
               maxLength: 20,
-              inputFormatters: [
-                FilteringTextInputFormatter.deny(new RegExp(r"\s\b|\b\s"))
-              ],
+              inputFormatters: [FilteringTextInputFormatter.deny(' ')],
               decoration: InputDecoration(
                   label: Text("User Id"),
                   labelStyle: TextStyle(color: Colors.white),
@@ -70,9 +68,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 Container(
                   child: TextField(
-                    inputFormatters: [
-                      FilteringTextInputFormatter.deny(new RegExp(r"\s\b|\b\s"))
-                    ],
+                    inputFormatters: [FilteringTextInputFormatter.deny(' ')],
                     controller: password,
                     obscureText: obscure,
                     maxLength: 20,

@@ -33,7 +33,7 @@ class _SplashState extends State<Splash> {
           Container(
             alignment: Alignment.center,
             child: const Text(
-              "Dayalbagh Biometric Registration",
+              "Biometric Unique Identification",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.orange,
@@ -41,6 +41,18 @@ class _SplashState extends State<Splash> {
               ),
             ),
           ),
+          const Text("Universal Card",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.orange,
+                fontSize: 15,
+              )),
+          const Text("Enrollment Application",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.orange,
+                fontSize: 15,
+              )),
           const SizedBox(
             height: 40,
           ),

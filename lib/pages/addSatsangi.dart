@@ -108,8 +108,8 @@ class _AddSatsangiState extends State<AddSatsangi>
         faceLoading = true;
         VxToast.show(context, msg: "please wait unitl we process the image");
       });
-      bool faceCorrect =
-          await PostApi().checkFace("data:image/jpeg;base64,$faceImage");
+      bool faceCorrect = await PostApi()
+          .checkFace("data:image/jpeg;base64,$faceImage", context);
       setState(() {
         faceLoading = false;
       });
@@ -493,65 +493,6 @@ class _AddSatsangiState extends State<AddSatsangi>
         body: SingleChildScrollView(
           child: Column(children: [
             20.heightBox,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 5,
-                    primary: Colors.orange,
-                  ),
-                  onPressed: () {
-                    //VxToast.show(context, msg: "Details Updated");
-                    if (!faceLoading) resetData();
-                  },
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'Reset all info',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15),
-                        ),
-                        5.widthBox,
-                        Icon(Icons.restore, color: Colors.green),
-                      ]),
-                ).p(5),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 5,
-                    primary: Colors.orange,
-                  ),
-                  onPressed: () {
-                    //VxToast.show(context, msg: "Details Updated");
-                    if (!faceLoading) {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) =>
-                              _buildPopupImage(context));
-                    }
-                  },
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'Update Info',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15),
-                        ),
-                        5.widthBox,
-                        Icon(Icons.update, color: Colors.green),
-                      ]),
-                ).p(5),
-              ],
-            ),
-            10.heightBox,
             if (faceLoading) CircularProgressIndicator(),
             if (imageFile != null)
               Card(
@@ -567,14 +508,9 @@ class _AddSatsangiState extends State<AddSatsangi>
                     ).pOnly(bottom: 10),
                   ])),
             if (imageFile == null)
-              InkWell(
-                onTap: () {
-                  if (!faceLoading) initialiseCamera();
-                },
-                child: CircleAvatar(
-                  radius: 100,
-                  child: Image.asset("assets/addPhoto.png"),
-                ),
+              CircleAvatar(
+                radius: 100,
+                child: Image.asset("assets/addPhoto.png"),
               ),
             5.heightBox,
             if (finger1 || finger2) "Left hand finger prints".text.make(),
@@ -774,6 +710,65 @@ class _AddSatsangiState extends State<AddSatsangi>
                         const BorderSide(color: Colors.blueGrey, width: 1.0),
                     borderRadius: BorderRadius.circular(15.0),
                   )),
+            ),
+            20.heightBox,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 5,
+                    primary: Colors.orange,
+                  ),
+                  onPressed: () {
+                    //VxToast.show(context, msg: "Details Updated");
+                    if (!faceLoading) resetData();
+                  },
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Reset all info',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
+                        ),
+                        5.widthBox,
+                        Icon(Icons.restore, color: Colors.green),
+                      ]),
+                ).p(5),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 5,
+                    primary: Colors.orange,
+                  ),
+                  onPressed: () {
+                    //VxToast.show(context, msg: "Details Updated");
+                    if (!faceLoading) {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              _buildPopupImage(context));
+                    }
+                  },
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Update Info',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
+                        ),
+                        5.widthBox,
+                        Icon(Icons.update, color: Colors.green),
+                      ]),
+                ).p(5),
+              ],
             ),
             20.heightBox,
           ]).p(10),

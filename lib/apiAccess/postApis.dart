@@ -1,8 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'package:http_certificate_pinning/http_certificate_pinning.dart';
 import 'package:dayalbaghidregistration/apiAccess/keyEncrypt.dart';
 import 'package:dayalbaghidregistration/data/downloadLink.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
@@ -31,6 +32,7 @@ class PostApi {
   Future<int> login(
       String username, String password, BuildContext context) async {
     var jsonReceived;
+    var check = false;
     try {
       if (username.isNotEmpty && password.isNotEmpty) {
         var jsonData = AuthData(
@@ -38,50 +40,63 @@ class PostApi {
           password: password,
           version: version,
         ).toJson();
-        http.Response response = await http.post(
-            Uri.parse("https://api.dbidentity.in/api/login/authenticate"),
-            body: jsonData,
-            headers: {
-              'Content-type': 'application/json',
-            });
-        jsonReceived = jsonDecode(response.body);
-        print(jsonReceived);
-        if (response.statusCode == 400) {
-          //DownloadLink.link = response.body.toString();
-          print(response.body.toString());
-          if (response.body.toString().characters.first == '{') {
-            if (jsonReceived["message"] == "Username or password is incorrect")
-              VxToast.show(context, msg: "Username or password is incorrect");
+        Map<String, String> headers = {'Content-type': 'application/json'};
+        check = await myCustomImplementation(
+            "https://api.dbidentity.in/api/login/authenticate", headers);
+        if (check) {
+          http.Response response = await http.post(
+              Uri.parse("https://api.dbidentity.in/api/login/authenticate"),
+              body: jsonData,
+              headers: {
+                'Content-type': 'application/json',
+              }).timeout(const Duration(seconds: 10));
+          jsonReceived = jsonDecode(response.body);
+          print(jsonReceived);
+          if (response.statusCode == 400) {
+            //DownloadLink.link = response.body.toString();
+            print(response.body.toString());
+            if (response.body.toString().characters.first == '{') {
+              if (jsonReceived["message"] ==
+                  "Username or password is incorrect")
+                VxToast.show(context, msg: "Username or password is incorrect");
 
-            return 300; // username/pass incorrect
+              return 300; // username/pass incorrect
+            }
+            return 400;
           }
-          return 400;
         }
       }
+    } on TimeoutException catch (e) {
+      VxToast.show(context, msg: "Request Timeout");
     } on Exception catch (e) {
       // TODO
 
       FirebaseLog().logError("login error", e.toString());
       return 401;
     }
-    EncryptedSharedPreferences encryptedSharedPreferences =
-        EncryptedSharedPreferences();
-    await encryptedSharedPreferences.setString("token", jsonReceived["token"]);
-    await encryptedSharedPreferences.setString("userid", username);
+    if (check && jsonReceived != null) {
+      EncryptedSharedPreferences encryptedSharedPreferences =
+          EncryptedSharedPreferences();
+      await encryptedSharedPreferences.setString(
+          "token", jsonReceived["token"]);
+      await encryptedSharedPreferences.setString("userid", username);
 
-    if (username != "" && password != "")
-      Navigator.pushNamed(context, "/home");
-    else if (username == "")
-      VxToast.show(context, msg: "Please enter username");
-    else if (password == "")
-      VxToast.show(context, msg: "Please enter password");
-    return 200;
+      if (username != "" && password != "")
+        Navigator.pushNamed(context, "/home");
+      else if (username == "")
+        VxToast.show(context, msg: "Please enter username");
+      else if (password == "")
+        VxToast.show(context, msg: "Please enter password");
+      return 200;
+    } else
+      return 401;
   }
 
   //gets the branch list of that particular user
   Future<List<dynamic>> getBranches(BuildContext context, int index) async {
-    var jsonReceived;
+    var jsonReceived = [];
     var token = " ";
+    var check = false;
     try {
       try {
         EncryptedSharedPreferences encryptedSharedPreferences =
@@ -90,16 +105,20 @@ class PostApi {
       } catch (e) {
         // TODO
       }
-
-      final response = await http.get(
-          Uri.parse('https://api.dbidentity.in/api/branch/list'),
-          headers: {
-            'Content-type': 'application/json',
-            'Authorization': 'Bearer $token',
-          });
-      jsonReceived = jsonDecode(response.body);
-      print(response.body);
-      print(response.statusCode);
+      Map<String, String> headers = {'Content-type': 'application/json'};
+      check = await myCustomImplementation(
+          "https://api.dbidentity.in/api/branch/list", headers);
+      if (check) {
+        final response = await http.get(
+            Uri.parse('https://api.dbidentity.in/api/branch/list'),
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': 'Bearer $token',
+            }).timeout(const Duration(seconds: 10));
+        jsonReceived = jsonDecode(response.body);
+      }
+    } on TimeoutException catch (e) {
+      VxToast.show(context, msg: "Request Timeout");
     } on Exception catch (e) {
       // TODO
 
@@ -108,14 +127,17 @@ class PostApi {
       List<dynamic> m = [];
       return m;
     }
-    if (index == 0) {
-      Navigator.pushNamed(context, "/home");
+    if (check) {
+      if (index == 0) {
+        Navigator.pushNamed(context, "/home");
+      }
     }
     return jsonReceived;
   }
 
   Future<bool> getstsangiData(BuildContext context) async {
     var data;
+    var check = false;
     var token;
     try {
       try {
@@ -130,15 +152,24 @@ class PostApi {
       m["uid"] = satsangiListData.satsangiList[satsangiListData.index].uid;
       var json = jsonEncode(m);
       print(json);
-      http.Response response = await http.post(
-          Uri.parse("https://api.dbidentity.in/api/uidbio/getbiometric"),
-          body: json,
-          headers: {
-            'Content-type': 'application/json',
-            'Authorization': 'Bearer $token',
-          });
-      data = jsonDecode(response.body);
-      print(data);
+      Map<String, String> headers = {'Content-type': 'application/json'};
+      check = await myCustomImplementation(
+          "https://api.dbidentity.in/api/uidbio/getbiometric", headers);
+      if (check) {
+        http.Response response = await http.post(
+            Uri.parse("https://api.dbidentity.in/api/uidbio/getbiometric"),
+            body: json,
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': 'Bearer $token',
+            }).timeout(const Duration(seconds: 15));
+        data = jsonDecode(response.body);
+
+        print(data);
+      }
+    } on TimeoutException catch (e) {
+      VxToast.show(context, msg: "Request Timeout");
+      return false;
     } on Exception catch (e) {
       // TODO
 
@@ -146,32 +177,36 @@ class PostApi {
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
       return false;
     }
-
-    SatsangiGetBiometricMap.data = SatsangiGetBiometric(
-      name: data["name"],
-      father_Or_Spouse_Name: data["father_Or_Spouse_Name"],
-      dob: data["dob"],
-      branch: data["branch"] ?? " ",
-      date_of_issue: data["date_of_issue"] ?? " ",
-      status: data["status"] ?? " ",
-      gender: data["gender"] ?? " ",
-      isO_FP_1: data["isO_FP_1"],
-      isO_FP_2: data["isO_FP_2"],
-      isO_FP_3: data["isO_FP_3"],
-      isO_FP_4: data["isO_FP_4"],
-      fingerPrint_1: data["fingerPrint_1"],
-      fingerPrint_2: data["fingerPrint_2"],
-      fingerPrint_3: data["fingerPrint_3"],
-      fingerPrint_4: data["fingerPrint_4"],
-      image: data["image"] ?? " ",
-      uid: data["uid"],
-    ).toMap();
-    return true;
+    if (check && data != null) {
+      SatsangiGetBiometricMap.data = SatsangiGetBiometric(
+        name: data["name"],
+        father_Or_Spouse_Name: data["father_Or_Spouse_Name"],
+        dob: data["dob"],
+        branch: data["branch"] ?? " ",
+        date_of_issue: data["date_of_issue"] ?? " ",
+        status: data["status"] ?? " ",
+        gender: data["gender"] ?? " ",
+        isO_FP_1: data["isO_FP_1"],
+        isO_FP_2: data["isO_FP_2"],
+        isO_FP_3: data["isO_FP_3"],
+        isO_FP_4: data["isO_FP_4"],
+        fingerPrint_1: data["fingerPrint_1"],
+        fingerPrint_2: data["fingerPrint_2"],
+        fingerPrint_3: data["fingerPrint_3"],
+        fingerPrint_4: data["fingerPrint_4"],
+        image: data["image"] ?? " ",
+        uid: data["uid"],
+      ).toMap();
+      print("data ${data["fingerPrint_1"]}");
+      return true;
+    }
+    return false;
   }
 
   Future<void> getChildList(BuildContext context) async {
     var jsonReceived;
     var token;
+    var check = false;
     try {
       try {
         EncryptedSharedPreferences encryptedSharedPreferences =
@@ -185,14 +220,21 @@ class PostApi {
       m["uid"] = satsangiListData.satsangiList[satsangiListData.index].uid;
       var json = jsonEncode(m);
       print(json);
-      http.Response response = await http.post(
-          Uri.parse("https://api.dbidentity.in/api/childbio/getchildren"),
-          body: json,
-          headers: {
-            'Content-type': 'application/json',
-            'Authorization': 'Bearer $token',
-          });
-      jsonReceived = jsonDecode(response.body);
+      Map<String, String> headers = {'Content-type': 'application/json'};
+      check = await myCustomImplementation(
+          "https://api.dbidentity.in/api/childbio/getchildren", headers);
+      if (check) {
+        http.Response response = await http.post(
+            Uri.parse("https://api.dbidentity.in/api/childbio/getchildren"),
+            body: json,
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': 'Bearer $token',
+            }).timeout(const Duration(seconds: 10));
+        jsonReceived = jsonDecode(response.body);
+      }
+    } on TimeoutException catch (e) {
+      VxToast.show(context, msg: "Request Timeout");
     } on Exception catch (e) {
       // TODO
 
@@ -200,7 +242,7 @@ class PostApi {
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
       return;
     }
-    if (jsonReceived != null) {
+    if (jsonReceived != null && check) {
       ChildList.childList.clear();
       ChildList.childList = List.from(jsonReceived)
           .map<ChildListData>((item) => ChildListData.fromMap(item))
@@ -212,6 +254,7 @@ class PostApi {
   Future<void> getSatsangisList(String branchid, int offset, int pageSize,
       BuildContext context, int index) async {
     var jsonReceived;
+    var check = false;
     var token;
     try {
       try {
@@ -227,32 +270,40 @@ class PostApi {
           PaginaionData(branch: branchid, Offset: offset, PageSize: pageSize)
               .toJson();
       print(jsonData);
-      http.Response response = await http.post(
-          Uri.parse("https://api.dbidentity.in/api/uid/list"),
-          body: jsonData,
-          headers: {
-            'Content-type': 'application/json',
-            'Authorization': 'Bearer $token',
-          });
-      jsonReceived = jsonDecode(response.body);
-      print(response.body);
+      Map<String, String> headers = {'Content-type': 'application/json'};
+      check = await myCustomImplementation(
+          "https://api.dbidentity.in/api/uid/list", headers);
+      if (check) {
+        http.Response response = await http.post(
+            Uri.parse("https://api.dbidentity.in/api/uid/list"),
+            body: jsonData,
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': 'Bearer $token',
+            }).timeout(const Duration(seconds: 10));
+        jsonReceived = jsonDecode(response.body);
+      }
+    } on TimeoutException catch (e) {
+      VxToast.show(context, msg: "Request Timeout");
     } on Exception catch (e) {
       FirebaseLog().logError("get satsangi list error", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
       return;
     }
-    satsangiListData.satsangiList.clear();
-    satsangiListData.satsangiList = List.from(jsonReceived)
-        .map<SatsangiData>((item) => SatsangiData.fromMap(item))
-        .toList();
-    print(satsangiListData.satsangiList[0]);
-    if (index == 1) {
-      Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-            builder: (BuildContext context) =>
-                ListSatsangis(branchId: branchid),
-          ));
+    if (check) {
+      satsangiListData.satsangiList.clear();
+      satsangiListData.satsangiList = List.from(jsonReceived)
+          .map<SatsangiData>((item) => SatsangiData.fromMap(item))
+          .toList();
+      print(satsangiListData.satsangiList[0]);
+      if (index == 1) {
+        Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (BuildContext context) =>
+                  ListSatsangis(branchId: branchid),
+            ));
+      }
     }
 
     //print(satsangiListData.satsangiList[0].bioMetric_Status);
@@ -262,6 +313,7 @@ class PostApi {
       String branchid, String name, BuildContext context) async {
     var jsonReceived;
     var token;
+    var check = false;
     try {
       try {
         EncryptedSharedPreferences encryptedSharedPreferences =
@@ -274,44 +326,68 @@ class PostApi {
 
       var jsonData = Search(branch: branchid, Name: name).toJson();
       print(jsonData);
-      http.Response response = await http.post(
-          Uri.parse("https://api.dbidentity.in/api/uid/search"),
-          body: jsonData,
-          headers: {
-            'Content-type': 'application/json',
-            'Authorization': 'Bearer $token',
-          });
-      jsonReceived = jsonDecode(response.body);
-      print(response.body);
+      Map<String, String> headers = {'Content-type': 'application/json'};
+      check = await myCustomImplementation(
+          "https://api.dbidentity.in/api/uid/search", headers);
+      if (check) {
+        http.Response response = await http.post(
+            Uri.parse("https://api.dbidentity.in/api/uid/search"),
+            body: jsonData,
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': 'Bearer $token',
+            }).timeout(const Duration(seconds: 10));
+        jsonReceived = jsonDecode(response.body);
+        print(response.body);
+      }
+    } on TimeoutException catch (e) {
+      VxToast.show(context, msg: "Request Timeout");
     } on Exception catch (e) {
       FirebaseLog().logError("search satsangi error", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
       return;
     }
-    satsangiListData.satsangiList.clear();
-    satsangiListData.satsangiList = List.from(jsonReceived)
-        .map<SatsangiData>((item) => SatsangiData.fromMap(item))
-        .toList();
+    if (check) {
+      satsangiListData.satsangiList.clear();
+      satsangiListData.satsangiList = List.from(jsonReceived)
+          .map<SatsangiData>((item) => SatsangiData.fromMap(item))
+          .toList();
+    }
   }
 
-  Future<bool> checkFace(String image) async {
+  Future<bool> checkFace(String image, BuildContext context) async {
     Map<String, String> m = new Map();
     m["img"] = image;
+    var data;
+    var check = false;
     print(jsonEncode(m));
-    http.Response response = await http.post(
-        Uri.parse("https://api.dbidentity.in/?match=v"),
-        body: jsonEncode(m),
-        headers: {
-          'Content-type': 'application/json',
-        });
-    var data = jsonDecode(response.body);
-
-    return data["result"];
+    try {
+      Map<String, String> headers = {'Content-type': 'application/json'};
+      check = await myCustomImplementation(
+          "https://api.dbidentity.in/?match=v", headers);
+      if (check) {
+        http.Response response = await http.post(
+            Uri.parse("https://api.dbidentity.in/?match=v"),
+            body: jsonEncode(m),
+            headers: {
+              'Content-type': 'application/json',
+            }).timeout(const Duration(seconds: 10));
+        data = jsonDecode(response.body);
+      }
+    } on TimeoutException catch (e) {
+      // TODO
+      return false;
+    }
+    if (check)
+      return data["result"];
+    else
+      return false;
   }
 
   Future<bool> getChildInfo(BuildContext context) async {
     var data;
     var token;
+    var check = false;
     try {
       try {
         EncryptedSharedPreferences encryptedSharedPreferences =
@@ -324,16 +400,23 @@ class PostApi {
       var jsonData =
           jsonEncode({"uid": ChildList.childList[ChildList.index].uid});
       print(jsonData);
-      http.Response response = await http.post(
-          Uri.parse("https://api.dbidentity.in/api/childbio/getbiometric"),
-          body: jsonData,
-          headers: {
-            'Content-type': 'application/json',
-            'Authorization': 'Bearer $token',
-          });
-      data = jsonDecode(response.body);
-      print(response.body);
-      print(data["id"]);
+      Map<String, String> headers = {'Content-type': 'application/json'};
+      check = await myCustomImplementation(
+          "https://api.dbidentity.in/api/childbio/getbiometric", headers);
+      if (check) {
+        http.Response response = await http.post(
+            Uri.parse("https://api.dbidentity.in/api/childbio/getbiometric"),
+            body: jsonData,
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': 'Bearer $token',
+            }).timeout(const Duration(seconds: 10));
+        data = jsonDecode(response.body);
+        print(response.body);
+        print(data["id"]);
+      }
+    } on TimeoutException catch (e) {
+      VxToast.show(context, msg: "Request Timeout");
     } on Exception catch (e) {
       // TODO
       //Map<String, dynamic> errLog = {"get child info": e};
@@ -341,35 +424,38 @@ class PostApi {
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
       return false;
     }
-    ChildBiometricData.data = ChildBiometricView(
-      id: data["id"],
-      name: data["name"],
-      father_name: data["father_name"],
-      image: data["image"],
-      uid: data["uid"],
-      gender: data["gender"],
-      dob: data["dob"],
-      parent_uid_one: data["parent_uid_one"],
-      parent_uid_two: data["parent_uid_two"],
-      branch: data["branch"],
-      first_created: data["first_created"],
-      last_updated: data["last_updated"],
-      isO_FP_1: data["isO_FP_1"],
-      isO_FP_2: data["isO_FP_2"],
-      isO_FP_3: data["isO_FP_3"],
-      isO_FP_4: data["isO_FP_4"],
-      fingerPrint_1: data["fingerPrint_1"],
-      fingerPrint_2: data["fingerPrint_2"],
-      fingerPrint_3: data["fingerPrint_3"],
-      fingerPrint_4: data["fingerPrint_4"],
-    ).toMap();
-    //Navigator.pop(context);
-    if (ChildBiometricData.data["id"] != 0 ||
-        ChildBiometricData.data.isNotEmpty) {
-      return true;
-    } else {
+    if (check) {
+      ChildBiometricData.data = ChildBiometricView(
+        id: data["id"],
+        name: data["name"],
+        father_name: data["father_name"],
+        image: data["image"],
+        uid: data["uid"],
+        gender: data["gender"],
+        dob: data["dob"],
+        parent_uid_one: data["parent_uid_one"],
+        parent_uid_two: data["parent_uid_two"],
+        branch: data["branch"],
+        first_created: data["first_created"],
+        last_updated: data["last_updated"],
+        isO_FP_1: data["isO_FP_1"],
+        isO_FP_2: data["isO_FP_2"],
+        isO_FP_3: data["isO_FP_3"],
+        isO_FP_4: data["isO_FP_4"],
+        fingerPrint_1: data["fingerPrint_1"],
+        fingerPrint_2: data["fingerPrint_2"],
+        fingerPrint_3: data["fingerPrint_3"],
+        fingerPrint_4: data["fingerPrint_4"],
+      ).toMap();
+      //Navigator.pop(context);
+      if (ChildBiometricData.data["id"] != 0 ||
+          ChildBiometricData.data.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    } else
       return false;
-    }
   }
 
   void updateSatsangiBiometric(
@@ -398,6 +484,7 @@ class PostApi {
               faceimage: faceImage)
           .toJson();
       var token;
+      var check = false;
       try {
         EncryptedSharedPreferences encryptedSharedPreferences =
             EncryptedSharedPreferences();
@@ -406,16 +493,22 @@ class PostApi {
         // TODO
       }
       // var branch = await encryptedSharedPreferences.getString("branch");
-
-      http.Response response = await http.post(
-          Uri.parse("https://api.dbidentity.in/api/uidbio/Register"),
-          body: jsonData,
-          headers: {
-            'Content-type': 'application/json',
-            'Authorization': 'Bearer $token',
-          });
-      // var jsonReceived = jsonDecode(response.body);
-      print("${response.body}");
+      Map<String, String> headers = {'Content-type': 'application/json'};
+      check = await myCustomImplementation(
+          "https://api.dbidentity.in/api/uidbio/Register", headers);
+      if (check) {
+        http.Response response = await http.post(
+            Uri.parse("https://api.dbidentity.in/api/uidbio/Register"),
+            body: jsonData,
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': 'Bearer $token',
+            }).timeout(const Duration(seconds: 10));
+        // var jsonReceived = jsonDecode(response.body);
+        print("${response.body}");
+      }
+    } on TimeoutException catch (e) {
+      VxToast.show(context, msg: "Request Timeout");
     } on Exception catch (e) {
       // TODO\
       //Map<String, dynamic> errLog = {: e};
@@ -445,7 +538,7 @@ class PostApi {
       BuildContext context) async {
     var token;
     var branch;
-
+    var check = false;
     try {
       try {
         EncryptedSharedPreferences encryptedSharedPreferences =
@@ -477,16 +570,22 @@ class PostApi {
               FaceImage: faceimage)
           .toJson();
       print(json);
-
-      http.Response response = await http.post(
-          Uri.parse("https://api.dbidentity.in/api/childbio/Register"),
-          body: json,
-          headers: {
-            'Content-type': 'application/json',
-            'Authorization': 'Bearer $token',
-          });
-      // var jsonReceived = jsonDecode(response.body);
-      print("${response.body}");
+      Map<String, String> headers = {'Content-type': 'application/json'};
+      check = await myCustomImplementation(
+          "https://api.dbidentity.in/api/childbio/Register", headers);
+      if (check) {
+        http.Response response = await http.post(
+            Uri.parse("https://api.dbidentity.in/api/childbio/Register"),
+            body: json,
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': 'Bearer $token',
+            }).timeout(const Duration(seconds: 10));
+        // var jsonReceived = jsonDecode(response.body);
+        print("${response.body}");
+      }
+    } on TimeoutException catch (e) {
+      VxToast.show(context, msg: "Request Timeout");
     } on Exception catch (e) {
       // TODO
       // Map<String, dynamic> errLog = {"update child biometric": e};
@@ -518,4 +617,26 @@ class PostApi {
   //
   // }
 
+  Future<bool> myCustomImplementation(
+    String url,
+    Map<String, String> headers,
+  ) async {
+    print("checking");
+    try {
+      final secure = await HttpCertificatePinning.check(
+          serverURL: url,
+          headerHttp: headers,
+          sha: SHA.SHA256,
+          allowedSHAFingerprints: Keys().allowedSHAFingerprints,
+          timeout: 50);
+      print("final $secure");
+      if (secure.contains("CONNECTION_SECURE")) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }
