@@ -197,7 +197,7 @@ class PostApi {
         image: data["image"] ?? " ",
         uid: data["uid"],
       ).toMap();
-      print("data ${data["fingerPrint_1"]}");
+      print(data["fingerPrint_1"]);
       return true;
     }
     return false;

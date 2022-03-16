@@ -78,10 +78,10 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
       loadIso(SatsangiGetBiometricMap.data["isO_FP_2"], 2);
       loadIso(SatsangiGetBiometricMap.data["isO_FP_3"], 3);
       loadIso(SatsangiGetBiometricMap.data["isO_FP_4"], 4);
-      fingerData1 = base64Decode(ChildBiometricData.data["fingerPrint_1"]);
-      fingerData2 = base64Decode(ChildBiometricData.data["fingerPrint_2"]);
-      fingerData3 = base64Decode(ChildBiometricData.data["fingerPrint_3"]);
-      fingerData4 = base64Decode(ChildBiometricData.data["fingerPrint_4"]);
+      fingerData1 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_1"]);
+      fingerData2 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_2"]);
+      fingerData3 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_3"]);
+      fingerData4 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_4"]);
       imageFile = base64Decode(SatsangiGetBiometricMap.data["image"]);
 
       try {
