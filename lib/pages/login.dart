@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
             50.heightBox,
             TextField(
               controller: username,
-              maxLength: 15,
+              maxLength: 20,
               inputFormatters: [
                 FilteringTextInputFormatter.deny(new RegExp(r"\s\b|\b\s"))
               ],
@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                     controller: password,
                     obscureText: obscure,
-                    maxLength: 15,
+                    maxLength: 20,
                     decoration: InputDecoration(
                         label: Text("Password"),
                         labelStyle: TextStyle(color: Colors.white),

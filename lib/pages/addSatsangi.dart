@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
 import 'package:dayalbaghidregistration/data/satsangiData.dart';
+import 'package:dayalbaghidregistration/pages/addChild.dart';
 import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ Uint8List fingerData4 = Uint8List(0);
 Uint8List fingerData5 = Uint8List(0);
 Uint8List fingerData6 = Uint8List(0);
 int code = 0;
+bool faceLoading = false;
 //Uint8List testImage = Uint8List(0);
 
 class AddSatsangi extends StatefulWidget {
@@ -61,6 +63,7 @@ class _AddSatsangiState extends State<AddSatsangi>
   //= File("assets/images/userDummyPhoto.png");
   @override
   void initState() {
+    faceLoading = false;
     uidController =
         TextEditingController(text: satsangiListData.satsangiList[index].uid);
 
@@ -89,6 +92,7 @@ class _AddSatsangiState extends State<AddSatsangi>
     // TODO: implement initState
     try {
       final ImagePicker _picker = ImagePicker();
+      Navigator.pop(context);
 
       // Capture a photo
       var image = await _picker.getImage(source: ImageSource.camera);
@@ -99,8 +103,16 @@ class _AddSatsangiState extends State<AddSatsangi>
       // showDialog(
       //     context: context,
       //     builder: (BuildContext context) => _buildPopUpWait(context));
+
+      setState(() {
+        faceLoading = true;
+        VxToast.show(context, msg: "please wait unitl we process the image");
+      });
       bool faceCorrect =
           await PostApi().checkFace("data:image/jpeg;base64,$faceImage");
+      setState(() {
+        faceLoading = false;
+      });
       //  faceapi not working
       print(faceCorrect);
       if (!faceCorrect) {
@@ -109,7 +121,7 @@ class _AddSatsangiState extends State<AddSatsangi>
       if (image != null && faceCorrect) {
         imageFile = File(image.path);
         photoTaken = true;
-        Navigator.pop(context);
+
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupImage(context));
@@ -388,372 +400,384 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: "Registration".text.make(),
-        actions: [
-          if (fingerScanned >= 4)
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.black,
-              ),
-              onPressed: () {
-                //VxToast.show(context, msg: "Details Updated");
-                print(iso);
-                print(fingerprints);
-                if (fingerprints.length == 4 &&
-                    iso.length == 4 &&
-                    faceImage != "") {
-                  updateData();
-                  VxToast.show(context, msg: "details updated");
-                } else {
-                  VxToast.show(context,
-                      msg: "error updating (try again after resetting data)");
-                }
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Done',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15),
-                    ),
-                    5.widthBox,
-                    Icon(Icons.forward, color: Colors.green),
-                  ]),
-            ).p(5),
-        ],
-      ),
-      // floatingActionButton: FloatingActionBubble(
-      //   items: <Bubble>[
-      //     Bubble(
-      //       title: "Add Image",
-      //       iconColor: Colors.black,
-      //       bubbleColor: Colors.orange,
-      //       icon: Icons.add_photo_alternate,
-      //       titleStyle: TextStyle(fontSize: 16, color: Colors.black),
-      //       onPress: () {
-      //         initialiseCamera();
-      //       },
-      //     ),
-      //     Bubble(
-      //       title: "Add fingerprint",
-      //       iconColor: Colors.black,
-      //       bubbleColor: Colors.orange,
-      //       icon: Icons.fingerprint,
-      //       titleStyle: TextStyle(fontSize: 16, color: Colors.black),
-      //       onPress: () {
-      //         showDialog(
-      //             context: context,
-      //             builder: (BuildContext context) =>
-      //                 _buildPopupShowFingers(context));
-      //       },
-      //     ),
-      //   ],
-      //   animation: _animation,
-
-      //   // On pressed change animation state
-      //   onPress: () => _animationController.isCompleted
-      //       ? _animationController.reverse()
-      //       : _animationController.forward(),
-
-      //   // Floating Action button Icon color
-      //   iconColor: Colors.black,
-
-      //   // Flaoting Action button Icon
-      //   iconData: Icons.add,
-      //   backGroundColor: Colors.orange,
-      // ),
-      backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: Column(children: [
-          20.heightBox,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
+    return WillPopScope(
+      onWillPop: () async {
+        if (faceLoading)
+          return false;
+        else
+          return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: "Registration".text.make(),
+          actions: [
+            if (fingerScanned >= 4)
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   elevation: 5,
-                  primary: Colors.orange,
+                  primary: Colors.black,
                 ),
                 onPressed: () {
                   //VxToast.show(context, msg: "Details Updated");
-                  resetData();
+                  print(iso);
+                  print(fingerprints);
+                  if (fingerprints.length == 4 &&
+                      iso.length == 4 &&
+                      faceImage != "" &&
+                      !faceLoading) {
+                    updateData();
+                    VxToast.show(context, msg: "details updated");
+                  } else {
+                    VxToast.show(context,
+                        msg: "error updating (try again after resetting data)");
+                  }
                 },
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        'Reset all info',
+                      Text(
+                        'Done',
                         style: TextStyle(
-                            color: Colors.black,
+                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 15),
                       ),
                       5.widthBox,
-                      Icon(Icons.restore, color: Colors.green),
+                      Icon(Icons.forward, color: Colors.green),
                     ]),
               ).p(5),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  primary: Colors.orange,
-                ),
-                onPressed: () {
-                  //VxToast.show(context, msg: "Details Updated");
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          _buildPopupImage(context));
-                },
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'Update Info',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15),
-                      ),
-                      5.widthBox,
-                      Icon(Icons.update, color: Colors.green),
-                    ]),
-              ).p(5),
-            ],
-          ),
-          10.heightBox,
-          if (imageFile != null)
-            Card(
-                color: Colors.orange.shade200,
-                child: Column(children: [
-                  "Face Image".text.black.make(),
-                  5.heightBox,
-                  Image.file(
-                    imageFile!,
-                    width: 200,
-                    height: 200,
-                    fit: BoxFit.contain,
-                  ).pOnly(bottom: 10),
-                ])),
-          if (imageFile == null)
-            InkWell(
-              onTap: () {
-                initialiseCamera();
-              },
-              child: CircleAvatar(
-                radius: 100,
-                child: Image.asset("assets/addPhoto.png"),
-              ),
+          ],
+        ),
+        // floatingActionButton: FloatingActionBubble(
+        //   items: <Bubble>[
+        //     Bubble(
+        //       title: "Add Image",
+        //       iconColor: Colors.black,
+        //       bubbleColor: Colors.orange,
+        //       icon: Icons.add_photo_alternate,
+        //       titleStyle: TextStyle(fontSize: 16, color: Colors.black),
+        //       onPress: () {
+        //         initialiseCamera();
+        //       },
+        //     ),
+        //     Bubble(
+        //       title: "Add fingerprint",
+        //       iconColor: Colors.black,
+        //       bubbleColor: Colors.orange,
+        //       icon: Icons.fingerprint,
+        //       titleStyle: TextStyle(fontSize: 16, color: Colors.black),
+        //       onPress: () {
+        //         showDialog(
+        //             context: context,
+        //             builder: (BuildContext context) =>
+        //                 _buildPopupShowFingers(context));
+        //       },
+        //     ),
+        //   ],
+        //   animation: _animation,
+
+        //   // On pressed change animation state
+        //   onPress: () => _animationController.isCompleted
+        //       ? _animationController.reverse()
+        //       : _animationController.forward(),
+
+        //   // Floating Action button Icon color
+        //   iconColor: Colors.black,
+
+        //   // Flaoting Action button Icon
+        //   iconData: Icons.add,
+        //   backGroundColor: Colors.orange,
+        // ),
+        backgroundColor: Colors.black,
+        body: SingleChildScrollView(
+          child: Column(children: [
+            20.heightBox,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 5,
+                    primary: Colors.orange,
+                  ),
+                  onPressed: () {
+                    //VxToast.show(context, msg: "Details Updated");
+                    if (!faceLoading) resetData();
+                  },
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Reset all info',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
+                        ),
+                        5.widthBox,
+                        Icon(Icons.restore, color: Colors.green),
+                      ]),
+                ).p(5),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 5,
+                    primary: Colors.orange,
+                  ),
+                  onPressed: () {
+                    //VxToast.show(context, msg: "Details Updated");
+                    if (!faceLoading) {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              _buildPopupImage(context));
+                    }
+                  },
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Update Info',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
+                        ),
+                        5.widthBox,
+                        Icon(Icons.update, color: Colors.green),
+                      ]),
+                ).p(5),
+              ],
             ),
-          5.heightBox,
-          if (finger1 || finger2) "Left hand finger prints".text.make(),
-          5.heightBox,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (finger1)
-                Card(
+            10.heightBox,
+            if (faceLoading) CircularProgressIndicator(),
+            if (imageFile != null)
+              Card(
                   color: Colors.orange.shade200,
-                  child: Column(
-                    children: [
-                      "left index finger".text.black.make(),
-                      5.heightBox,
-                      Image.memory(
-                        fingerData1,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.contain,
-                      ),
-                    ],
-                  ).p(5),
+                  child: Column(children: [
+                    "Face Image".text.black.make(),
+                    5.heightBox,
+                    Image.file(
+                      imageFile!,
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.contain,
+                    ).pOnly(bottom: 10),
+                  ])),
+            if (imageFile == null)
+              InkWell(
+                onTap: () {
+                  if (!faceLoading) initialiseCamera();
+                },
+                child: CircleAvatar(
+                  radius: 100,
+                  child: Image.asset("assets/addPhoto.png"),
                 ),
-              if (finger3)
-                Card(
-                  color: Colors.orange.shade200,
-                  child: Column(
-                    children: [
-                      "left middle finger".text.black.make(),
-                      5.heightBox,
-                      Image.memory(
-                        fingerData3,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.contain,
-                      ),
-                    ],
-                  ).p(5),
-                ),
-            ],
-          ),
-          5.heightBox,
-          if (finger3 || finger4) "Right hand finger prints".text.make(),
-          5.heightBox,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (finger2)
-                Card(
-                  color: Colors.orange.shade200,
-                  child: Column(
-                    children: [
-                      "right index finger".text.black.make(),
-                      5.heightBox,
-                      Image.memory(
-                        fingerData2,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.contain,
-                      ),
-                    ],
-                  ).p(5),
-                ),
-              if (finger4)
-                Card(
-                  color: Colors.orange.shade200,
-                  child: Column(
-                    children: [
-                      "Right middle finger".text.black.make(),
-                      5.heightBox,
-                      Image.memory(
-                        fingerData4,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.contain,
-                      ),
-                    ],
-                  ).p(5),
-                ),
-            ],
-          ),
-          if (finger5 || finger6) "Ring finger prints".text.make(),
-          5.heightBox,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (finger5)
-                Card(
-                  color: Colors.orange.shade200,
-                  child: Column(
-                    children: [
-                      "left ring finger".text.black.make(),
-                      5.heightBox,
-                      Image.memory(
-                        fingerData5,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.contain,
-                      ),
-                    ],
-                  ).p(5),
-                ),
-              if (finger6)
-                Card(
-                  color: Colors.orange.shade200,
-                  child: Column(
-                    children: [
-                      "Right ring finger".text.black.make(),
-                      5.heightBox,
-                      Image.memory(
-                        fingerData6,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.contain,
-                      ),
-                    ],
-                  ).p(5),
-                ),
-            ],
-          ),
-          20.heightBox,
-          TextField(
-            style: TextStyle(color: Colors.grey),
-            readOnly: true,
-            controller: uidController,
-            decoration: InputDecoration(
-                label: Text("UID"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
-          20.heightBox,
-          TextField(
-            style: TextStyle(color: Colors.grey),
-            readOnly: true,
-            controller: nameController,
-            decoration: InputDecoration(
-                label: Text("Name"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
-          20.heightBox,
-          TextField(
-            style: TextStyle(color: Colors.grey),
-            readOnly: true,
-            controller: fatherNameController,
-            decoration: InputDecoration(
-                label: Text("Father / Husband Name"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
-          20.heightBox,
-          TextField(
-            style: TextStyle(color: Colors.grey),
-            readOnly: true,
-            controller: dobController,
-            decoration: InputDecoration(
-                label: Text("Date Of Birth"),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Colors.blueGrey, width: 1.0),
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-          ),
-          20.heightBox,
-        ]).p(10),
+              ),
+            5.heightBox,
+            if (finger1 || finger2) "Left hand finger prints".text.make(),
+            5.heightBox,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (finger1)
+                  Card(
+                    color: Colors.orange.shade200,
+                    child: Column(
+                      children: [
+                        "left index finger".text.black.make(),
+                        5.heightBox,
+                        Image.memory(
+                          fingerData1,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.contain,
+                        ),
+                      ],
+                    ).p(5),
+                  ),
+                if (finger3)
+                  Card(
+                    color: Colors.orange.shade200,
+                    child: Column(
+                      children: [
+                        "left middle finger".text.black.make(),
+                        5.heightBox,
+                        Image.memory(
+                          fingerData3,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.contain,
+                        ),
+                      ],
+                    ).p(5),
+                  ),
+              ],
+            ),
+            5.heightBox,
+            if (finger3 || finger4) "Right hand finger prints".text.make(),
+            5.heightBox,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (finger2)
+                  Card(
+                    color: Colors.orange.shade200,
+                    child: Column(
+                      children: [
+                        "right index finger".text.black.make(),
+                        5.heightBox,
+                        Image.memory(
+                          fingerData2,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.contain,
+                        ),
+                      ],
+                    ).p(5),
+                  ),
+                if (finger4)
+                  Card(
+                    color: Colors.orange.shade200,
+                    child: Column(
+                      children: [
+                        "Right middle finger".text.black.make(),
+                        5.heightBox,
+                        Image.memory(
+                          fingerData4,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.contain,
+                        ),
+                      ],
+                    ).p(5),
+                  ),
+              ],
+            ),
+            if (finger5 || finger6) "Ring finger prints".text.make(),
+            5.heightBox,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (finger5)
+                  Card(
+                    color: Colors.orange.shade200,
+                    child: Column(
+                      children: [
+                        "left ring finger".text.black.make(),
+                        5.heightBox,
+                        Image.memory(
+                          fingerData5,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.contain,
+                        ),
+                      ],
+                    ).p(5),
+                  ),
+                if (finger6)
+                  Card(
+                    color: Colors.orange.shade200,
+                    child: Column(
+                      children: [
+                        "Right ring finger".text.black.make(),
+                        5.heightBox,
+                        Image.memory(
+                          fingerData6,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.contain,
+                        ),
+                      ],
+                    ).p(5),
+                  ),
+              ],
+            ),
+            20.heightBox,
+            TextField(
+              style: TextStyle(color: Colors.grey),
+              readOnly: true,
+              controller: uidController,
+              decoration: InputDecoration(
+                  label: Text("UID"),
+                  labelStyle: TextStyle(color: Colors.white),
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  )),
+            ),
+            20.heightBox,
+            TextField(
+              style: TextStyle(color: Colors.grey),
+              readOnly: true,
+              controller: nameController,
+              decoration: InputDecoration(
+                  label: Text("Name"),
+                  labelStyle: TextStyle(color: Colors.white),
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  )),
+            ),
+            20.heightBox,
+            TextField(
+              style: TextStyle(color: Colors.grey),
+              readOnly: true,
+              controller: fatherNameController,
+              decoration: InputDecoration(
+                  label: Text("Father / Husband Name"),
+                  labelStyle: TextStyle(color: Colors.white),
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  )),
+            ),
+            20.heightBox,
+            TextField(
+              style: TextStyle(color: Colors.grey),
+              readOnly: true,
+              controller: dobController,
+              decoration: InputDecoration(
+                  label: Text("Date Of Birth"),
+                  labelStyle: TextStyle(color: Colors.white),
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  )),
+            ),
+            20.heightBox,
+          ]).p(10),
+        ),
       ),
     );
   }
@@ -1429,6 +1453,30 @@ class _AddSatsangiState extends State<AddSatsangi>
                 primary: Colors.orange,
               ),
               onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFinger6(context));
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'finger not available',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ]),
+            ),
+            5.heightBox,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
                 print(fingerScanned);
                 if (finger5 && fingerScanned < 4) {
                   Navigator.pop(context);
@@ -1540,10 +1588,34 @@ class _AddSatsangiState extends State<AddSatsangi>
                 primary: Colors.orange,
               ),
               onPressed: () {
+                Navigator.pop(context);
+                VxToast.show(context, msg: "finger scans are neccessary");
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'finger not available',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ]),
+            ),
+            5.heightBox,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
                 if (finger6 && fingerScanned < 4) {
                   Navigator.pop(context);
                 } else if (fingerScanned >= 4) {
                   Navigator.pop(context);
+                } else if (!finger6 && fingerScanned < 4) {
+                  Navigator.pop(context);
+                  VxToast.show(context, msg: "finger scans are neccessary");
                 }
               },
               child: Row(
@@ -1688,85 +1760,93 @@ class _AddSatsangiState extends State<AddSatsangi>
   }
 
   Widget _buildPopupImage(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: Colors.blueGrey,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("Please take a photo"),
-      titleTextStyle: TextStyle(fontSize: 18),
-      actions: <Widget>[
-        if (imageFile != null)
-          Center(
-            child: Container(
-              height: 300,
-              width: 250,
-              child: Card(
-                  color: Colors.orange.shade200,
-                  child: Column(children: [
-                    "Face Image".text.black.make(),
-                    5.heightBox,
-                    Image.file(
-                      imageFile!,
-                      width: 250,
-                      height: 250,
-                      fit: BoxFit.contain,
-                    ).pOnly(bottom: 10),
-                  ])),
-            ),
-          ),
-        10.heightBox,
-        Center(
-          child: Column(
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  primary: Colors.orange,
-                ),
-                onPressed: () {
-                  initialiseCamera();
-                },
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: photoTaken
-                      ? Text(
-                          'Retake photo',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
-                        )
-                      : Text(
-                          "Capture",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
-                        ),
-                ),
+    return WillPopScope(
+      onWillPop: () async {
+        if (faceLoading)
+          return false;
+        else
+          return true;
+      },
+      child: AlertDialog(
+        backgroundColor: Colors.blueGrey,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        title: Text("Please take a photo"),
+        titleTextStyle: TextStyle(fontSize: 18),
+        actions: <Widget>[
+          if (imageFile != null)
+            Center(
+              child: Container(
+                height: 300,
+                width: 250,
+                child: Card(
+                    color: Colors.orange.shade200,
+                    child: Column(children: [
+                      "Face Image".text.black.make(),
+                      5.heightBox,
+                      Image.file(
+                        imageFile!,
+                        width: 250,
+                        height: 250,
+                        fit: BoxFit.contain,
+                      ).pOnly(bottom: 10),
+                    ])),
               ),
-              10.heightBox,
-              if (photoTaken)
+            ),
+          10.heightBox,
+          Center(
+            child: Column(
+              children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     elevation: 5,
                     primary: Colors.orange,
                   ),
                   onPressed: () {
-                    Navigator.pop(context);
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _buildPopupFinger1(context));
+                    initialiseCamera();
                   },
                   child: Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      "Next",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
+                    child: (photoTaken && !faceLoading)
+                        ? Text(
+                            'Retake photo',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15),
+                          )
+                        : Text(
+                            "Capture",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15),
+                          ),
                   ),
                 ),
-            ],
+                10.heightBox,
+                if (photoTaken && !faceLoading)
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 5,
+                      primary: Colors.orange,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              _buildPopupFinger1(context));
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        "Next",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
