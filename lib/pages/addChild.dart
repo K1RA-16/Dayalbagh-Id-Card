@@ -800,9 +800,11 @@ class _AddChildrenState extends State<ManageChildren>
               ),
               mode: DateTimeFieldPickerMode.date,
               autovalidateMode: AutovalidateMode.always,
-              validator: (e) => ((e?.day ?? 30) > day ||
-                      (e?.month ?? 12) > month ||
-                      (e?.year ?? 2022) > year)
+              validator: (e) => ((e?.day ?? 30) > day &&
+                          (e?.month ?? 12) > month &&
+                          (e?.year ?? 2022) > year ||
+                      ((e?.year ?? 2022) > year) ||
+                      ((e?.month ?? 12) > month && (e?.year ?? 2022) > year))
                   ? 'Please select a day before today'
                   : null,
               onDateSelected: (DateTime value) {
@@ -1011,8 +1013,8 @@ class _AddChildrenState extends State<ManageChildren>
       actions: <Widget>[
         Center(
           child: Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: Image.asset(
               "assets/LI.png",
               fit: BoxFit.contain,
@@ -1139,8 +1141,8 @@ class _AddChildrenState extends State<ManageChildren>
       actions: <Widget>[
         Center(
           child: Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: Image.asset(
               "assets/RI.png",
               fit: BoxFit.contain,
@@ -1267,8 +1269,8 @@ class _AddChildrenState extends State<ManageChildren>
       actions: <Widget>[
         Center(
           child: Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: Image.asset(
               "assets/LM.png",
               fit: BoxFit.contain,
@@ -1395,8 +1397,8 @@ class _AddChildrenState extends State<ManageChildren>
       actions: <Widget>[
         Center(
           child: Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: Image.asset(
               "assets/RM.png",
               fit: BoxFit.contain,
@@ -1525,8 +1527,8 @@ class _AddChildrenState extends State<ManageChildren>
       actions: <Widget>[
         Center(
           child: Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: Image.asset(
               "assets/LR.png",
               fit: BoxFit.contain,
@@ -1657,8 +1659,8 @@ class _AddChildrenState extends State<ManageChildren>
       actions: <Widget>[
         Center(
           child: Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: Image.asset(
               "assets/RR.png",
               fit: BoxFit.contain,

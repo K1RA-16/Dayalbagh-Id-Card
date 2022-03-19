@@ -910,8 +910,8 @@ class _AddSatsangiState extends State<AddSatsangi>
       actions: <Widget>[
         Center(
           child: Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: Image.asset(
               "assets/LI.png",
               fit: BoxFit.contain,
@@ -1039,8 +1039,8 @@ class _AddSatsangiState extends State<AddSatsangi>
       actions: <Widget>[
         Center(
           child: Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: Image.asset(
               "assets/RI.png",
               fit: BoxFit.contain,
@@ -1167,8 +1167,8 @@ class _AddSatsangiState extends State<AddSatsangi>
       actions: <Widget>[
         Center(
           child: Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: Image.asset(
               "assets/LM.png",
               fit: BoxFit.contain,
@@ -1295,8 +1295,8 @@ class _AddSatsangiState extends State<AddSatsangi>
       actions: <Widget>[
         Center(
           child: Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: Image.asset(
               "assets/RM.png",
               fit: BoxFit.contain,
@@ -1426,8 +1426,8 @@ class _AddSatsangiState extends State<AddSatsangi>
       actions: <Widget>[
         Center(
           child: Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: Image.asset(
               "assets/LR.png",
               fit: BoxFit.contain,
@@ -1558,8 +1558,8 @@ class _AddSatsangiState extends State<AddSatsangi>
       actions: <Widget>[
         Center(
           child: Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: Image.asset(
               "assets/RR.png",
               fit: BoxFit.contain,

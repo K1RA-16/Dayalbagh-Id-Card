@@ -22,13 +22,25 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool loading = false;
   @override
   void initState() {
     // TODO: implement initState
-
+    loading = false;
     getPhoneData();
     getBranches();
     super.initState();
+  }
+
+  list() async {
+    print(selectedLocation);
+    setState(() {
+      loading = true;
+    });
+    await PostApi().getSatsangisList(selectedLocation, 0, 50, context, 1);
+    setState(() {
+      loading = false;
+    });
   }
 
   getPhoneData() async {
@@ -123,12 +135,8 @@ class _HomePageState extends State<HomePage> {
                 const HeightBox(20),
                 InkWell(
                   onTap: () => {
-                    if (selectedLocation != "select branch")
-                      {
-                        print(selectedLocation),
-                        PostApi().getSatsangisList(
-                            selectedLocation, 0, 50, context, 1),
-                      }
+                    if (selectedLocation != "select branch" && !loading)
+                      {list()}
                     else
                       {VxToast.show(context, msg: "please select a branch")}
                   },

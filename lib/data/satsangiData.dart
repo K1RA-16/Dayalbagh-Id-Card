@@ -81,7 +81,7 @@ class SatsangiData {
       card_Print_Status: map['card_Print_Status'] as bool,
       region: map['region'] as String,
       status: map['status'] ?? "J" as String,
-      father_Or_Spouse_Name: map['father_Or_Spouse_Name'] as String,
+      father_Or_Spouse_Name: map['father_Or_Spouse_Name'] ?? "" as String,
       bioMetric_Status: map['bioMetric_Status'] as bool,
       branch: map['branch'] as String,
       title: map['title'] as String,

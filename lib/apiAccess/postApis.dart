@@ -26,7 +26,7 @@ import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
 
 import '../data/search.dart';
 
-String version = "1.0.0.1";
+String version = "2.0.0.0";
 
 class PostApi {
   //logs in the user and saves the token to shared Pref...
