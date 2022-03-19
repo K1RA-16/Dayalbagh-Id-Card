@@ -15,6 +15,14 @@ import 'package:flutter/services.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:image_picker/image_picker.dart';
 
+Map<int, String> fingerIsoMap = {
+  1: "Left index finger",
+  2: "Right index finger",
+  3: "Left middle finger",
+  4: "Right middle finger",
+  5: "Left ring finger",
+  6: "Right ring finger"
+};
 bool dialogLoading = false;
 bool processing = false;
 Uint8List fingerData1 = Uint8List(0);
@@ -24,6 +32,7 @@ Uint8List fingerData4 = Uint8List(0);
 Uint8List fingerData5 = Uint8List(0);
 Uint8List fingerData6 = Uint8List(0);
 int code = 0;
+bool rescan = false;
 bool fingeLoading = false;
 var day;
 var month;
@@ -84,6 +93,7 @@ class _AddChildrenState extends State<ManageChildren>
   }
   @override
   void initState() {
+    rescan = false;
     dialogLoading = false;
     consentLoading = false;
     consentPhoto = false;
@@ -241,8 +251,11 @@ class _AddChildrenState extends State<ManageChildren>
           fingerScanned++;
         }
         finger1 = true;
-        iso.add(7);
-        fingerprints.add(base64.encode(fingerData1));
+        if (!rescan) {
+          iso.add(7);
+          fingerprints.add(base64.encode(fingerData1));
+        }
+        rescan = false;
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger1(context));
@@ -251,8 +264,11 @@ class _AddChildrenState extends State<ManageChildren>
           fingerScanned++;
         }
         finger2 = true;
-        iso.add(2);
-        fingerprints.add(base64.encode(fingerData2));
+        if (!rescan) {
+          iso.add(2);
+          fingerprints.add(base64.encode(fingerData2));
+        }
+        rescan = false;
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger2(context));
@@ -261,8 +277,11 @@ class _AddChildrenState extends State<ManageChildren>
           fingerScanned++;
         }
         finger3 = true;
-        iso.add(8);
-        fingerprints.add(base64.encode(fingerData3));
+        if (!rescan) {
+          iso.add(8);
+          fingerprints.add(base64.encode(fingerData3));
+        }
+        rescan = false;
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger3(context));
@@ -271,9 +290,12 @@ class _AddChildrenState extends State<ManageChildren>
           fingerScanned++;
         }
         finger4 = true;
-        iso.add(3);
+        if (!rescan) {
+          iso.add(3);
 
-        fingerprints.add(base64.encode(fingerData4));
+          fingerprints.add(base64.encode(fingerData4));
+        }
+        rescan = false;
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger4(context));
@@ -283,8 +305,11 @@ class _AddChildrenState extends State<ManageChildren>
         }
 
         finger5 = true;
-        iso.add(9);
-        fingerprints.add(base64.encode(fingerData5));
+        if (!rescan) {
+          iso.add(9);
+          fingerprints.add(base64.encode(fingerData5));
+        }
+        rescan = false;
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger5(context));
@@ -293,8 +318,11 @@ class _AddChildrenState extends State<ManageChildren>
           fingerScanned++;
         }
         finger6 = true;
-        iso.add(4);
-        fingerprints.add(base64.encode(fingerData6));
+        if (!rescan) {
+          iso.add(4);
+          fingerprints.add(base64.encode(fingerData6));
+        }
+        rescan = false;
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger6(context));
@@ -568,6 +596,7 @@ class _AddChildrenState extends State<ManageChildren>
           child: Column(children: [
             10.heightBox,
             if (faceLoading) CircularProgressIndicator(),
+            5.heightBox,
             if (imageFile != null)
               Card(
                   color: Colors.orange.shade200,
@@ -579,7 +608,7 @@ class _AddChildrenState extends State<ManageChildren>
                       width: 200,
                       height: 200,
                       fit: BoxFit.contain,
-                    ).pOnly(bottom: 10),
+                    ).p(10),
                   ])),
             if (imageFile == null)
               InkWell(
@@ -877,30 +906,31 @@ class _AddChildrenState extends State<ManageChildren>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 5,
-                    primary: Colors.orange,
-                  ),
-                  onPressed: () {
-                    //VxToast.show(context, msg: "Details Updated");
-                    if (!faceLoading && !processing) resetData();
-                  },
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'Reset all info',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15),
-                        ),
-                        5.widthBox,
-                        Icon(Icons.restore, color: Colors.green),
-                      ]),
-                ).p(5),
+                if (fingerScanned >= 4)
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 5,
+                      primary: Colors.orange,
+                    ),
+                    onPressed: () {
+                      //VxToast.show(context, msg: "Details Updated");
+                      if (!faceLoading && !processing) resetData();
+                    },
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'Reset all info',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15),
+                          ),
+                          5.widthBox,
+                          Icon(Icons.restore, color: Colors.green),
+                        ]),
+                  ).p(5),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     elevation: 5,
@@ -920,7 +950,7 @@ class _AddChildrenState extends State<ManageChildren>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text(
-                          'Update Info',
+                          'Add Biometric',
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -943,7 +973,7 @@ class _AddChildrenState extends State<ManageChildren>
       titleTextStyle: TextStyle(fontSize: 18),
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("Improper finger placement Please take the scan again"),
+      title: Text("please place the finger before starting scan").centered(),
       actions: <Widget>[
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -976,7 +1006,7 @@ class _AddChildrenState extends State<ManageChildren>
       titleTextStyle: TextStyle(fontSize: 18),
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("Improper finger placement Please take the scan again"),
+      title: Text("please place the finger before starting scan").centered(),
       actions: <Widget>[
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -1009,7 +1039,7 @@ class _AddChildrenState extends State<ManageChildren>
       backgroundColor: Colors.blueGrey,
       titleTextStyle: TextStyle(fontSize: 18),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingerScanned Fingers Scanned"),
+      title: Text("Left index finger").centered(),
       actions: <Widget>[
         Center(
           child: Container(
@@ -1046,12 +1076,21 @@ class _AddChildrenState extends State<ManageChildren>
               primary: Colors.orange,
             ),
             onPressed: () {
+              if (finger1) {
+                fingerScanned--;
+                rescan = true;
+              }
               finger1 = false;
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _buildPopupFingerprint1(context, 1));
-              startReadingFirst();
+              if (fingerScanned >= 4) {
+                VxToast.show(context,
+                    msg: "you cannot scan more than 4 fingerprints");
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFingerprint1(context, 1));
+                startReadingFirst();
+              }
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1072,30 +1111,32 @@ class _AddChildrenState extends State<ManageChildren>
           ),
         ),
         5.heightBox,
-        Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 5,
-              primary: Colors.orange,
+        if (!finger1)
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFinger2(context));
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'finger not available',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ]),
             ),
-            onPressed: () {
-              Navigator.pop(context);
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _buildPopupFinger2(context));
-            },
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'finger not available',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                ]),
           ),
-        ),
         Center(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -1137,7 +1178,7 @@ class _AddChildrenState extends State<ManageChildren>
       backgroundColor: Colors.blueGrey,
       titleTextStyle: TextStyle(fontSize: 18),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingerScanned Finger Scanned"),
+      title: Text("Right index finger").centered(),
       actions: <Widget>[
         Center(
           child: Container(
@@ -1174,12 +1215,21 @@ class _AddChildrenState extends State<ManageChildren>
               primary: Colors.orange,
             ),
             onPressed: () {
+              if (finger2) {
+                fingerScanned--;
+                rescan = true;
+              }
               finger2 = false;
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _buildPopupFingerprint1(context, 2));
-              startReadingFirst();
+              if (fingerScanned >= 4) {
+                VxToast.show(context,
+                    msg: "you cannot scan more than 4 fingerprints");
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFingerprint1(context, 2));
+                startReadingFirst();
+              }
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1200,30 +1250,32 @@ class _AddChildrenState extends State<ManageChildren>
           ),
         ),
         5.heightBox,
-        Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 5,
-              primary: Colors.orange,
+        if (!finger2)
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFinger3(context));
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'finger not available',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ]),
             ),
-            onPressed: () {
-              Navigator.pop(context);
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _buildPopupFinger3(context));
-            },
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'finger not available',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                ]),
           ),
-        ),
         Center(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -1265,7 +1317,7 @@ class _AddChildrenState extends State<ManageChildren>
       backgroundColor: Colors.blueGrey,
       titleTextStyle: TextStyle(fontSize: 18),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingerScanned Finger Scanned"),
+      title: Text("Left middle finger").centered(),
       actions: <Widget>[
         Center(
           child: Container(
@@ -1302,12 +1354,21 @@ class _AddChildrenState extends State<ManageChildren>
               primary: Colors.orange,
             ),
             onPressed: () {
+              if (finger3) {
+                fingerScanned--;
+                rescan = true;
+              }
               finger3 = false;
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _buildPopupFingerprint1(context, 3));
-              startReadingFirst();
+              if (fingerScanned >= 4) {
+                VxToast.show(context,
+                    msg: "you cannot scan more than 4 fingerprints");
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFingerprint1(context, 3));
+                startReadingFirst();
+              }
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1328,30 +1389,32 @@ class _AddChildrenState extends State<ManageChildren>
           ),
         ),
         5.heightBox,
-        Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 5,
-              primary: Colors.orange,
+        if (!finger3)
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFinger4(context));
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'finger not available',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ]),
             ),
-            onPressed: () {
-              Navigator.pop(context);
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _buildPopupFinger4(context));
-            },
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'finger not available',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                ]),
           ),
-        ),
         Center(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -1393,7 +1456,7 @@ class _AddChildrenState extends State<ManageChildren>
       backgroundColor: Colors.blueGrey,
       titleTextStyle: TextStyle(fontSize: 18),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingerScanned Finger Scanned"),
+      title: Text("Right middle finger").centered(),
       actions: <Widget>[
         Center(
           child: Container(
@@ -1430,12 +1493,21 @@ class _AddChildrenState extends State<ManageChildren>
               primary: Colors.orange,
             ),
             onPressed: () {
+              if (finger4) {
+                fingerScanned--;
+                rescan = true;
+              }
               finger4 = false;
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _buildPopupFingerprint1(context, 4));
-              startReadingFirst();
+              if (fingerScanned >= 4) {
+                VxToast.show(context,
+                    msg: "you cannot scan more than 4 fingerprints");
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFingerprint1(context, 4));
+                startReadingFirst();
+              }
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1456,30 +1528,32 @@ class _AddChildrenState extends State<ManageChildren>
           ),
         ),
         5.heightBox,
-        Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 5,
-              primary: Colors.orange,
+        if (!finger4)
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFinger5(context));
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'finger not available',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ]),
             ),
-            onPressed: () {
-              Navigator.pop(context);
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _buildPopupFinger5(context));
-            },
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'finger not available',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                ]),
           ),
-        ),
         Center(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -1522,7 +1596,7 @@ class _AddChildrenState extends State<ManageChildren>
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingerScanned Finger Scanned"),
+      title: Text("Left ring finger").centered(),
       titleTextStyle: TextStyle(fontSize: 18),
       actions: <Widget>[
         Center(
@@ -1560,12 +1634,21 @@ class _AddChildrenState extends State<ManageChildren>
               primary: Colors.orange,
             ),
             onPressed: () {
+              if (finger5) {
+                fingerScanned--;
+                rescan = true;
+              }
               finger5 = false;
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _buildPopupFingerprint1(context, 5));
-              startReadingFirst();
+              if (fingerScanned >= 4) {
+                VxToast.show(context,
+                    msg: "you cannot scan more than 4 fingerprints");
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFingerprint1(context, 5));
+                startReadingFirst();
+              }
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1586,30 +1669,32 @@ class _AddChildrenState extends State<ManageChildren>
           ),
         ),
         5.heightBox,
-        Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 5,
-              primary: Colors.orange,
+        if (!finger5)
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFinger6(context));
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'finger not available',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ]),
             ),
-            onPressed: () {
-              Navigator.pop(context);
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _buildPopupFinger6(context));
-            },
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'finger not available',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                ]),
           ),
-        ),
         Center(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -1654,7 +1739,7 @@ class _AddChildrenState extends State<ManageChildren>
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("$fingerScanned Finger Scanned"),
+      title: Text("Right ring finger").centered(),
       titleTextStyle: TextStyle(fontSize: 18),
       actions: <Widget>[
         Center(
@@ -1692,12 +1777,21 @@ class _AddChildrenState extends State<ManageChildren>
               primary: Colors.orange,
             ),
             onPressed: () {
+              if (finger6) {
+                fingerScanned--;
+                rescan = true;
+              }
               finger6 = false;
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _buildPopupFingerprint1(context, 6));
-              startReadingFirst();
+              if (fingerScanned >= 4) {
+                VxToast.show(context,
+                    msg: "you cannot scan more than 4 fingerprints");
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupFingerprint1(context, 6));
+                startReadingFirst();
+              }
             },
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1718,74 +1812,57 @@ class _AddChildrenState extends State<ManageChildren>
           ),
         ),
         5.heightBox,
-        Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 5,
-              primary: Colors.orange,
+        if (!finger6)
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                VxToast.show(context, msg: "finger scans are neccessary");
+              },
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'finger not available',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ]),
             ),
-            onPressed: () {
-              Navigator.pop(context);
-              VxToast.show(context, msg: "finger scans are neccessary");
-            },
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'finger not available',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                ]),
           ),
-        ),
-        Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 5,
-              primary: Colors.orange,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-              VxToast.show(context, msg: "finger scans are neccessary");
-            },
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'finger not available',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                ]),
-          ),
-        ),
         5.heightBox,
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            elevation: 5,
-            primary: Colors.orange,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              if (finger6 && fingerScanned < 4) {
+                Navigator.pop(context);
+              } else if (fingerScanned >= 4) {
+                Navigator.pop(context);
+              } else if (!finger6 && fingerScanned < 4) {
+                Navigator.pop(context);
+                VxToast.show(context, msg: "finger scans are neccessary");
+              }
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Next',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger6) Icon(Icons.check, color: Colors.green),
+                ]),
           ),
-          onPressed: () {
-            if (finger6 && fingerScanned < 4) {
-              Navigator.pop(context);
-            } else if (fingerScanned >= 4) {
-              Navigator.pop(context);
-            } else if (!finger6 && fingerScanned < 4) {
-              Navigator.pop(context);
-              VxToast.show(context, msg: "finger scans are neccessary");
-            }
-          },
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Next',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                ),
-                if (finger6) Icon(Icons.check, color: Colors.green),
-              ]),
         ),
         5.heightBox,
       ],
@@ -1796,22 +1873,21 @@ class _AddChildrenState extends State<ManageChildren>
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("Please retrieve to check the image"),
+      title: "Continue".text.make().centered(),
       titleTextStyle: TextStyle(fontSize: 18),
       actions: <Widget>[
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            elevation: 5,
-            primary: Colors.orange,
-          ),
-          onPressed: () {
-            getFingerprint(fingerIso, 1);
-          },
-          child: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Get First Scan',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        5.heightBox,
+        "please wait until the red light turns off".text.make(),
+        5.heightBox,
+        Center(
+          child: InkWell(
+            onTap: () {
+              getFingerprint(fingerIso, 1);
+            },
+            child: Icon(
+              Icons.arrow_circle_right,
+              size: 60,
+              color: Colors.white,
             ),
           ),
         ),
@@ -1823,22 +1899,21 @@ class _AddChildrenState extends State<ManageChildren>
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("Please retrieve to check the image"),
+      title: "Continue".text.make().centered(),
       titleTextStyle: TextStyle(fontSize: 18),
       actions: <Widget>[
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            elevation: 5,
-            primary: Colors.orange,
-          ),
-          onPressed: () {
-            getFingerprint(fingerIso, 2);
-          },
-          child: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Get Second Scan',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        5.heightBox,
+        "please wait until the red light turns off".text.make(),
+        5.heightBox,
+        Center(
+          child: InkWell(
+            onTap: () {
+              getFingerprint(fingerIso, 2);
+            },
+            child: Icon(
+              Icons.arrow_circle_right,
+              size: 60,
+              color: Colors.white,
             ),
           ),
         ),
@@ -1859,25 +1934,26 @@ class _AddChildrenState extends State<ManageChildren>
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("Please take another scan"),
       titleTextStyle: TextStyle(fontSize: 18),
       actions: [
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            elevation: 5,
-            primary: Colors.orange,
-          ),
-          onPressed: () {
-            if (!dialogLoading) {
-              Navigator.pop(context);
-              getFingerFinal(fingerIso);
-            }
-          },
-          child: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Get Match',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              if (!dialogLoading) {
+                Navigator.pop(context);
+                getFingerFinal(fingerIso);
+              }
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Show Fingerprint',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              ),
             ),
           ),
         ),
@@ -1889,9 +1965,11 @@ class _AddChildrenState extends State<ManageChildren>
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("Please take another scan"),
+      title: Text("Please take second scan of \n-> ${fingerIsoMap[fingerIso]}"),
       titleTextStyle: TextStyle(fontSize: 18),
       actions: [
+        "Remove the finger and place it again".text.make(),
+        15.heightBox,
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             elevation: 5,
@@ -1907,7 +1985,7 @@ class _AddChildrenState extends State<ManageChildren>
           child: const Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
-              'Start reading for second scan',
+              'Start scan',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
           ),
@@ -1927,7 +2005,9 @@ class _AddChildrenState extends State<ManageChildren>
       child: AlertDialog(
         backgroundColor: Colors.blueGrey,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        title: Text("Please take a photo"),
+        title: (imageFile != null)
+            ? Text("Face image").centered()
+            : Text("Please capture face image"),
         titleTextStyle: TextStyle(fontSize: 18),
         actions: <Widget>[
           if (imageFile != null)
@@ -1938,7 +2018,6 @@ class _AddChildrenState extends State<ManageChildren>
                 child: Card(
                     color: Colors.orange.shade200,
                     child: Column(children: [
-                      "Face Image".text.black.make(),
                       5.heightBox,
                       Image.file(
                         imageFile!,
@@ -2014,7 +2093,9 @@ class _AddChildrenState extends State<ManageChildren>
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("Please take a photo of the consent form"),
+      title: consentPhoto
+          ? Text("Consent Form").centered()
+          : Text("Please take a photo of the consent form"),
       titleTextStyle: TextStyle(fontSize: 18),
       actions: <Widget>[
         if (consentFile != null && consentPhoto)
@@ -2025,14 +2106,13 @@ class _AddChildrenState extends State<ManageChildren>
               child: Card(
                   color: Colors.orange.shade200,
                   child: Column(children: [
-                    "Consent".text.black.make(),
                     5.heightBox,
                     Image.file(
                       consentFile!,
                       width: 200,
                       height: 200,
                       fit: BoxFit.contain,
-                    ).pOnly(bottom: 10),
+                    ).p(10),
                   ])),
             ),
           ),

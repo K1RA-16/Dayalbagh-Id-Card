@@ -83,6 +83,15 @@ class _ListSatsangisState extends State<ListSatsangis> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         title: "Select Satsangi".text.make(),
+        actions: [
+          InkWell(
+                  onTap: () {
+                    page = 0;
+                    _getMoreData();
+                  },
+                  child: Icon(Icons.replay_rounded))
+              .p(10),
+        ],
       ),
       body: Column(
         //mainAxisAlignment: MainAxisAlignment.center,

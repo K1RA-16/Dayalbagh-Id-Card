@@ -91,6 +91,7 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: const Text(
             "Home",
             style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),

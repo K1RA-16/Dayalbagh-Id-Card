@@ -26,7 +26,8 @@ import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
 
 import '../data/search.dart';
 
-String version = "2.0.0.0";
+String version = "3.0.0.0";
+//second ver
 
 class PostApi {
   //logs in the user and saves the token to shared Pref...
@@ -535,7 +536,7 @@ class PostApi {
             headers: {
               'Content-type': 'application/json',
               'Authorization': 'Bearer $token',
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: 20));
         // var jsonReceived = jsonDecode(response.body);
         if (response.statusCode == 400) {
           VxToast.show(context, msg: "Details not updated please try again");
@@ -621,7 +622,7 @@ class PostApi {
             headers: {
               'Content-type': 'application/json',
               'Authorization': 'Bearer $token',
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: 20));
         // var jsonReceived = jsonDecode(response.body);
 
         code = response.statusCode;
