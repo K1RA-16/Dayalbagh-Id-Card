@@ -50,7 +50,7 @@ class _ListChildrenState extends State<ListChildren> {
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
-          title: "Select Satsangi".text.make(),
+          title: "Children".text.make(),
         ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
@@ -163,7 +163,7 @@ class _ListInflateState extends State<ListInflate> {
                               .text
                               .bold
                               .black
-                              .size(15)
+                              .size(10)
                               .make()
                               .pOnly(left: 10),
                           widget.data.name
@@ -171,7 +171,7 @@ class _ListInflateState extends State<ListInflate> {
                               .text
                               .black
                               .bold
-                              .size(15)
+                              .size(10)
                               .make()
                               .p(10),
                         ],
@@ -245,6 +245,9 @@ class _ListInflateState extends State<ListInflate> {
                             .then((value) => progress = false);
                       } else {
                         Navigator.pop(context);
+                        setState(() {
+                          progress = false;
+                        });
                         VxToast.show(context, msg: "child data not available");
                       }
                     }

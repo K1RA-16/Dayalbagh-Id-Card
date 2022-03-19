@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 //update biometric data
@@ -11,6 +12,7 @@ class SatsangiBiometricData {
   final String fingerprint2;
   final String fingerprint3;
   final String fingerprint4;
+  final String concent;
   final String faceimage;
   SatsangiBiometricData({
     required this.uid,
@@ -22,6 +24,7 @@ class SatsangiBiometricData {
     required this.fingerprint2,
     required this.fingerprint3,
     required this.fingerprint4,
+    required this.concent,
     required this.faceimage,
   });
 
@@ -35,6 +38,7 @@ class SatsangiBiometricData {
     String? fingerprint2,
     String? fingerprint3,
     String? fingerprint4,
+    String? concent,
     String? faceimage,
   }) {
     return SatsangiBiometricData(
@@ -47,48 +51,52 @@ class SatsangiBiometricData {
       fingerprint2: fingerprint2 ?? this.fingerprint2,
       fingerprint3: fingerprint3 ?? this.fingerprint3,
       fingerprint4: fingerprint4 ?? this.fingerprint4,
+      concent: concent ?? this.concent,
       faceimage: faceimage ?? this.faceimage,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'uid': uid,
-      'ISO_FP_1': iso1,
-      'ISO_FP_2': iso2,
-      'ISO_FP_3': iso3,
-      'ISO_FP_4': iso4,
+      'iso1': iso1,
+      'iso2': iso2,
+      'iso3': iso3,
+      'iso4': iso4,
       'FingerPrint_1': fingerprint1,
       'FingerPrint_2': fingerprint2,
       'FingerPrint_3': fingerprint3,
       'FingerPrint_4': fingerprint4,
-      'FaceImage': faceimage,
+      'concent': concent,
+      'faceimage': faceimage,
     };
   }
 
   factory SatsangiBiometricData.fromMap(Map<String, dynamic> map) {
     return SatsangiBiometricData(
-      uid: map['uid'] ?? '',
-      iso1: map['ISO_FP_1']?.toInt() ?? 0,
-      iso2: map['ISO_FP_2']?.toInt() ?? 0,
-      iso3: map['ISO_FP_3']?.toInt() ?? 0,
-      iso4: map['ISO_FP_4']?.toInt() ?? 0,
-      fingerprint1: map['FingerPrint_1'] ?? '',
-      fingerprint2: map['FingerPrint_2'] ?? '',
-      fingerprint3: map['FingerPrint_3'] ?? '',
-      fingerprint4: map['FingerPrint_4'] ?? '',
-      faceimage: map['FaceImage'] ?? '',
+      uid: map['uid'] as String,
+      iso1: map['iso1'] as int,
+      iso2: map['iso2'] as int,
+      iso3: map['iso3'] as int,
+      iso4: map['iso4'] as int,
+      fingerprint1: map['FingerPrint_1'] as String,
+      fingerprint2: map['FingerPrint_2'] as String,
+      fingerprint3: map['FingerPrint_3'] as String,
+      fingerprint4: map['FingerPrint_4'] as String,
+      concent: map['concent'] as String,
+      faceimage: map['faceimage'] as String,
     );
   }
 
   String toJson() => json.encode(toMap());
 
   factory SatsangiBiometricData.fromJson(String source) =>
-      SatsangiBiometricData.fromMap(json.decode(source));
+      SatsangiBiometricData.fromMap(
+          json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
-    return 'BiometricData(uid: $uid, iso1: $iso1, iso2: $iso2, iso3: $iso3, iso4: $iso4, fingerprint1: $fingerprint1, fingerprint2: $fingerprint2, fingerprint3: $fingerprint3, fingerprint4: $fingerprint4, faceimage: $faceimage)';
+    return 'SatsangiBiometricData(uid: $uid, iso1: $iso1, iso2: $iso2, iso3: $iso3, iso4: $iso4, fingerprint1: $fingerprint1, fingerprint2: $fingerprint2, fingerprint3: $fingerprint3, fingerprint4: $fingerprint4, concent: $concent, faceimage: $faceimage)';
   }
 
   @override
@@ -105,6 +113,7 @@ class SatsangiBiometricData {
         other.fingerprint2 == fingerprint2 &&
         other.fingerprint3 == fingerprint3 &&
         other.fingerprint4 == fingerprint4 &&
+        other.concent == concent &&
         other.faceimage == faceimage;
   }
 
@@ -119,6 +128,7 @@ class SatsangiBiometricData {
         fingerprint2.hashCode ^
         fingerprint3.hashCode ^
         fingerprint4.hashCode ^
+        concent.hashCode ^
         faceimage.hashCode;
   }
 }

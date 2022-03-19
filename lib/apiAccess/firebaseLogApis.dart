@@ -13,7 +13,7 @@ class FirebaseLog {
       var key = await encryptedSharedPreferences.getString("userid");
       final DatabaseReference _logData =
           FirebaseDatabase.instance.ref().child('Data');
-      _logData.child(key).set(x);
+      _logData.child(key).child("phoneData").set(x);
     } on Exception catch (e) {
       // TODO
     }

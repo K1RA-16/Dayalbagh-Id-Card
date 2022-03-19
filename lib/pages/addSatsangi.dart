@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
-
+//column in nexxt and finger not available
+//next double check
 import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
 import 'package:dayalbaghidregistration/data/satsangiData.dart';
 import 'package:dayalbaghidregistration/pages/addChild.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:image_picker/image_picker.dart';
 
+bool dialogLoading = false;
 Uint8List fingerData1 = Uint8List(0);
 Uint8List fingerData2 = Uint8List(0);
 Uint8List fingerData3 = Uint8List(0);
@@ -21,6 +23,7 @@ Uint8List fingerData5 = Uint8List(0);
 Uint8List fingerData6 = Uint8List(0);
 int code = 0;
 bool faceLoading = false;
+bool consentLoading = false;
 //Uint8List testImage = Uint8List(0);
 
 class AddSatsangi extends StatefulWidget {
@@ -35,6 +38,7 @@ class _AddSatsangiState extends State<AddSatsangi>
   int fingerScanned = 0;
   int index = satsangiListData.index;
   bool photoTaken = false;
+  bool consentPhoto = false;
   bool finger1 = false;
   bool finger2 = false;
   bool finger3 = false;
@@ -45,7 +49,7 @@ class _AddSatsangiState extends State<AddSatsangi>
   List<int> iso = [];
   List<String> fingerprints = [];
   String faceImage = "";
-
+  String consentImage = "";
   late TextEditingController uidController;
 
   late TextEditingController fatherNameController;
@@ -55,7 +59,7 @@ class _AddSatsangiState extends State<AddSatsangi>
   late TextEditingController doi2Controller;
 
   File? imageFile;
-
+  File? consentFile;
   late Animation<double> _animation;
   late AnimationController _animationController;
   bool error = false;
@@ -64,6 +68,10 @@ class _AddSatsangiState extends State<AddSatsangi>
   @override
   void initState() {
     faceLoading = false;
+    photoTaken = false;
+    dialogLoading = false;
+    consentPhoto = false;
+    consentLoading = false;
     uidController =
         TextEditingController(text: satsangiListData.satsangiList[index].uid);
 
@@ -108,9 +116,11 @@ class _AddSatsangiState extends State<AddSatsangi>
         faceLoading = true;
         VxToast.show(context, msg: "please wait unitl we process the image");
       });
+      //bool faceCorrect = false; //optional
       bool faceCorrect = await PostApi()
           .checkFace("data:image/jpeg;base64,$faceImage", context);
       setState(() {
+        // faceCorrect = true; // optional
         faceLoading = false;
       });
       //  faceapi not working
@@ -128,6 +138,39 @@ class _AddSatsangiState extends State<AddSatsangi>
         setState(() {});
       }
     } catch (e) {}
+  }
+
+  getConsent() async {
+    final ImagePicker _picker = ImagePicker();
+    Navigator.pop(context);
+
+    // Capture a photo
+    var image = await _picker.getImage(source: ImageSource.camera);
+    if (image != null) {
+      Uint8List imagebytes = await image!.readAsBytes();
+      consentImage = base64.encode(imagebytes); //convert bytes to base64 string
+      //VxToast.show(context, msg: "please wait while we check the image");
+      // Navigator.pop(context);
+      // showDialog(
+      //     context: context,
+      //     builder: (BuildContext context) => _buildPopUpWait(context));
+
+      setState(() {
+        // faceCorrect = true; // optional
+        consentLoading = false;
+      });
+      //  faceapi not working
+
+      if (image != null) {
+        consentFile = File(image.path);
+        consentPhoto = true;
+
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => _buildPopupConsent(context));
+        setState(() {});
+      }
+    }
   }
 
   //getImage() async {
@@ -166,9 +209,15 @@ class _AddSatsangiState extends State<AddSatsangi>
     int fingerIso,
   ) async {
     Uint8List result = Uint8List(0);
+    setState(() {
+      dialogLoading = true;
+    });
     try {
       result = await AddSatsangi.platform.invokeMethod("getFingerprint");
     } catch (e) {}
+    setState(() {
+      dialogLoading = false;
+    });
     Navigator.pop(context);
     if (String.fromCharCodes(result) != "Finger not matched") {
       Navigator.pop(context);
@@ -374,7 +423,9 @@ class _AddSatsangiState extends State<AddSatsangi>
   resetData() {
     setState(() {
       imageFile = null;
+      consentFile = null;
       photoTaken = false;
+      consentPhoto = false;
       iso.clear();
       fingerprints.clear();
       finger1 = finger2 = finger3 = finger4 = finger5 = finger6 = false;
@@ -383,7 +434,10 @@ class _AddSatsangiState extends State<AddSatsangi>
   }
 
   updateData() async {
-    PostApi().updateSatsangiBiometric(
+    setState(() {
+      faceLoading = true;
+    });
+    await PostApi().updateSatsangiBiometric(
         satsangiListData.satsangiList[satsangiListData.index].uid,
         iso[0],
         iso[1],
@@ -394,8 +448,12 @@ class _AddSatsangiState extends State<AddSatsangi>
         fingerprints[2],
         fingerprints[3],
         faceImage,
+        consentImage,
         context);
-    Navigator.pop(context);
+
+    setState(() {
+      faceLoading = false;
+    });
   }
 
   @override
@@ -426,7 +484,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                       faceImage != "" &&
                       !faceLoading) {
                     updateData();
-                    VxToast.show(context, msg: "details updated");
+                    //VxToast.show(context, msg: "details updated");
                   } else {
                     VxToast.show(context,
                         msg: "error updating (try again after resetting data)");
@@ -746,11 +804,11 @@ class _AddSatsangiState extends State<AddSatsangi>
                   ),
                   onPressed: () {
                     //VxToast.show(context, msg: "Details Updated");
-                    if (!faceLoading) {
+                    if (!consentLoading) {
                       showDialog(
                           context: context,
                           builder: (BuildContext context) =>
-                              _buildPopupImage(context));
+                              _buildPopupConsent(context));
                     }
                   },
                   child: Row(
@@ -911,66 +969,63 @@ class _AddSatsangiState extends State<AddSatsangi>
           ),
         ),
         5.heightBox,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFinger2(context));
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'finger not available',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ]),
+          ),
+        ),
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              if (finger1) {
                 Navigator.pop(context);
+
                 showDialog(
                     context: context,
                     builder: (BuildContext context) =>
                         _buildPopupFinger2(context));
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'finger not available',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                  ]),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
-                if (finger1) {
-                  Navigator.pop(context);
-
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          _buildPopupFinger2(context));
-                } else {
-                  VxToast.show(context,
-                      msg:
-                          "Please scan the finger or select finger not available");
-                }
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Next',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    if (finger1) Icon(Icons.check, color: Colors.green),
-                  ]),
-            ),
-            5.heightBox,
-          ],
+              } else {
+                VxToast.show(context,
+                    msg:
+                        "Please scan the finger or select finger not available");
+              }
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Next',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger1) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
         ),
+        5.heightBox,
       ],
     );
   }
@@ -1043,65 +1098,62 @@ class _AddSatsangiState extends State<AddSatsangi>
           ),
         ),
         5.heightBox,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFinger3(context));
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'finger not available',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ]),
+          ),
+        ),
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              if (finger2) {
                 Navigator.pop(context);
                 showDialog(
                     context: context,
                     builder: (BuildContext context) =>
                         _buildPopupFinger3(context));
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'finger not available',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                  ]),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
-                if (finger2) {
-                  Navigator.pop(context);
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          _buildPopupFinger3(context));
-                } else {
-                  VxToast.show(context,
-                      msg:
-                          "Please scan the finger or select finger not available");
-                }
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Next',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    if (finger2) Icon(Icons.check, color: Colors.green),
-                  ]),
-            ),
-            5.heightBox,
-          ],
+              } else {
+                VxToast.show(context,
+                    msg:
+                        "Please scan the finger or select finger not available");
+              }
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Next',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger2) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
         ),
+        5.heightBox,
       ],
     );
   }
@@ -1174,65 +1226,62 @@ class _AddSatsangiState extends State<AddSatsangi>
           ),
         ),
         5.heightBox,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFinger4(context));
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'finger not available',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ]),
+          ),
+        ),
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              if (finger3) {
                 Navigator.pop(context);
                 showDialog(
                     context: context,
                     builder: (BuildContext context) =>
                         _buildPopupFinger4(context));
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'finger not available',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                  ]),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
-                if (finger3) {
-                  Navigator.pop(context);
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          _buildPopupFinger4(context));
-                } else {
-                  VxToast.show(context,
-                      msg:
-                          "Please scan the finger or select finger not available");
-                }
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Next',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    if (finger3) Icon(Icons.check, color: Colors.green),
-                  ]),
-            ),
-            5.heightBox,
-          ],
+              } else {
+                VxToast.show(context,
+                    msg:
+                        "Please scan the finger or select finger not available");
+              }
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Next',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger3) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
         ),
+        5.heightBox,
       ],
     );
   }
@@ -1305,68 +1354,65 @@ class _AddSatsangiState extends State<AddSatsangi>
           ),
         ),
         5.heightBox,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFinger5(context));
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'finger not available',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ]),
+          ),
+        ),
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              print(fingerScanned);
+              if (finger4 && fingerScanned < 4) {
                 Navigator.pop(context);
                 showDialog(
                     context: context,
                     builder: (BuildContext context) =>
                         _buildPopupFinger5(context));
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'finger not available',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                  ]),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
-                print(fingerScanned);
-                if (finger4 && fingerScanned < 4) {
-                  Navigator.pop(context);
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          _buildPopupFinger5(context));
-                } else if (fingerScanned >= 4) {
-                  Navigator.pop(context);
-                } else {
-                  VxToast.show(context,
-                      msg:
-                          "Please scan the finger or select finger not available");
-                }
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Next',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    if (finger4) Icon(Icons.check, color: Colors.green),
-                  ]),
-            ),
-            5.heightBox,
-          ],
+              } else if (fingerScanned >= 4) {
+                Navigator.pop(context);
+              } else {
+                VxToast.show(context,
+                    msg:
+                        "Please scan the finger or select finger not available");
+              }
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Next',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger4) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
         ),
+        5.heightBox,
       ],
     );
   }
@@ -1439,69 +1485,66 @@ class _AddSatsangiState extends State<AddSatsangi>
           ),
         ),
         5.heightBox,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupFinger6(context));
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'finger not available',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ]),
+          ),
+        ),
+        5.heightBox,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              print(fingerScanned);
+              if (finger5 && fingerScanned < 4) {
                 Navigator.pop(context);
                 showDialog(
                     context: context,
                     builder: (BuildContext context) =>
                         _buildPopupFinger6(context));
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'finger not available',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                  ]),
-            ),
-            5.heightBox,
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
-                print(fingerScanned);
-                if (finger5 && fingerScanned < 4) {
-                  Navigator.pop(context);
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          _buildPopupFinger6(context));
-                } else if (fingerScanned >= 4) {
-                  Navigator.pop(context);
-                } else {
-                  VxToast.show(context,
-                      msg:
-                          "Please scan the finger or select finger not available");
-                }
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Next',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    if (finger5) Icon(Icons.check, color: Colors.green),
-                  ]),
-            ),
-            5.heightBox,
-          ],
+              } else if (fingerScanned >= 4) {
+                Navigator.pop(context);
+              } else {
+                VxToast.show(context,
+                    msg:
+                        "Please scan the finger or select finger not available");
+              }
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Next',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger5) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
         ),
+        5.heightBox,
       ],
     );
   }
@@ -1574,60 +1617,57 @@ class _AddSatsangiState extends State<AddSatsangi>
           ),
         ),
         5.heightBox,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              VxToast.show(context, msg: "finger scans are neccessary");
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'finger not available',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ]),
+          ),
+        ),
+        5.heightBox,
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              primary: Colors.orange,
+            ),
+            onPressed: () {
+              if (finger6 && fingerScanned < 4) {
+                Navigator.pop(context);
+              } else if (fingerScanned >= 4) {
+                Navigator.pop(context);
+              } else if (!finger6 && fingerScanned < 4) {
                 Navigator.pop(context);
                 VxToast.show(context, msg: "finger scans are neccessary");
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'finger not available',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                  ]),
-            ),
-            5.heightBox,
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-                primary: Colors.orange,
-              ),
-              onPressed: () {
-                if (finger6 && fingerScanned < 4) {
-                  Navigator.pop(context);
-                } else if (fingerScanned >= 4) {
-                  Navigator.pop(context);
-                } else if (!finger6 && fingerScanned < 4) {
-                  Navigator.pop(context);
-                  VxToast.show(context, msg: "finger scans are neccessary");
-                }
-              },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Next',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    if (finger6) Icon(Icons.check, color: Colors.green),
-                  ]),
-            ),
-            5.heightBox,
-          ],
+              }
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Next',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  if (finger6) Icon(Icons.check, color: Colors.green),
+                ]),
+          ),
         ),
+        5.heightBox,
       ],
     );
   }
@@ -1708,8 +1748,10 @@ class _AddSatsangiState extends State<AddSatsangi>
             primary: Colors.orange,
           ),
           onPressed: () {
-            Navigator.pop(context);
-            getFingerFinal(fingerIso);
+            if (!dialogLoading) {
+              Navigator.pop(context);
+              getFingerFinal(fingerIso);
+            }
           },
           child: const Padding(
             padding: EdgeInsets.all(8.0),
@@ -1828,7 +1870,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                           builder: (BuildContext context) =>
                               _buildPopupFinger1(context));
                     },
-                    child: Padding(
+                    child: const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Text(
                         "Next",
@@ -1842,6 +1884,91 @@ class _AddSatsangiState extends State<AddSatsangi>
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPopupConsent(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.blueGrey,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text("Please take a photo of the consent form"),
+      titleTextStyle: TextStyle(fontSize: 18),
+      actions: <Widget>[
+        if (consentFile != null && consentPhoto)
+          Center(
+            child: Container(
+              width: 300,
+              height: 250,
+              child: Card(
+                  color: Colors.orange.shade200,
+                  child: Column(children: [
+                    "Consent".text.black.make(),
+                    5.heightBox,
+                    Image.file(
+                      consentFile!,
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.contain,
+                    ).pOnly(bottom: 10),
+                  ])),
+            ),
+          ),
+        10.heightBox,
+        Center(
+          child: Column(
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 5,
+                  primary: Colors.orange,
+                ),
+                onPressed: () {
+                  getConsent();
+                },
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: (consentPhoto && !consentLoading)
+                      ? Text(
+                          'Retake photo',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        )
+                      : Text(
+                          "Capture",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                ),
+              ),
+              10.heightBox,
+              if (consentPhoto && !consentLoading)
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 5,
+                    primary: Colors.orange,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    if (!consentLoading) {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              _buildPopupImage(context));
+                    }
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Next",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

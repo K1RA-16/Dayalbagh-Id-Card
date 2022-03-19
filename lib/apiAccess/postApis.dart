@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:dayalbaghidregistration/pages/addChild.dart';
 import 'package:http_certificate_pinning/http_certificate_pinning.dart';
 import 'package:dayalbaghidregistration/apiAccess/keyEncrypt.dart';
 import 'package:dayalbaghidregistration/data/downloadLink.dart';
@@ -25,7 +26,7 @@ import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
 
 import '../data/search.dart';
 
-String version = "1.0.0.0";
+String version = "1.0.0.1";
 
 class PostApi {
   //logs in the user and saves the token to shared Pref...
@@ -50,12 +51,13 @@ class PostApi {
               headers: {
                 'Content-type': 'application/json',
               }).timeout(const Duration(seconds: 10));
-          jsonReceived = jsonDecode(response.body);
-          print(jsonReceived);
+
           if (response.statusCode == 400) {
             //DownloadLink.link = response.body.toString();
             print(response.body.toString());
             if (response.body.toString().characters.first == '{') {
+              jsonReceived = await jsonDecode(response.body);
+
               if (jsonReceived["message"] ==
                   "Username or password is incorrect")
                 VxToast.show(context, msg: "Username or password is incorrect");
@@ -63,14 +65,22 @@ class PostApi {
               return 300; // username/pass incorrect
             }
             return 400;
+          } else {
+            jsonReceived = await jsonDecode(response.body);
+            if (jsonReceived["message"] ==
+                "Username or password is incorrect") {
+              VxToast.show(context, msg: "Username or password is incorrect");
+
+              return 300;
+            } // username/pas
           }
         }
       }
     } on TimeoutException catch (e) {
       VxToast.show(context, msg: "Request Timeout");
-    } on Exception catch (e) {
+    } catch (e) {
       // TODO
-
+      print(e);
       FirebaseLog().logError("login error", e.toString());
       return 401;
     }
@@ -88,8 +98,15 @@ class PostApi {
       else if (password == "")
         VxToast.show(context, msg: "Please enter password");
       return 200;
-    } else
+    } else {
+      if (username == "" && password == "")
+        VxToast.show(context, msg: "please enter username & password");
+      else if (username == "")
+        VxToast.show(context, msg: "Please enter username");
+      else if (password == "")
+        VxToast.show(context, msg: "Please enter password");
       return 401;
+    }
   }
 
   //gets the branch list of that particular user
@@ -119,7 +136,7 @@ class PostApi {
       }
     } on TimeoutException catch (e) {
       VxToast.show(context, msg: "Request Timeout");
-    } on Exception catch (e) {
+    } catch (e) {
       // TODO
 
       FirebaseLog().logError("get branches error", e.toString());
@@ -164,13 +181,12 @@ class PostApi {
               'Authorization': 'Bearer $token',
             }).timeout(const Duration(seconds: 15));
         data = jsonDecode(response.body);
-
         print(data);
       }
     } on TimeoutException catch (e) {
       VxToast.show(context, msg: "Request Timeout");
       return false;
-    } on Exception catch (e) {
+    } catch (e) {
       // TODO
 
       FirebaseLog().logError("get Satsangi data", e.toString());
@@ -203,7 +219,7 @@ class PostApi {
     return false;
   }
 
-  Future<void> getChildList(BuildContext context) async {
+  Future<bool> getChildList(BuildContext context) async {
     var jsonReceived;
     var token;
     var check = false;
@@ -212,6 +228,8 @@ class PostApi {
         EncryptedSharedPreferences encryptedSharedPreferences =
             EncryptedSharedPreferences();
         token = await encryptedSharedPreferences.getString("token");
+        var branch = await encryptedSharedPreferences.getString("branch");
+        print("branch get $branch");
       } catch (e) {
         // TODO
       }
@@ -232,23 +250,26 @@ class PostApi {
               'Authorization': 'Bearer $token',
             }).timeout(const Duration(seconds: 10));
         jsonReceived = jsonDecode(response.body);
+      } else {
+        return false;
       }
     } on TimeoutException catch (e) {
       VxToast.show(context, msg: "Request Timeout");
-    } on Exception catch (e) {
+    } catch (e) {
       // TODO
 
       FirebaseLog().logError("get child list error", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
-      return;
+      return false;
     }
     if (jsonReceived != null && check) {
       ChildList.childList.clear();
       ChildList.childList = List.from(jsonReceived)
           .map<ChildListData>((item) => ChildListData.fromMap(item))
           .toList();
-      Navigator.pushNamed(context, "/childrenList");
+      return true;
     }
+    return false;
   }
 
   Future<void> getSatsangisList(String branchid, int offset, int pageSize,
@@ -282,27 +303,30 @@ class PostApi {
               'Authorization': 'Bearer $token',
             }).timeout(const Duration(seconds: 10));
         jsonReceived = jsonDecode(response.body);
+        print(response.body);
       }
     } on TimeoutException catch (e) {
       VxToast.show(context, msg: "Request Timeout");
-    } on Exception catch (e) {
+    } catch (e) {
       FirebaseLog().logError("get satsangi list error", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
       return;
     }
     if (check) {
-      satsangiListData.satsangiList.clear();
-      satsangiListData.satsangiList = List.from(jsonReceived)
-          .map<SatsangiData>((item) => SatsangiData.fromMap(item))
-          .toList();
-      print(satsangiListData.satsangiList[0]);
-      if (index == 1) {
-        Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (BuildContext context) =>
-                  ListSatsangis(branchId: branchid),
-            ));
+      if (jsonReceived != null) {
+        satsangiListData.satsangiList.clear();
+        satsangiListData.satsangiList = List.from(jsonReceived)
+            .map<SatsangiData>((item) => SatsangiData.fromMap(item))
+            .toList();
+
+        if (index == 1) {
+          Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) =>
+                    ListSatsangis(branchId: branchid),
+              ));
+        }
       }
     }
 
@@ -342,7 +366,7 @@ class PostApi {
       }
     } on TimeoutException catch (e) {
       VxToast.show(context, msg: "Request Timeout");
-    } on Exception catch (e) {
+    } catch (e) {
       FirebaseLog().logError("search satsangi error", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
       return;
@@ -363,21 +387,26 @@ class PostApi {
     print(jsonEncode(m));
     try {
       Map<String, String> headers = {'Content-type': 'application/json'};
-      check = await myCustomImplementation(
-          "https://api.dbidentity.in/?match=v", headers);
+      check =
+          await myCustomImplementation("https://api.dbidentity.in", headers);
       if (check) {
         http.Response response = await http.post(
             Uri.parse("https://api.dbidentity.in/?match=v"),
             body: jsonEncode(m),
             headers: {
               'Content-type': 'application/json',
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: 60));
         data = jsonDecode(response.body);
+        print(response.statusCode);
+        print("if true ${data["result"]}");
       }
     } on TimeoutException catch (e) {
       // TODO
+      print("timeout");
       return false;
     }
+    print("face result ${data["result"]}");
+    print(check);
     if (check)
       return data["result"];
     else
@@ -417,7 +446,8 @@ class PostApi {
       }
     } on TimeoutException catch (e) {
       VxToast.show(context, msg: "Request Timeout");
-    } on Exception catch (e) {
+      return false;
+    } catch (e) {
       // TODO
       //Map<String, dynamic> errLog = {"get child info": e};
       FirebaseLog().logError("get child info", e.toString());
@@ -458,7 +488,7 @@ class PostApi {
       return false;
   }
 
-  void updateSatsangiBiometric(
+  Future<void> updateSatsangiBiometric(
       String uid,
       int iso1,
       int iso2,
@@ -469,6 +499,7 @@ class PostApi {
       String finger3,
       String finger4,
       String faceImage,
+      String concent,
       BuildContext context) async {
     try {
       var jsonData = SatsangiBiometricData(
@@ -481,6 +512,7 @@ class PostApi {
               fingerprint2: finger2,
               fingerprint3: finger3,
               fingerprint4: finger4,
+              concent: concent,
               faceimage: faceImage)
           .toJson();
       var token;
@@ -505,17 +537,23 @@ class PostApi {
               'Authorization': 'Bearer $token',
             }).timeout(const Duration(seconds: 10));
         // var jsonReceived = jsonDecode(response.body);
+        if (response.statusCode == 400) {
+          VxToast.show(context, msg: "Details not updated please try again");
+        } else if (response.statusCode == 200) {
+          VxToast.show(context, msg: "Details updated");
+        }
         print("${response.body}");
       }
     } on TimeoutException catch (e) {
       VxToast.show(context, msg: "Request Timeout");
-    } on Exception catch (e) {
+    } catch (e) {
       // TODO\
       //Map<String, dynamic> errLog = {: e};
       FirebaseLog().logError("update satsangi biometric", e.toString());
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
       return;
     }
+    Navigator.pop(context);
   }
 
   updateChildBiometric(
@@ -535,21 +573,22 @@ class PostApi {
       String fingerprint3,
       String fingerprint4,
       String faceimage,
+      String concent,
       BuildContext context) async {
     var token;
-    var branch;
+
     var check = false;
     try {
       try {
         EncryptedSharedPreferences encryptedSharedPreferences =
             EncryptedSharedPreferences();
-        var token = await encryptedSharedPreferences.getString("token");
-        var branch = await encryptedSharedPreferences.getString("branch");
+        token = await encryptedSharedPreferences.getString("token");
       } catch (e) {
         // TODO
       }
+      var branch = satsangiListData.satsangiList[0].branch;
+      print("branch ${token}");
 
-      print(branch);
       var json = ChildJsonBiometric(
               name: name,
               dob: dob,
@@ -567,9 +606,11 @@ class PostApi {
               FingerPrint_2: fingerprint2,
               FingerPrint_3: fingerprint3,
               FingerPrint_4: fingerprint4,
-              FaceImage: faceimage)
+              FaceImage: faceimage,
+              concent: concent)
           .toJson();
       print(json);
+      var code;
       Map<String, String> headers = {'Content-type': 'application/json'};
       check = await myCustomImplementation(
           "https://api.dbidentity.in/api/childbio/Register", headers);
@@ -582,17 +623,35 @@ class PostApi {
               'Authorization': 'Bearer $token',
             }).timeout(const Duration(seconds: 10));
         // var jsonReceived = jsonDecode(response.body);
-        print("${response.body}");
+
+        code = response.statusCode;
+        print("code $code");
+        if (code == 400) {
+          //DownloadLink.link = response.body.toString();
+          VxToast.show(context,
+              msg: "second parent uid wrong / error updating");
+          Navigator.pop(context);
+          //VxToast.show(context, msg: "Second parent uid wrong");
+          return;
+        } else if (code == 200) {
+          VxToast.show(context, msg: "Details updated");
+        }
       }
     } on TimeoutException catch (e) {
       VxToast.show(context, msg: "Request Timeout");
-    } on Exception catch (e) {
+      Navigator.pop(context);
+    } catch (e) {
       // TODO
       // Map<String, dynamic> errLog = {"update child biometric": e};
+
       FirebaseLog().logError("update child biometric", e.toString());
+      //VxToast.show(context, msg: "null");
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
       return;
     }
+
+    Navigator.pop(context);
+    // VxToast.show(context, msg: "child updated");
   }
   // Future<Uint8List> getTestImage() async {
   //   final pref = await SharedPreferences.getInstance();

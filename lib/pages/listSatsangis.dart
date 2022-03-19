@@ -30,10 +30,11 @@ class _ListSatsangisState extends State<ListSatsangis> {
   @override
   void initState() {
     super.initState();
-    _getMoreData(page);
+    page = 0;
+    _getMoreData();
     _sc.addListener(() {
       if (_sc.position.pixels == _sc.position.maxScrollExtent) {
-        _getMoreData(page);
+        _getMoreData();
       }
     });
   }
@@ -44,7 +45,7 @@ class _ListSatsangisState extends State<ListSatsangis> {
     super.dispose();
   }
 
-  Future<void> _getMoreData(int page) async {
+  Future<void> _getMoreData() async {
     if (!isLoading) {
       setState(() {
         isLoading = true;
@@ -55,6 +56,9 @@ class _ListSatsangisState extends State<ListSatsangis> {
         satsangiList = satsangiListData.satsangiList;
       } else {
         VxToast.show(context, msg: "no data present");
+        page = 0;
+        print("Check");
+        _getMoreData();
       }
       setState(() {
         isLoading = false;
@@ -110,7 +114,7 @@ class _ListSatsangisState extends State<ListSatsangis> {
               ElevatedButton(
                   onPressed: () {
                     if (search.text.isEmpty) {
-                      _getMoreData(0);
+                      _getMoreData();
                     } else {
                       searchSatsangi();
                     }
@@ -194,7 +198,7 @@ class ListInflate extends StatelessWidget {
                               .text
                               .black
                               .bold
-                              .size(15)
+                              .size(10)
                               .make()
                               .pOnly(left: 22),
                           10.heightBox,
@@ -202,7 +206,7 @@ class ListInflate extends StatelessWidget {
                               .text
                               .black
                               .bold
-                              .size(15)
+                              .size(10)
                               .make()
                               .pOnly(left: 22),
                         ],

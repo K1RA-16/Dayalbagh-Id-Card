@@ -16,10 +16,22 @@ class _LoginPageState extends State<LoginPage> {
 
   TextEditingController password = TextEditingController();
   bool obscure = true;
+  bool loginInitiated = false;
+  @override
+  void initState() {
+    loginInitiated = false;
+  }
 
   login() async {
+    setState(() {
+      loginInitiated = true;
+    });
     int code = await PostApi().login(username.text, password.text, context);
     print(code);
+//login check double
+    setState(() {
+      loginInitiated = false;
+    });
     if (code == 400) {
       showDialog(
           context: context,
@@ -29,88 +41,93 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            20.heightBox,
-            Image.asset(
-              "assets/splashScreen.png",
-              width: 100,
-              height: 100,
-            ),
-            20.heightBox,
-            "Login".text.size(20).bold.make(),
-            50.heightBox,
-            TextField(
-              controller: username,
-              maxLength: 20,
-              inputFormatters: [FilteringTextInputFormatter.deny(' ')],
-              decoration: InputDecoration(
-                  label: Text("User Id"),
-                  labelStyle: TextStyle(color: Colors.white),
-                  fillColor: Colors.white,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                        const BorderSide(color: Colors.blueGrey, width: 1.0),
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        const BorderSide(color: Colors.blueGrey, width: 1.0),
-                    borderRadius: BorderRadius.circular(15.0),
-                  )),
-            ).p(20),
-            20.heightBox,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  child: TextField(
-                    inputFormatters: [FilteringTextInputFormatter.deny(' ')],
-                    controller: password,
-                    obscureText: obscure,
-                    maxLength: 20,
-                    decoration: InputDecoration(
-                        label: Text("Password"),
-                        labelStyle: TextStyle(color: Colors.white),
-                        fillColor: Colors.white,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.blueGrey, width: 1.0),
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.blueGrey, width: 1.0),
-                          borderRadius: BorderRadius.circular(15.0),
-                        )),
-                  ).pOnly(left: 20, right: 10).expand(),
-                ),
-                Center(
-                    child: InkWell(
-                  onTap: () {
-                    obscure = !obscure;
-                    setState(() {});
-                  },
-                  child:
-                      Icon(Icons.remove_red_eye).pOnly(bottom: 20, right: 10),
-                )),
-              ],
-            ),
-            50.heightBox,
-            InkWell(
-              onTap: () {
-                login();
-              },
-              child: Icon(
-                Icons.arrow_circle_right,
-                size: 60,
-                color: Colors.white,
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              20.heightBox,
+              Image.asset(
+                "assets/splashScreen.png",
+                width: 100,
+                height: 100,
               ),
-            ),
-          ],
+              20.heightBox,
+              "Login".text.size(20).bold.make(),
+              50.heightBox,
+              TextField(
+                controller: username,
+                maxLength: 20,
+                inputFormatters: [FilteringTextInputFormatter.deny(' ')],
+                decoration: InputDecoration(
+                    label: Text("User Id"),
+                    labelStyle: TextStyle(color: Colors.white),
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: Colors.blueGrey, width: 1.0),
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: Colors.blueGrey, width: 1.0),
+                      borderRadius: BorderRadius.circular(15.0),
+                    )),
+              ).p(20),
+              20.heightBox,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    child: TextField(
+                      inputFormatters: [FilteringTextInputFormatter.deny(' ')],
+                      controller: password,
+                      obscureText: obscure,
+                      maxLength: 20,
+                      decoration: InputDecoration(
+                          label: Text("Password"),
+                          labelStyle: TextStyle(color: Colors.white),
+                          fillColor: Colors.white,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: Colors.blueGrey, width: 1.0),
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: Colors.blueGrey, width: 1.0),
+                            borderRadius: BorderRadius.circular(15.0),
+                          )),
+                    ).pOnly(left: 20, right: 10).expand(),
+                  ),
+                  Center(
+                      child: InkWell(
+                    onTap: () {
+                      obscure = !obscure;
+                      setState(() {});
+                    },
+                    child:
+                        Icon(Icons.remove_red_eye).pOnly(bottom: 20, right: 10),
+                  )),
+                ],
+              ),
+              50.heightBox,
+              InkWell(
+                onTap: () {
+                  if (!loginInitiated) login();
+                },
+                child: Icon(
+                  Icons.arrow_circle_right,
+                  size: 60,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

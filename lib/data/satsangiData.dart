@@ -12,7 +12,7 @@ class SatsangiData {
   final String dob;
   final bool card_Print_Status;
   final String region;
-
+  final String status;
   final String father_Or_Spouse_Name;
   final bool bioMetric_Status;
   final String branch;
@@ -24,6 +24,7 @@ class SatsangiData {
     required this.dob,
     required this.card_Print_Status,
     required this.region,
+    required this.status,
     required this.father_Or_Spouse_Name,
     required this.bioMetric_Status,
     required this.branch,
@@ -36,6 +37,7 @@ class SatsangiData {
     String? dob,
     bool? card_Print_Status,
     String? region,
+    String? status,
     String? father_Or_Spouse_Name,
     bool? bioMetric_Status,
     String? branch,
@@ -47,6 +49,7 @@ class SatsangiData {
       dob: dob ?? this.dob,
       card_Print_Status: card_Print_Status ?? this.card_Print_Status,
       region: region ?? this.region,
+      status: status ?? this.status,
       father_Or_Spouse_Name:
           father_Or_Spouse_Name ?? this.father_Or_Spouse_Name,
       bioMetric_Status: bioMetric_Status ?? this.bioMetric_Status,
@@ -62,6 +65,7 @@ class SatsangiData {
       'dob': dob,
       'card_Print_Status': card_Print_Status,
       'region': region,
+      'status': status,
       'father_Or_Spouse_Name': father_Or_Spouse_Name,
       'bioMetric_Status': bioMetric_Status,
       'branch': branch,
@@ -76,6 +80,7 @@ class SatsangiData {
       dob: map['dob'] as String,
       card_Print_Status: map['card_Print_Status'] as bool,
       region: map['region'] as String,
+      status: map['status'] ?? "J" as String,
       father_Or_Spouse_Name: map['father_Or_Spouse_Name'] as String,
       bioMetric_Status: map['bioMetric_Status'] as bool,
       branch: map['branch'] as String,
@@ -90,7 +95,7 @@ class SatsangiData {
 
   @override
   String toString() {
-    return 'SatsangiData(uid: $uid, name: $name, dob: $dob, card_Print_Status: $card_Print_Status, region: $region, father_Or_Spouse_Name: $father_Or_Spouse_Name, bioMetric_Status: $bioMetric_Status, branch: $branch, title: $title)';
+    return 'SatsangiData(uid: $uid, name: $name, dob: $dob, card_Print_Status: $card_Print_Status, region: $region, status: $status, father_Or_Spouse_Name: $father_Or_Spouse_Name, bioMetric_Status: $bioMetric_Status, branch: $branch, title: $title)';
   }
 
   @override
@@ -103,6 +108,7 @@ class SatsangiData {
         other.dob == dob &&
         other.card_Print_Status == card_Print_Status &&
         other.region == region &&
+        other.status == status &&
         other.father_Or_Spouse_Name == father_Or_Spouse_Name &&
         other.bioMetric_Status == bioMetric_Status &&
         other.branch == branch &&
@@ -116,6 +122,7 @@ class SatsangiData {
         dob.hashCode ^
         card_Print_Status.hashCode ^
         region.hashCode ^
+        status.hashCode ^
         father_Or_Spouse_Name.hashCode ^
         bioMetric_Status.hashCode ^
         branch.hashCode ^

@@ -11,11 +11,25 @@ class SatsangiMenu extends StatefulWidget {
 
 class _SatsangiMenuState extends State<SatsangiMenu> {
   bool progressIndicator = false;
+  bool manageChildrenTrigger = false;
   @override
   void initState() {
     // TODO: implement initState
+    manageChildrenTrigger = false;
     progressIndicator = false;
     super.initState();
+  }
+
+  manageChildView() async {
+    setState(
+      () {
+        manageChildrenTrigger = true;
+      },
+    );
+    bool code = await PostApi().getChildList(context);
+    if (code)
+      Navigator.pushNamed(context, "/childrenList")
+          .then((value) => manageChildrenTrigger = false);
   }
 
   getData() async {
@@ -119,27 +133,35 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
                       ).p(20)),
                 ),
                 const HeightBox(10),
-                InkWell(
-                  onTap: () =>
-                      {if (!progressIndicator) PostApi().getChildList(context)},
-                  //     "/connectRfid")), //SystemSetting.goto(SettingTarget.BLUETOOTH)),
-                  child: Card(
-                      margin: const EdgeInsets.all(8.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      color: Colors.blueGrey,
-                      elevation: 8,
-                      child: Column(
-                        children: [
-                          Center(
-                            child: Text("Manage Children",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 19)),
-                          ),
-                        ],
-                      ).p(20)),
-                ),
+                if (satsangiListData
+                        .satsangiList[satsangiListData.index].status ==
+                    "I")
+                  InkWell(
+                    onTap: () => {
+                      if (!progressIndicator && !manageChildrenTrigger)
+                        {
+                          manageChildView(),
+                        }
+                    },
+                    //     "/connectRfid")), //SystemSetting.goto(SettingTarget.BLUETOOTH)),
+                    child: Card(
+                        margin: const EdgeInsets.all(8.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        color: Colors.blueGrey,
+                        elevation: 8,
+                        child: Column(
+                          children: [
+                            Center(
+                              child: Text("Manage Children",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 19)),
+                            ),
+                          ],
+                        ).p(20)),
+                  ),
                 const HeightBox(10),
                 // InkWell(
                 //   onTap: () => {},
