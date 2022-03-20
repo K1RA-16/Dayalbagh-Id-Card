@@ -51,7 +51,7 @@ class PostApi {
               body: jsonData,
               headers: {
                 'Content-type': 'application/json',
-              }).timeout(const Duration(seconds: 10));
+              }).timeout(const Duration(seconds: 60));
 
           if (response.statusCode == 400) {
             //DownloadLink.link = response.body.toString();
@@ -132,7 +132,7 @@ class PostApi {
             headers: {
               'Content-type': 'application/json',
               'Authorization': 'Bearer $token',
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: 20));
         jsonReceived = jsonDecode(response.body);
       }
     } on TimeoutException catch (e) {
@@ -180,7 +180,7 @@ class PostApi {
             headers: {
               'Content-type': 'application/json',
               'Authorization': 'Bearer $token',
-            }).timeout(const Duration(seconds: 15));
+            }).timeout(const Duration(seconds: 20));
         data = jsonDecode(response.body);
         print(data);
       }
@@ -249,7 +249,7 @@ class PostApi {
             headers: {
               'Content-type': 'application/json',
               'Authorization': 'Bearer $token',
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: 20));
         jsonReceived = jsonDecode(response.body);
       } else {
         return false;
@@ -302,7 +302,7 @@ class PostApi {
             headers: {
               'Content-type': 'application/json',
               'Authorization': 'Bearer $token',
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: 20));
         jsonReceived = jsonDecode(response.body);
         print(response.body);
       }
@@ -361,7 +361,7 @@ class PostApi {
             headers: {
               'Content-type': 'application/json',
               'Authorization': 'Bearer $token',
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: 20));
         jsonReceived = jsonDecode(response.body);
         print(response.body);
       }
@@ -440,7 +440,7 @@ class PostApi {
             headers: {
               'Content-type': 'application/json',
               'Authorization': 'Bearer $token',
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: 30));
         data = jsonDecode(response.body);
         print(response.body);
         print(data["id"]);
@@ -536,17 +536,20 @@ class PostApi {
             headers: {
               'Content-type': 'application/json',
               'Authorization': 'Bearer $token',
-            }).timeout(const Duration(seconds: 20));
+            }).timeout(const Duration(seconds: 120));
         // var jsonReceived = jsonDecode(response.body);
         if (response.statusCode == 400) {
-          VxToast.show(context, msg: "Details not updated please try again");
+          VxToast.show(context,
+              msg: "Details not updated please try again", showTime: 3000);
         } else if (response.statusCode == 200) {
           VxToast.show(context, msg: "Details updated");
+          Navigator.pop(context);
         }
         print("${response.body}");
       }
     } on TimeoutException catch (e) {
-      VxToast.show(context, msg: "Request Timeout");
+      VxToast.show(context,
+          msg: "Request Timeout please try again", showTime: 6000);
     } catch (e) {
       // TODO\
       //Map<String, dynamic> errLog = {: e};
@@ -554,7 +557,6 @@ class PostApi {
       Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
       return;
     }
-    Navigator.pop(context);
   }
 
   updateChildBiometric(
@@ -622,7 +624,7 @@ class PostApi {
             headers: {
               'Content-type': 'application/json',
               'Authorization': 'Bearer $token',
-            }).timeout(const Duration(seconds: 20));
+            }).timeout(const Duration(seconds: 120));
         // var jsonReceived = jsonDecode(response.body);
 
         code = response.statusCode;
@@ -630,17 +632,19 @@ class PostApi {
         if (code == 400) {
           //DownloadLink.link = response.body.toString();
           VxToast.show(context,
-              msg: "second parent uid wrong / error updating");
+              msg: "second parent uid wrong / error updating", showTime: 4000);
           Navigator.pop(context);
           //VxToast.show(context, msg: "Second parent uid wrong");
           return;
         } else if (code == 200) {
-          VxToast.show(context, msg: "Details updated");
+          VxToast.show(context, msg: "Details updated", showTime: 2000);
+          Navigator.pop(context);
         }
       }
     } on TimeoutException catch (e) {
-      VxToast.show(context, msg: "Request Timeout");
-      Navigator.pop(context);
+      VxToast.show(context,
+          msg: "Request Timeout please try again", showTime: 3000);
+      return;
     } catch (e) {
       // TODO
       // Map<String, dynamic> errLog = {"update child biometric": e};
@@ -651,7 +655,6 @@ class PostApi {
       return;
     }
 
-    Navigator.pop(context);
     // VxToast.show(context, msg: "child updated");
   }
   // Future<Uint8List> getTestImage() async {

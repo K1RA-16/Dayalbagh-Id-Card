@@ -12,11 +12,13 @@ class SatsangiMenu extends StatefulWidget {
 class _SatsangiMenuState extends State<SatsangiMenu> {
   bool progressIndicator = false;
   bool manageChildrenTrigger = false;
+
   @override
   void initState() {
     // TODO: implement initState
     manageChildrenTrigger = false;
     progressIndicator = false;
+
     super.initState();
   }
 
@@ -96,9 +98,17 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
                       children: [
                         Icon(Icons.add),
                         Center(
-                          child: Text("Add Biometrics",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 19)),
+                          child: (satsangiListData
+                                  .satsangiList[satsangiListData.index]
+                                  .bioMetric_Status)
+                              ? Text("Update Biometrics",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 19))
+                              : Text("Add Biometrics",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 19)),
                         ),
                       ],
                     ).p(20),

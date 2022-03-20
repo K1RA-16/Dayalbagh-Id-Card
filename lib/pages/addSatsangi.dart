@@ -113,7 +113,8 @@ class _AddSatsangiState extends State<AddSatsangi>
       Navigator.pop(context);
 
       // Capture a photo
-      var image = await _picker.getImage(source: ImageSource.camera);
+      var image = await _picker.getImage(
+          source: ImageSource.camera, preferredCameraDevice: CameraDevice.rear);
       Uint8List imagebytes = await image!.readAsBytes(); //convert to bytes
       faceImage = base64.encode(imagebytes); //convert bytes to base64 string
       //VxToast.show(context, msg: "please wait while we check the image");
@@ -156,7 +157,8 @@ class _AddSatsangiState extends State<AddSatsangi>
     Navigator.pop(context);
 
     // Capture a photo
-    var image = await _picker.getImage(source: ImageSource.camera);
+    var image = await _picker.getImage(
+        source: ImageSource.camera, preferredCameraDevice: CameraDevice.rear);
     if (image != null) {
       Uint8List imagebytes = await image!.readAsBytes();
       consentImage = base64.encode(imagebytes); //convert bytes to base64 string
@@ -845,13 +847,17 @@ class _AddSatsangiState extends State<AddSatsangi>
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
-                          'Add Biometric',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15),
-                        ),
+                        (consentFile != null)
+                            ? const Text('Add Biometric',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15))
+                            : const Text('Add consent',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15)),
                         5.widthBox,
                         Icon(Icons.fingerprint, color: Colors.green),
                       ]),

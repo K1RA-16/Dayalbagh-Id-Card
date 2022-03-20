@@ -949,13 +949,17 @@ class _AddChildrenState extends State<ManageChildren>
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
-                          'Add Biometric',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15),
-                        ),
+                        (consentFile != null)
+                            ? const Text('Add Biometric',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15))
+                            : const Text('Add consent',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15)),
                         5.widthBox,
                         Icon(Icons.update, color: Colors.green),
                       ]),
