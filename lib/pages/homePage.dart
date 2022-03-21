@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                         Icon(Icons.list),
                         10.widthBox,
                         Center(
-                          child: Text("List Satsangis",
+                          child: Text("List Individuals",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 19)),
                         ),

@@ -15,6 +15,8 @@ import 'package:flutter/services.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../apiAccess/firebaseLogApis.dart';
+
 Map<int, String> fingerIsoMap = {
   1: "Left index finger",
   2: "Right index finger",
@@ -304,7 +306,6 @@ class _AddChildrenState extends State<ManageChildren>
         finger4 = true;
         if (!rescan) {
           iso.add(3);
-
           fingerprints.add(base64.encode(fingerData4));
         } else {
           int index = checkForExistingIso(3);
@@ -324,6 +325,10 @@ class _AddChildrenState extends State<ManageChildren>
         if (!rescan) {
           iso.add(9);
           fingerprints.add(base64.encode(fingerData5));
+        } else {
+          int index = checkForExistingIso(9);
+          iso[index] = 9;
+          fingerprints[index] = base64.encode(fingerData5);
         }
         rescan = false;
         showDialog(
@@ -550,7 +555,9 @@ class _AddChildrenState extends State<ManageChildren>
                   //VxToast.show(context, msg: "Details Updated");
                   print(iso);
                   print(fingerprints);
-
+                  FirebaseLog().logError("iso child", iso.toString());
+                  FirebaseLog().logError(
+                      "fingerprints child", fingerprints.length.toString());
                   if (fingerprints.length == 4 &&
                       iso.length == 4 &&
                       faceImage != "" &&
@@ -559,7 +566,12 @@ class _AddChildrenState extends State<ManageChildren>
                       !faceLoading &&
                       !processing) {
                     updateData();
+                  } else if (processing) {
+                    VxToast.show(context, msg: "please wait");
                   } else {
+                    FirebaseLog().logError("iso child", iso.toString());
+                    FirebaseLog().logError(
+                        "fingerprints child", fingerprints.length.toString());
                     VxToast.show(context,
                         msg: "error updating (try again after resetting data)");
                   }
@@ -624,6 +636,7 @@ class _AddChildrenState extends State<ManageChildren>
         backgroundColor: Colors.black,
         body: SingleChildScrollView(
           child: Column(children: [
+            if (processing) CircularProgressIndicator(),
             10.heightBox,
             if (faceLoading) CircularProgressIndicator(),
             5.heightBox,
@@ -1119,11 +1132,11 @@ class _AddChildrenState extends State<ManageChildren>
                 VxToast.show(context,
                     msg: "you cannot scan more than 4 fingerprints");
               } else {
+                startReadingFirst();
                 showDialog(
                     context: context,
                     builder: (BuildContext context) =>
                         _buildPopupFingerprint1(context, 1));
-                startReadingFirst();
               }
             },
             child: Row(
@@ -1907,7 +1920,7 @@ class _AddChildrenState extends State<ManageChildren>
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: "Continue".text.make().centered(),
+      title: Text("Continue").centered(),
       titleTextStyle: TextStyle(fontSize: 18),
       actions: <Widget>[
         5.heightBox,
@@ -1933,7 +1946,7 @@ class _AddChildrenState extends State<ManageChildren>
     return AlertDialog(
       backgroundColor: Colors.blueGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: "Continue".text.make().centered(),
+      title: Text("Continue").centered(),
       titleTextStyle: TextStyle(fontSize: 18),
       actions: <Widget>[
         5.heightBox,
