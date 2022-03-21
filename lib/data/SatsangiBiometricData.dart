@@ -59,32 +59,32 @@ class SatsangiBiometricData {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'uid': uid,
-      'iso1': iso1,
-      'iso2': iso2,
-      'iso3': iso3,
-      'iso4': iso4,
+      'ISO_FP_1': iso1,
+      'ISO_FP_2': iso2,
+      'ISO_FP_3': iso3,
+      'ISO_FP_4': iso4,
       'FingerPrint_1': fingerprint1,
       'FingerPrint_2': fingerprint2,
       'FingerPrint_3': fingerprint3,
       'FingerPrint_4': fingerprint4,
       'concent': concent,
-      'faceimage': faceimage,
+      'FaceImage': faceimage,
     };
   }
 
   factory SatsangiBiometricData.fromMap(Map<String, dynamic> map) {
     return SatsangiBiometricData(
       uid: map['uid'] as String,
-      iso1: map['iso1'] as int,
-      iso2: map['iso2'] as int,
-      iso3: map['iso3'] as int,
-      iso4: map['iso4'] as int,
+      iso1: map['ISO_FP_1'] as int,
+      iso2: map['ISO_FP_2'] as int,
+      iso3: map['ISO_FP_3'] as int,
+      iso4: map['ISO_FP_4'] as int,
       fingerprint1: map['FingerPrint_1'] as String,
       fingerprint2: map['FingerPrint_2'] as String,
       fingerprint3: map['FingerPrint_3'] as String,
       fingerprint4: map['FingerPrint_4'] as String,
       concent: map['concent'] as String,
-      faceimage: map['faceimage'] as String,
+      faceimage: map['FaceImage'] as String,
     );
   }
 

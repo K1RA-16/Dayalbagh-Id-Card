@@ -309,7 +309,7 @@ class _AddChildrenState extends State<ManageChildren>
         } else {
           int index = checkForExistingIso(3);
           iso[index] = 3;
-          fingerprints[index] = base64.encode(fingerData4);
+          fingerprints[index] = base64.encode(fingerData1);
         }
         rescan = false;
         showDialog(
@@ -324,10 +324,6 @@ class _AddChildrenState extends State<ManageChildren>
         if (!rescan) {
           iso.add(9);
           fingerprints.add(base64.encode(fingerData5));
-        } else {
-          int index = checkForExistingIso(9);
-          iso[index] = 9;
-          fingerprints[index] = base64.encode(fingerData5);
         }
         rescan = false;
         showDialog(
@@ -337,7 +333,6 @@ class _AddChildrenState extends State<ManageChildren>
         if (!finger6) {
           fingerScanned++;
         }
-        finger6 = true;
         if (!rescan) {
           iso.add(4);
           fingerprints.add(base64.encode(fingerData6));
@@ -388,9 +383,9 @@ class _AddChildrenState extends State<ManageChildren>
   }
 
   int checkForExistingIso(int fingerIso) {
-    int index = fingerIso;
+    int index = iso.length - 1;
     for (int i = 0; i < iso.length; i++) {
-      if (iso[i] == index) {
+      if (iso[i] == fingerIso) {
         index = i;
         break;
       }

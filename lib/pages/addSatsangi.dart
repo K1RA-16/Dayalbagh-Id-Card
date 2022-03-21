@@ -57,8 +57,8 @@ class _AddSatsangiState extends State<AddSatsangi>
   bool finger5 = false;
   bool finger6 = false;
 
-  List<int> iso = List.filled(4, 0);
-  List<String> fingerprints = List.filled(4, "fingerPrint");
+  List<int> iso = [];
+  List<String> fingerprints = [];
   String faceImage = "";
   String consentImage = "";
   late TextEditingController uidController;
@@ -250,6 +250,7 @@ class _AddSatsangiState extends State<AddSatsangi>
           iso[index] = 7;
           fingerprints[index] = base64.encode(fingerData1);
         }
+        print(iso);
         rescan = false;
         showDialog(
             context: context,
@@ -267,6 +268,7 @@ class _AddSatsangiState extends State<AddSatsangi>
           iso[index] = 2;
           fingerprints[index] = base64.encode(fingerData2);
         }
+        print(iso);
         rescan = false;
         showDialog(
             context: context,
@@ -284,6 +286,7 @@ class _AddSatsangiState extends State<AddSatsangi>
           iso[index] = 8;
           fingerprints[index] = base64.encode(fingerData3);
         }
+        print(iso);
         rescan = false;
         showDialog(
             context: context,
@@ -303,6 +306,7 @@ class _AddSatsangiState extends State<AddSatsangi>
           iso[index] = 3;
           fingerprints[index] = base64.encode(fingerData4);
         }
+        print(iso);
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger4(context));
@@ -320,6 +324,7 @@ class _AddSatsangiState extends State<AddSatsangi>
           iso[index] = 9;
           fingerprints[index] = base64.encode(fingerData5);
         }
+        print(iso);
         rescan = false;
         showDialog(
             context: context,
@@ -337,6 +342,7 @@ class _AddSatsangiState extends State<AddSatsangi>
           iso[index] = 4;
           fingerprints[index] = base64.encode(fingerData6);
         }
+        print(iso);
         rescan = false;
         showDialog(
             context: context,
@@ -381,7 +387,7 @@ class _AddSatsangiState extends State<AddSatsangi>
   int checkForExistingIso(int fingerIso) {
     int index = iso.length - 1;
     for (int i = 0; i < iso.length; i++) {
-      if (iso[i] == index) {
+      if (iso[i] == fingerIso) {
         index = i;
         break;
       }
@@ -846,7 +852,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                   )),
             ),
             20.heightBox,
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 if (fingerScanned >= 4)
