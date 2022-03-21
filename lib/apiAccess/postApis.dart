@@ -26,7 +26,7 @@ import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
 
 import '../data/search.dart';
 
-String version = "3.0.0.0";
+String version = "3.4.0.0";
 //second ver
 
 class PostApi {

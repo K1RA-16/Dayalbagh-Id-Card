@@ -14,6 +14,8 @@ import 'package:flutter/services.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../apiAccess/firebaseLogApis.dart';
+
 bool dialogLoading = false;
 Uint8List fingerData1 = Uint8List(0);
 Uint8List fingerData2 = Uint8List(0);
@@ -55,8 +57,8 @@ class _AddSatsangiState extends State<AddSatsangi>
   bool finger5 = false;
   bool finger6 = false;
 
-  List<int> iso = [];
-  List<String> fingerprints = [];
+  List<int> iso = List.filled(4, 0);
+  List<String> fingerprints = List.filled(4, "fingerPrint");
   String faceImage = "";
   String consentImage = "";
   late TextEditingController uidController;
@@ -243,6 +245,10 @@ class _AddSatsangiState extends State<AddSatsangi>
         if (!rescan) {
           iso.add(7);
           fingerprints.add(base64.encode(fingerData1));
+        } else {
+          int index = checkForExistingIso(7);
+          iso[index] = 7;
+          fingerprints[index] = base64.encode(fingerData1);
         }
         rescan = false;
         showDialog(
@@ -256,6 +262,10 @@ class _AddSatsangiState extends State<AddSatsangi>
         if (!rescan) {
           iso.add(2);
           fingerprints.add(base64.encode(fingerData2));
+        } else {
+          int index = checkForExistingIso(2);
+          iso[index] = 2;
+          fingerprints[index] = base64.encode(fingerData2);
         }
         rescan = false;
         showDialog(
@@ -269,6 +279,10 @@ class _AddSatsangiState extends State<AddSatsangi>
         if (!rescan) {
           iso.add(8);
           fingerprints.add(base64.encode(fingerData3));
+        } else {
+          int index = checkForExistingIso(8);
+          iso[index] = 8;
+          fingerprints[index] = base64.encode(fingerData3);
         }
         rescan = false;
         showDialog(
@@ -279,12 +293,16 @@ class _AddSatsangiState extends State<AddSatsangi>
           fingerScanned++;
         }
         finger4 = true;
+
         if (!rescan) {
           iso.add(3);
 
           fingerprints.add(base64.encode(fingerData4));
+        } else {
+          int index = checkForExistingIso(3);
+          iso[index] = 3;
+          fingerprints[index] = base64.encode(fingerData4);
         }
-        rescan = false;
         showDialog(
             context: context,
             builder: (BuildContext context) => _buildPopupFinger4(context));
@@ -293,9 +311,14 @@ class _AddSatsangiState extends State<AddSatsangi>
           fingerScanned++;
         }
         finger5 = true;
+
         if (!rescan) {
           iso.add(9);
           fingerprints.add(base64.encode(fingerData5));
+        } else {
+          int index = checkForExistingIso(9);
+          iso[index] = 9;
+          fingerprints[index] = base64.encode(fingerData5);
         }
         rescan = false;
         showDialog(
@@ -309,6 +332,10 @@ class _AddSatsangiState extends State<AddSatsangi>
         if (!rescan) {
           iso.add(4);
           fingerprints.add(base64.encode(fingerData6));
+        } else {
+          int index = checkForExistingIso(4);
+          iso[index] = 4;
+          fingerprints[index] = base64.encode(fingerData6);
         }
         rescan = false;
         showDialog(
@@ -349,6 +376,17 @@ class _AddSatsangiState extends State<AddSatsangi>
       }
     }
     setState(() {});
+  }
+
+  int checkForExistingIso(int fingerIso) {
+    int index = iso.length - 1;
+    for (int i = 0; i < iso.length; i++) {
+      if (iso[i] == index) {
+        index = i;
+        break;
+      }
+    }
+    return index;
   }
 
   getFingerprint(int fingerIso, int index) async {
@@ -512,10 +550,17 @@ class _AddSatsangiState extends State<AddSatsangi>
                   if (fingerprints.length == 4 &&
                       iso.length == 4 &&
                       faceImage != "" &&
+                      fingerScanned == 4 &&
                       !faceLoading) {
+                    FirebaseLog().logError("iso", iso.toString());
+                    FirebaseLog().logError(
+                        "fingerprints", fingerprints.length.toString());
                     updateData();
                     //VxToast.show(context, msg: "details updated");
                   } else {
+                    FirebaseLog().logError("iso", iso.toString());
+                    FirebaseLog().logError(
+                        "fingerprints", fingerprints.length.toString());
                     VxToast.show(context,
                         msg: "error updating (try again after resetting data)");
                   }
