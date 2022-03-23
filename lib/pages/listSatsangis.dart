@@ -7,7 +7,8 @@ import 'package:http/http.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 TextEditingController search = TextEditingController();
-int page = 0;
+int page = 1;
+bool finished = false;
 
 List<SatsangiData> satsangiList = [];
 
@@ -26,15 +27,30 @@ class _ListSatsangisState extends State<ListSatsangis> {
   ScrollController _sc = new ScrollController();
 
   bool isLoading = false;
-
+  bool progressIndicator = false;
   @override
   void initState() {
     super.initState();
-    page = 0;
-    _getMoreData();
+    finished = false;
+    progressIndicator = false;
+    page = 1;
+    setState(() {
+      if (satsangiListData.satsangiList.isNotEmpty)
+        satsangiList = satsangiListData.satsangiList;
+      else
+        VxToast.show(context, msg: "no data present");
+    });
     _sc.addListener(() {
       if (_sc.position.pixels == _sc.position.maxScrollExtent) {
-        _getMoreData();
+        if (!finished && !isLoading) {
+          setState(() {
+            isLoading = true;
+          });
+          page++;
+          _getMoreData();
+        } else if (finished) {
+          VxToast.show(context, msg: "all data shown");
+        }
       }
     });
   }
@@ -46,33 +62,31 @@ class _ListSatsangisState extends State<ListSatsangis> {
   }
 
   Future<void> _getMoreData() async {
-    if (!isLoading) {
-      setState(() {
-        isLoading = true;
-      });
-      print(page);
-      await PostApi().getSatsangisList(widget.branchId, page, 50, context, 2);
-      if (satsangiListData.satsangiList.isNotEmpty) {
-        satsangiList = satsangiListData.satsangiList;
-      } else {
-        VxToast.show(context, msg: "no data present");
-        page = 0;
-        print("Check");
-        _getMoreData();
-      }
-      setState(() {
-        isLoading = false;
-        page++;
-      });
+    print("load");
+    setState(() {
+      progressIndicator = true;
+    });
+    print(page);
+    await PostApi().getSatsangisList(widget.branchId, page, 50, context, 2);
+    if (satsangiListData.newList.isNotEmpty) {
+      print("loaded");
+      satsangiList = satsangiListData.satsangiList;
+    } else {
+      finished = true;
+      VxToast.show(context, msg: "no more data present");
     }
+    setState(() {
+      isLoading = false;
+      progressIndicator = false;
+    });
   }
 
   searchSatsangi() async {
     await PostApi().search(widget.branchId, search.text, context);
-    if (satsangiListData.satsangiList.isNotEmpty) {
+    if (satsangiListData.newList.isNotEmpty) {
       satsangiList = satsangiListData.satsangiList;
     } else {
-      VxToast.show(context, msg: "no data present");
+      VxToast.show(context, msg: "no more data present");
     }
     setState(() {});
   }
@@ -86,7 +100,13 @@ class _ListSatsangisState extends State<ListSatsangis> {
         actions: [
           InkWell(
                   onTap: () {
-                    page = 0;
+                    finished = false;
+                    isLoading = false;
+                    setState(() {
+                      progressIndicator = true;
+                    });
+                    page = 1;
+                    satsangiListData.satsangiList.clear();
                     _getMoreData();
                   },
                   child: Icon(Icons.replay_rounded))
@@ -139,7 +159,8 @@ class _ListSatsangisState extends State<ListSatsangis> {
           SatsangiList(
             sc: _sc,
           ).p(20).expand(),
-          if (isLoading) const CircularProgressIndicator(),
+          5.heightBox,
+          if (progressIndicator) const CircularProgressIndicator(),
         ],
       ),
     );
@@ -203,21 +224,34 @@ class ListInflate extends StatelessWidget {
                             ),
                       Column(
                         children: [
-                          "Name - ${data.name.toString()}"
-                              .text
-                              .black
-                              .bold
-                              .size(10)
-                              .make()
-                              .pOnly(left: 22),
                           10.heightBox,
-                          "UID - ${data.uid.toString()}"
-                              .text
-                              .black
-                              .bold
-                              .size(10)
-                              .make()
-                              .pOnly(left: 22),
+                          Container(
+                            width: MediaQuery.of(context).size.width - 150,
+                            child: "${data.uid.toString()}"
+                                .text
+                                .overflow(
+                                  TextOverflow.ellipsis,
+                                )
+                                .black
+                                .bold
+                                .size(10)
+                                .make()
+                                .pOnly(left: 22),
+                          ),
+                          10.heightBox,
+                          Container(
+                            width: MediaQuery.of(context).size.width - 150,
+                            child: "${data.name.toString()}"
+                                .text
+                                .overflow(
+                                  TextOverflow.ellipsis,
+                                )
+                                .black
+                                .bold
+                                .size(10)
+                                .make()
+                                .pOnly(left: 22),
+                          ),
                         ],
                       ),
                     ],

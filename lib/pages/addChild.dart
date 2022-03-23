@@ -96,17 +96,22 @@ class _AddChildrenState extends State<ManageChildren>
   @override
   void initState() {
     rescan = false;
+    index = satsangiListData.index;
+
     dialogLoading = false;
     consentLoading = false;
     consentPhoto = false;
     print(_action);
     faceLoading = false;
     processing = false;
+    iso = [];
+    fingerprints = [];
     day = DateTime.now().day;
     month = DateTime.now().month;
     year = DateTime.now().year;
 
     if (_action == "update") uid = ChildList.index;
+    if (_action == "new") uid = ChildList.childrenNo;
     uidController = TextEditingController(
         text: "${satsangiListData.satsangiList[index].uid}C${(uid) + 1}");
 
@@ -946,7 +951,7 @@ class _AddChildrenState extends State<ManageChildren>
                   )),
             ),
             20.heightBox,
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 if (fingerScanned >= 4)

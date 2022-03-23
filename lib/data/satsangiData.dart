@@ -3,6 +3,7 @@ import 'dart:convert';
 
 class satsangiListData {
   static List<SatsangiData> satsangiList = [];
+  static List<SatsangiData> newList = [];
   static int index = 0;
 }
 

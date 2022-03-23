@@ -80,10 +80,14 @@ class _AddSatsangiState extends State<AddSatsangi>
   void initState() {
     rescan = false;
     faceLoading = false;
+    fingerScanned = 0;
     photoTaken = false;
+    index = satsangiListData.index;
     dialogLoading = false;
     consentPhoto = false;
     consentLoading = false;
+    iso = [];
+    fingerprints = [];
     uidController =
         TextEditingController(text: satsangiListData.satsangiList[index].uid);
 

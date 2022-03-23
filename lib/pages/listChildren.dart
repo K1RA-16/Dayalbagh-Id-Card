@@ -25,6 +25,7 @@ class _ListChildrenState extends State<ListChildren> {
 
   checkChildExist() {
     if (ChildList.childList[0].id == 0) {
+      ChildList.childrenNo = 0;
       childExist = false;
       loading = false;
       setState(() {});

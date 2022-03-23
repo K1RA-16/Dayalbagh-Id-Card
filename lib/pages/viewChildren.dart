@@ -72,14 +72,14 @@ class _ViewChildrenState extends State<ViewChildren> {
 
   loadData() {
     try {
-      loadIso(ChildBiometricData.data["isO_FP_1"], 1);
-      loadIso(ChildBiometricData.data["isO_FP_2"], 2);
-      loadIso(ChildBiometricData.data["isO_FP_3"], 3);
-      loadIso(ChildBiometricData.data["isO_FP_4"], 4);
-      fingerData1 = base64Decode(ChildBiometricData.data["fingerPrint_1"]);
-      fingerData2 = base64Decode(ChildBiometricData.data["fingerPrint_2"]);
-      fingerData3 = base64Decode(ChildBiometricData.data["fingerPrint_3"]);
-      fingerData4 = base64Decode(ChildBiometricData.data["fingerPrint_4"]);
+      loadIso(ChildBiometricData.data["isO_FP_1"]!, 1);
+      loadIso(ChildBiometricData.data["isO_FP_2"]!, 2);
+      loadIso(ChildBiometricData.data["isO_FP_3"]!, 3);
+      loadIso(ChildBiometricData.data["isO_FP_4"]!, 4);
+      // fingerData1 = base64Decode(ChildBiometricData.data["fingerPrint_1"]);
+      // fingerData2 = base64Decode(ChildBiometricData.data["fingerPrint_2"]);
+      // fingerData3 = base64Decode(ChildBiometricData.data["fingerPrint_3"]);
+      // fingerData4 = base64Decode(ChildBiometricData.data["fingerPrint_4"]);
       imageFile = base64Decode(ChildBiometricData.data["image"]);
       try {
         if (ChildBiometricData.data["image"].toString().length > 5)
@@ -198,8 +198,8 @@ class _ViewChildrenState extends State<ViewChildren> {
                     children: [
                       fingerIso1.text.black.make(),
                       5.heightBox,
-                      Image.memory(
-                        fingerData1,
+                      Image.asset(
+                        "assets/done.jpg",
                         width: 50,
                         height: 50,
                         fit: BoxFit.contain,
@@ -214,8 +214,8 @@ class _ViewChildrenState extends State<ViewChildren> {
                     children: [
                       fingerIso2.text.black.make(),
                       5.heightBox,
-                      Image.memory(
-                        fingerData3,
+                      Image.asset(
+                        "assets/done.jpg",
                         width: 50,
                         height: 50,
                         fit: BoxFit.contain,
@@ -236,8 +236,8 @@ class _ViewChildrenState extends State<ViewChildren> {
                     children: [
                       fingerIso3.text.black.make(),
                       5.heightBox,
-                      Image.memory(
-                        fingerData2,
+                      Image.asset(
+                        "assets/done.jpg",
                         width: 50,
                         height: 50,
                         fit: BoxFit.contain,
@@ -252,8 +252,8 @@ class _ViewChildrenState extends State<ViewChildren> {
                     children: [
                       fingerIso4.text.black.make(),
                       5.heightBox,
-                      Image.memory(
-                        fingerData4,
+                      Image.asset(
+                        "assets/done.jpg",
                         width: 50,
                         height: 50,
                         fit: BoxFit.contain,

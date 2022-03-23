@@ -239,6 +239,9 @@ class PostApi {
       m["uid"] = satsangiListData.satsangiList[satsangiListData.index].uid;
       var json = jsonEncode(m);
       print(json);
+      ChildList.childList.clear();
+      ChildList.index = 0;
+      ChildList.childrenNo = 0;
       Map<String, String> headers = {'Content-type': 'application/json'};
       check = await myCustomImplementation(
           "https://api.dbidentity.in/api/childbio/getchildren", headers);
@@ -264,7 +267,6 @@ class PostApi {
       return false;
     }
     if (jsonReceived != null && check) {
-      ChildList.childList.clear();
       ChildList.childList = List.from(jsonReceived)
           .map<ChildListData>((item) => ChildListData.fromMap(item))
           .toList();
@@ -278,6 +280,10 @@ class PostApi {
     var jsonReceived;
     var check = false;
     var token;
+    satsangiListData.newList.clear();
+    if (index == 1) {
+      satsangiListData.satsangiList.clear();
+    }
     try {
       try {
         EncryptedSharedPreferences encryptedSharedPreferences =
@@ -315,10 +321,11 @@ class PostApi {
     }
     if (check) {
       if (jsonReceived != null) {
-        satsangiListData.satsangiList.clear();
-        satsangiListData.satsangiList = List.from(jsonReceived)
+        satsangiListData.newList = List.from(jsonReceived)
             .map<SatsangiData>((item) => SatsangiData.fromMap(item))
             .toList();
+        satsangiListData.satsangiList =
+            satsangiListData.satsangiList + satsangiListData.newList;
 
         if (index == 1) {
           Navigator.push(
