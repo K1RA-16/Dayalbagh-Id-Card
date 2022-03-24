@@ -9,7 +9,8 @@ class SatsangiGetBiometric {
   //get biometric data
 
   final String name;
-  final String father_Or_Spouse_Name;
+  final String spouseName;
+  final String fatherName;
   final String dob;
 
   final String branch;
@@ -26,10 +27,12 @@ class SatsangiGetBiometric {
   final String fingerPrint_3;
   final String fingerPrint_4;
   final String image;
+  final String concent;
   final String uid;
   SatsangiGetBiometric({
     required this.name,
-    required this.father_Or_Spouse_Name,
+    required this.spouseName,
+    required this.fatherName,
     required this.dob,
     required this.branch,
     required this.date_of_issue,
@@ -44,12 +47,14 @@ class SatsangiGetBiometric {
     required this.fingerPrint_3,
     required this.fingerPrint_4,
     required this.image,
+    required this.concent,
     required this.uid,
   });
 
   SatsangiGetBiometric copyWith({
     String? name,
-    String? father_Or_Spouse_Name,
+    String? spouseName,
+    String? fatherName,
     String? dob,
     String? branch,
     String? date_of_issue,
@@ -64,12 +69,13 @@ class SatsangiGetBiometric {
     String? fingerPrint_3,
     String? fingerPrint_4,
     String? image,
+    String? concent,
     String? uid,
   }) {
     return SatsangiGetBiometric(
       name: name ?? this.name,
-      father_Or_Spouse_Name:
-          father_Or_Spouse_Name ?? this.father_Or_Spouse_Name,
+      spouseName: spouseName ?? this.spouseName,
+      fatherName: fatherName ?? this.fatherName,
       dob: dob ?? this.dob,
       branch: branch ?? this.branch,
       date_of_issue: date_of_issue ?? this.date_of_issue,
@@ -84,6 +90,7 @@ class SatsangiGetBiometric {
       fingerPrint_3: fingerPrint_3 ?? this.fingerPrint_3,
       fingerPrint_4: fingerPrint_4 ?? this.fingerPrint_4,
       image: image ?? this.image,
+      concent: concent ?? this.concent,
       uid: uid ?? this.uid,
     );
   }
@@ -91,7 +98,8 @@ class SatsangiGetBiometric {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'name': name,
-      'father_Or_Spouse_Name': father_Or_Spouse_Name,
+      'spouseName': spouseName,
+      'fatherName': fatherName,
       'dob': dob,
       'branch': branch,
       'date_of_issue': date_of_issue,
@@ -106,6 +114,7 @@ class SatsangiGetBiometric {
       'fingerPrint_3': fingerPrint_3,
       'fingerPrint_4': fingerPrint_4,
       'image': image,
+      'concent': concent,
       'uid': uid,
     };
   }
@@ -113,7 +122,8 @@ class SatsangiGetBiometric {
   factory SatsangiGetBiometric.fromMap(Map<String, dynamic> map) {
     return SatsangiGetBiometric(
       name: map['name'] as String,
-      father_Or_Spouse_Name: map['father_Or_Spouse_Name'] as String,
+      spouseName: map['spouseName'] as String,
+      fatherName: map['fatherName'] as String,
       dob: map['dob'] as String,
       branch: map['branch'] as String,
       date_of_issue: map['date_of_issue'] as String,
@@ -128,6 +138,7 @@ class SatsangiGetBiometric {
       fingerPrint_3: map['fingerPrint_3'] as String,
       fingerPrint_4: map['fingerPrint_4'] as String,
       image: map['image'] as String,
+      concent: map['concent'] as String,
       uid: map['uid'] as String,
     );
   }
@@ -139,7 +150,7 @@ class SatsangiGetBiometric {
 
   @override
   String toString() {
-    return 'SatsangiGetBiometric(name: $name, father_Or_Spouse_Name: $father_Or_Spouse_Name, dob: $dob, branch: $branch, date_of_issue: $date_of_issue, status: $status, gender: $gender, isO_FP_1: $isO_FP_1, isO_FP_2: $isO_FP_2, isO_FP_3: $isO_FP_3, isO_FP_4: $isO_FP_4, fingerPrint_1: $fingerPrint_1, fingerPrint_2: $fingerPrint_2, fingerPrint_3: $fingerPrint_3, fingerPrint_4: $fingerPrint_4, image: $image, uid: $uid)';
+    return 'SatsangiGetBiometric(name: $name, spouseName: $spouseName, fatherName: $fatherName, dob: $dob, branch: $branch, date_of_issue: $date_of_issue, status: $status, gender: $gender, isO_FP_1: $isO_FP_1, isO_FP_2: $isO_FP_2, isO_FP_3: $isO_FP_3, isO_FP_4: $isO_FP_4, fingerPrint_1: $fingerPrint_1, fingerPrint_2: $fingerPrint_2, fingerPrint_3: $fingerPrint_3, fingerPrint_4: $fingerPrint_4, image: $image, concent: $concent, uid: $uid)';
   }
 
   @override
@@ -148,7 +159,8 @@ class SatsangiGetBiometric {
 
     return other is SatsangiGetBiometric &&
         other.name == name &&
-        other.father_Or_Spouse_Name == father_Or_Spouse_Name &&
+        other.spouseName == spouseName &&
+        other.fatherName == fatherName &&
         other.dob == dob &&
         other.branch == branch &&
         other.date_of_issue == date_of_issue &&
@@ -163,13 +175,15 @@ class SatsangiGetBiometric {
         other.fingerPrint_3 == fingerPrint_3 &&
         other.fingerPrint_4 == fingerPrint_4 &&
         other.image == image &&
+        other.concent == concent &&
         other.uid == uid;
   }
 
   @override
   int get hashCode {
     return name.hashCode ^
-        father_Or_Spouse_Name.hashCode ^
+        spouseName.hashCode ^
+        fatherName.hashCode ^
         dob.hashCode ^
         branch.hashCode ^
         date_of_issue.hashCode ^
@@ -184,6 +198,7 @@ class SatsangiGetBiometric {
         fingerPrint_3.hashCode ^
         fingerPrint_4.hashCode ^
         image.hashCode ^
+        concent.hashCode ^
         uid.hashCode;
   }
 }

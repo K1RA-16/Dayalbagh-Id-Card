@@ -3,7 +3,9 @@ import 'dart:typed_data';
 
 import 'package:dayalbaghidregistration/data/SatsangiBiometricData.dart';
 import 'package:dayalbaghidregistration/data/childBiometricViewData.dart';
+import 'package:dayalbaghidregistration/data/satsangiData.dart';
 import 'package:dayalbaghidregistration/data/satsangiGetBiometricData.dart';
+import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -17,7 +19,8 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
   late TextEditingController statusController;
   late TextEditingController genderController;
   late TextEditingController doisController;
-
+  late TextEditingController fatherNameController;
+  late TextEditingController regionController;
   late TextEditingController spouseNameController;
   late TextEditingController nameController;
   late TextEditingController dobController;
@@ -28,7 +31,7 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
   bool finger2 = false;
   bool finger3 = false;
   bool finger4 = false;
-
+  bool concent = false;
   bool faceImage = false;
 
   String fingerIso1 = "";
@@ -41,21 +44,30 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
   Uint8List fingerData3 = Uint8List(0);
   Uint8List fingerData4 = Uint8List(0);
   Uint8List imageFile = Uint8List(0);
-
+  Uint8List concentFile = Uint8List(0);
   @override
   void initState() {
+    setState(() {
+      concent = false;
+    });
     try {
       uidController =
           TextEditingController(text: SatsangiGetBiometricMap.data["uid"]);
-
+      regionController = TextEditingController(
+          text: satsangiListData.satsangiList[satsangiListData.index].region);
+      genderController = TextEditingController(
+          text: satsangiListData.satsangiList[satsangiListData.index].gender);
       spouseNameController = TextEditingController(
-          text: SatsangiGetBiometricMap.data["father_Or_Spouse_Name"]);
+          text:
+              satsangiListData.satsangiList[satsangiListData.index].spouseName);
+      fatherNameController = TextEditingController(
+          text:
+              satsangiListData.satsangiList[satsangiListData.index].fatherName);
       nameController =
           TextEditingController(text: SatsangiGetBiometricMap.data["name"]);
       statusController =
           TextEditingController(text: SatsangiGetBiometricMap.data["status"]);
-      genderController =
-          TextEditingController(text: SatsangiGetBiometricMap.data["gender"]);
+
       doisController = TextEditingController(
           text: SatsangiGetBiometricMap.data["date_of_issue"]);
       dobController =
@@ -83,11 +95,20 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
       // fingerData3 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_3"]);
       // fingerData4 = base64Decode(SatsangiGetBiometricMap.data["fingerPrint_4"]);
       imageFile = base64Decode(SatsangiGetBiometricMap.data["image"]);
-
+      concentFile = base64Decode(SatsangiGetBiometricMap.data["concent"]);
+      setState(() {
+        concent = true;
+      });
       try {
         if (SatsangiGetBiometricMap.data["image"].toString().length > 5)
-          print("check2");
-        faceImage = true;
+          setState(() {
+            faceImage = true;
+          });
+        if (SatsangiGetBiometricMap.data["concent"].toString().length > 5)
+          setState(() {
+            concent = true;
+          });
+
         print(SatsangiGetBiometricMap.data["image"].toString().length);
         setState(() {});
       } on Exception catch (e) {
@@ -179,11 +200,24 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
       body: SingleChildScrollView(
         child: Column(children: [
           20.heightBox,
+          if (concent) "Consent".text.bold.size(15).white.make(),
+          if (concent)
+            Card(
+                color: Colors.orange.shade200,
+                child: Column(children: [
+                  5.heightBox,
+                  Image.memory(
+                    concentFile,
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.contain,
+                  ).pOnly(bottom: 10),
+                ])),
+          if (faceImage) "Face Image".text.bold.size(15).white.make(),
           if (faceImage)
             Card(
                 color: Colors.orange.shade200,
                 child: Column(children: [
-                  "Face Image".text.black.make(),
                   5.heightBox,
                   Image.memory(
                     imageFile,
@@ -351,7 +385,63 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
                   borderRadius: BorderRadius.circular(15.0),
                 )),
           ),
-
+          20.heightBox,
+          TextField(
+            readOnly: true,
+            controller: fatherNameController,
+            decoration: InputDecoration(
+                label: Text("Father Name"),
+                labelStyle: TextStyle(color: Colors.white),
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                )),
+          ),
+          20.heightBox,
+          TextField(
+            readOnly: true,
+            controller: regionController,
+            decoration: InputDecoration(
+                label: Text("Region Name"),
+                labelStyle: TextStyle(color: Colors.white),
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                )),
+          ),
+          20.heightBox,
+          TextField(
+            readOnly: true,
+            controller: genderController,
+            decoration: InputDecoration(
+                label: Text("Gender"),
+                labelStyle: TextStyle(color: Colors.white),
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: Colors.blueGrey, width: 1.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                )),
+          ),
           20.heightBox,
           TextField(
             readOnly: true,

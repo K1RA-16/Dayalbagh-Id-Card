@@ -15,6 +15,7 @@ import 'package:velocity_x/velocity_x.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../apiAccess/firebaseLogApis.dart';
+import '../data/satsangiGetBiometricData.dart';
 
 bool dialogLoading = false;
 Uint8List fingerData1 = Uint8List(0);
@@ -62,8 +63,10 @@ class _AddSatsangiState extends State<AddSatsangi>
   String faceImage = "";
   String consentImage = "";
   late TextEditingController uidController;
-
   late TextEditingController fatherNameController;
+  late TextEditingController regionController;
+  late TextEditingController spouseNameController;
+  late TextEditingController genderController;
   late TextEditingController nameController;
   late TextEditingController dobController;
   late TextEditingController doi1Controller;
@@ -88,11 +91,17 @@ class _AddSatsangiState extends State<AddSatsangi>
     consentLoading = false;
     iso = [];
     fingerprints = [];
+    regionController = TextEditingController(
+        text: satsangiListData.satsangiList[satsangiListData.index].region);
+    genderController = TextEditingController(
+        text: satsangiListData.satsangiList[satsangiListData.index].gender);
+    spouseNameController = TextEditingController(
+        text: satsangiListData.satsangiList[satsangiListData.index].spouseName);
+    fatherNameController = TextEditingController(
+        text: satsangiListData.satsangiList[satsangiListData.index].fatherName);
     uidController =
         TextEditingController(text: satsangiListData.satsangiList[index].uid);
 
-    fatherNameController = TextEditingController(
-        text: satsangiListData.satsangiList[index].father_Or_Spouse_Name);
     nameController =
         TextEditingController(text: satsangiListData.satsangiList[index].name);
     dobController =
@@ -135,8 +144,10 @@ class _AddSatsangiState extends State<AddSatsangi>
             msg: "please wait unitl we process the image", showTime: 2000);
       });
       //bool faceCorrect = false; //optional
-      bool faceCorrect = await PostApi()
-          .checkFace("data:image/jpeg;base64,$faceImage", context);
+      bool faceCorrect = await PostApi().checkFace(
+          "data:image/jpeg;base64,$faceImage",
+          context,
+          satsangiListData.satsangiList[index].uid);
       setState(() {
         // faceCorrect = true; // optional
         faceLoading = false;
@@ -638,11 +649,11 @@ class _AddSatsangiState extends State<AddSatsangi>
             20.heightBox,
             if (faceLoading) CircularProgressIndicator(),
             5.heightBox,
+            if (imageFile != null) "Face Image".text.bold.size(15).white.make(),
             if (imageFile != null)
               Card(
                   color: Colors.orange.shade200,
                   child: Column(children: [
-                    "Face Image".text.black.make(),
                     5.heightBox,
                     Image.file(
                       imageFile!,
@@ -819,9 +830,69 @@ class _AddSatsangiState extends State<AddSatsangi>
             TextField(
               style: TextStyle(color: Colors.grey),
               readOnly: true,
+              controller: spouseNameController,
+              decoration: InputDecoration(
+                  label: Text("Spouse Name"),
+                  labelStyle: TextStyle(color: Colors.white),
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  )),
+            ),
+            20.heightBox,
+            TextField(
+              style: TextStyle(color: Colors.grey),
+              readOnly: true,
               controller: fatherNameController,
               decoration: InputDecoration(
-                  label: Text("Father / Husband Name"),
+                  label: Text("Father Name"),
+                  labelStyle: TextStyle(color: Colors.white),
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  )),
+            ),
+            20.heightBox,
+            TextField(
+              readOnly: true,
+              style: TextStyle(color: Colors.grey),
+              controller: regionController,
+              decoration: InputDecoration(
+                  label: Text("Region Name"),
+                  labelStyle: TextStyle(color: Colors.white),
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.blueGrey, width: 1.0),
+                    borderRadius: BorderRadius.circular(15.0),
+                  )),
+            ),
+            20.heightBox,
+            TextField(
+              style: TextStyle(color: Colors.grey),
+              readOnly: true,
+              controller: genderController,
+              decoration: InputDecoration(
+                  label: Text("Gender"),
                   labelStyle: TextStyle(color: Colors.white),
                   fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(

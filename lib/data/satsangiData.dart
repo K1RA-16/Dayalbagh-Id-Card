@@ -10,11 +10,13 @@ class satsangiListData {
 class SatsangiData {
   final String uid;
   final String name;
+  final String gender;
   final String dob;
   final bool card_Print_Status;
   final String region;
   final String status;
-  final String father_Or_Spouse_Name;
+  final String spouseName;
+  final String fatherName;
   final bool bioMetric_Status;
   final String branch;
   final String title;
@@ -22,11 +24,13 @@ class SatsangiData {
   SatsangiData({
     required this.uid,
     required this.name,
+    required this.gender,
     required this.dob,
     required this.card_Print_Status,
     required this.region,
     required this.status,
-    required this.father_Or_Spouse_Name,
+    required this.spouseName,
+    required this.fatherName,
     required this.bioMetric_Status,
     required this.branch,
     required this.title,
@@ -35,11 +39,13 @@ class SatsangiData {
   SatsangiData copyWith({
     String? uid,
     String? name,
+    String? gender,
     String? dob,
     bool? card_Print_Status,
     String? region,
     String? status,
-    String? father_Or_Spouse_Name,
+    String? spouseName,
+    String? fatherName,
     bool? bioMetric_Status,
     String? branch,
     String? title,
@@ -47,12 +53,13 @@ class SatsangiData {
     return SatsangiData(
       uid: uid ?? this.uid,
       name: name ?? this.name,
+      gender: gender ?? this.gender,
       dob: dob ?? this.dob,
       card_Print_Status: card_Print_Status ?? this.card_Print_Status,
       region: region ?? this.region,
       status: status ?? this.status,
-      father_Or_Spouse_Name:
-          father_Or_Spouse_Name ?? this.father_Or_Spouse_Name,
+      spouseName: spouseName ?? this.spouseName,
+      fatherName: fatherName ?? this.fatherName,
       bioMetric_Status: bioMetric_Status ?? this.bioMetric_Status,
       branch: branch ?? this.branch,
       title: title ?? this.title,
@@ -63,11 +70,13 @@ class SatsangiData {
     return <String, dynamic>{
       'uid': uid,
       'name': name,
+      'gender': gender,
       'dob': dob,
       'card_Print_Status': card_Print_Status,
       'region': region,
       'status': status,
-      'father_Or_Spouse_Name': father_Or_Spouse_Name,
+      'spouseName': spouseName,
+      'fatherName': fatherName,
       'bioMetric_Status': bioMetric_Status,
       'branch': branch,
       'title': title,
@@ -78,11 +87,13 @@ class SatsangiData {
     return SatsangiData(
       uid: map['uid'] as String,
       name: map['name'] as String,
+      gender: map['gender'] ?? " " as String,
       dob: map['dob'] as String,
       card_Print_Status: map['card_Print_Status'] as bool,
       region: map['region'] as String,
-      status: map['status'] ?? "J" as String,
-      father_Or_Spouse_Name: map['father_Or_Spouse_Name'] ?? "" as String,
+      status: map['status'] as String,
+      spouseName: map['spouseName'] ?? " " as String,
+      fatherName: map['fatherName'] ?? " " as String,
       bioMetric_Status: map['bioMetric_Status'] as bool,
       branch: map['branch'] as String,
       title: map['title'] as String,
@@ -96,7 +107,7 @@ class SatsangiData {
 
   @override
   String toString() {
-    return 'SatsangiData(uid: $uid, name: $name, dob: $dob, card_Print_Status: $card_Print_Status, region: $region, status: $status, father_Or_Spouse_Name: $father_Or_Spouse_Name, bioMetric_Status: $bioMetric_Status, branch: $branch, title: $title)';
+    return 'SatsangiData(uid: $uid, name: $name, gender: $gender, dob: $dob, card_Print_Status: $card_Print_Status, region: $region, status: $status, spouseName: $spouseName, fatherName: $fatherName, bioMetric_Status: $bioMetric_Status, branch: $branch, title: $title)';
   }
 
   @override
@@ -106,11 +117,13 @@ class SatsangiData {
     return other is SatsangiData &&
         other.uid == uid &&
         other.name == name &&
+        other.gender == gender &&
         other.dob == dob &&
         other.card_Print_Status == card_Print_Status &&
         other.region == region &&
         other.status == status &&
-        other.father_Or_Spouse_Name == father_Or_Spouse_Name &&
+        other.spouseName == spouseName &&
+        other.fatherName == fatherName &&
         other.bioMetric_Status == bioMetric_Status &&
         other.branch == branch &&
         other.title == title;
@@ -120,11 +133,13 @@ class SatsangiData {
   int get hashCode {
     return uid.hashCode ^
         name.hashCode ^
+        gender.hashCode ^
         dob.hashCode ^
         card_Print_Status.hashCode ^
         region.hashCode ^
         status.hashCode ^
-        father_Or_Spouse_Name.hashCode ^
+        spouseName.hashCode ^
+        fatherName.hashCode ^
         bioMetric_Status.hashCode ^
         branch.hashCode ^
         title.hashCode;

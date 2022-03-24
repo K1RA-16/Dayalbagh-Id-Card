@@ -172,18 +172,31 @@ class _ViewChildrenState extends State<ViewChildren> {
       body: SingleChildScrollView(
         child: Column(children: [
           20.heightBox,
+          if (faceImage) "Consent".text.bold.size(15).white.make(),
           if (faceImage)
             Card(
                 color: Colors.orange.shade200,
                 child: Column(children: [
-                  "Face Image".text.black.make(),
                   5.heightBox,
                   Image.memory(
                     imageFile,
                     width: 200,
                     height: 200,
                     fit: BoxFit.contain,
-                  ).p(10),
+                  ).pOnly(bottom: 10),
+                ])),
+          if (faceImage) "Face Image".text.bold.size(15).white.make(),
+          if (faceImage)
+            Card(
+                color: Colors.orange.shade200,
+                child: Column(children: [
+                  5.heightBox,
+                  Image.memory(
+                    imageFile,
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.contain,
+                  ).pOnly(bottom: 10),
                 ])),
           5.heightBox,
           "FingerPrints".text.bold.size(15).make(),

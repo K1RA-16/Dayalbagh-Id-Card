@@ -151,8 +151,8 @@ class _AddChildrenState extends State<ManageChildren>
         faceLoading = true;
       });
       //bool faceCorrect = true; // optional
-      bool faceCorrect = await PostApi()
-          .checkFace("data:image/jpeg;base64,$faceImage", context);
+      bool faceCorrect = await PostApi().checkFace(
+          "data:image/jpeg;base64,$faceImage", context, uidController.text);
       setState(() {
         faceLoading = false;
       });
@@ -645,11 +645,11 @@ class _AddChildrenState extends State<ManageChildren>
             10.heightBox,
             if (faceLoading) CircularProgressIndicator(),
             5.heightBox,
+            if (imageFile != null) "Face Image".text.bold.size(15).white.make(),
             if (imageFile != null)
               Card(
                   color: Colors.orange.shade200,
                   child: Column(children: [
-                    "Face Image".text.black.make(),
                     5.heightBox,
                     Image.file(
                       imageFile!,

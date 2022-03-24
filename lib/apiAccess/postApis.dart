@@ -197,10 +197,12 @@ class PostApi {
     if (check && data != null) {
       SatsangiGetBiometricMap.data = SatsangiGetBiometric(
         name: data["name"],
-        father_Or_Spouse_Name: data["father_Or_Spouse_Name"],
+        concent: data["concent"],
+        fatherName: data["fatherName"] ?? " ",
+        spouseName: data["spouseName"] ?? " ",
         dob: data["dob"],
         branch: data["branch"] ?? " ",
-        date_of_issue: data["date_of_issue"] ?? " ",
+        date_of_issue: data["date_of_issue"] ?? "Not yet issued",
         status: data["status"] ?? " ",
         gender: data["gender"] ?? " ",
         isO_FP_1: data["isO_FP_1"],
@@ -387,9 +389,11 @@ class PostApi {
     }
   }
 
-  Future<bool> checkFace(String image, BuildContext context) async {
+  Future<bool> checkFace(String image, BuildContext context, String uid) async {
     Map<String, String> m = new Map();
+    print(uid);
     m["img"] = image;
+    m["uid"] = uid;
     var data;
     var check = false;
     print(jsonEncode(m));
@@ -399,7 +403,7 @@ class PostApi {
           await myCustomImplementation("https://api.dbidentity.in", headers);
       if (check) {
         http.Response response = await http.post(
-            Uri.parse("https://api.dbidentity.in/?match=v"),
+            Uri.parse("https://api.dbidentity.in/multipart_b64/?match=v"),
             body: jsonEncode(m),
             headers: {
               'Content-type': 'application/json',
@@ -409,7 +413,6 @@ class PostApi {
         print("if true ${data["result"]}");
       }
     } on TimeoutException catch (e) {
-      // TODO
       print("timeout");
       return false;
     }
