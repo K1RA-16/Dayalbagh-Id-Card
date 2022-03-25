@@ -26,7 +26,7 @@ import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
 
 import '../data/search.dart';
 
-String version = "4.0.0.0";
+String version = "4.2.0.0";
 //second ver
 
 class PostApi {
@@ -407,7 +407,7 @@ class PostApi {
             body: jsonEncode(m),
             headers: {
               'Content-type': 'application/json',
-            }).timeout(const Duration(seconds: 60));
+            }).timeout(const Duration(seconds: 300));
         data = jsonDecode(response.body);
         print(response.statusCode);
         print("if true ${data["result"]}");
