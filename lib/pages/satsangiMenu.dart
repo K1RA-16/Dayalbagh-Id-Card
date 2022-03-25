@@ -146,8 +146,9 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
                 if (satsangiListData
                             .satsangiList[satsangiListData.index].status ==
                         "I" &&
-                    satsangiListData
-                        .satsangiList[satsangiListData.index].bioMetric_Status)
+                    satsangiListData.satsangiList[satsangiListData.index]
+                        .bioMetric_Status &&
+                    false) //false added to comment it out
                   InkWell(
                     onTap: () => {
                       if (!progressIndicator && !manageChildrenTrigger)
