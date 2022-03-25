@@ -144,8 +144,10 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
                 ),
                 const HeightBox(10),
                 if (satsangiListData
-                        .satsangiList[satsangiListData.index].status ==
-                    "I")
+                            .satsangiList[satsangiListData.index].status ==
+                        "I" &&
+                    satsangiListData
+                        .satsangiList[satsangiListData.index].bioMetric_Status)
                   InkWell(
                     onTap: () => {
                       if (!progressIndicator && !manageChildrenTrigger)
@@ -164,11 +166,10 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
                         child: Column(
                           children: [
                             Center(
-                              child: Text("Manage Children",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 19)),
-                            ),
+                                child: const Text("Manage Children",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 19))),
                           ],
                         ).p(20)),
                   ),

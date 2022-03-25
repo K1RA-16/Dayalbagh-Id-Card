@@ -125,7 +125,7 @@ class _ListSatsangisState extends State<ListSatsangis> {
                 child: TextField(
                   controller: search,
                   decoration: InputDecoration(
-                      label: Text("Search"),
+                      label: Text("Search Name"),
                       labelStyle: TextStyle(color: Colors.white),
                       fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
