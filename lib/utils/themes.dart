@@ -11,7 +11,7 @@ class MyThemes {
       appBarTheme: AppBarTheme(
         color: Colors.orange,
         elevation: 10.0,
-        shadowColor: Colors.white,
+        shadowColor: Colors.orange,
         toolbarTextStyle: Theme.of(context).textTheme.bodyText2,
         titleTextStyle: Theme.of(context).textTheme.headline6,
       ));

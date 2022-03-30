@@ -80,40 +80,34 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
             child: Column(
               children: [
                 const HeightBox(20),
-                InkWell(
-                  onTap: () => {
-                    if (!progressIndicator)
-                      Navigator.pushNamed(context, "/addSatsangi")
-                  },
-                  child: Card(
-                    borderOnForeground: true,
-                    elevation: 8,
-                    margin: EdgeInsets.all(8.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
+                if (!(satsangiListData
+                    .satsangiList[satsangiListData.index].bioMetric_Status))
+                  InkWell(
+                    onTap: () => {
+                      if (!progressIndicator)
+                        Navigator.pushNamed(context, "/addSatsangi")
+                    },
+                    child: Card(
+                      borderOnForeground: true,
+                      elevation: 8,
+                      margin: EdgeInsets.all(8.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      color: Colors.blueGrey,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add),
+                          Center(
+                            child: Text("Add Biometrics",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 19)),
+                          ),
+                        ],
+                      ).p(20),
                     ),
-                    color: Colors.blueGrey,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.add),
-                        Center(
-                          child: (satsangiListData
-                                  .satsangiList[satsangiListData.index]
-                                  .bioMetric_Status)
-                              ? Text("Update Biometrics",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 19))
-                              : Text("Add Biometrics",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 19)),
-                        ),
-                      ],
-                    ).p(20),
                   ),
-                ),
                 const HeightBox(10),
                 InkWell(
                   onTap: () => {

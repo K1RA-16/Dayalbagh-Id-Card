@@ -142,9 +142,7 @@ class _ListSatsangisState extends State<ListSatsangis> {
               ),
               ElevatedButton(
                   onPressed: () {
-                    if (search.text.isEmpty) {
-                      _getMoreData();
-                    } else {
+                    if (search.text.isNotEmpty) {
                       searchSatsangi();
                     }
                   },

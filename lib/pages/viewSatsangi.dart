@@ -124,6 +124,8 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
     String value = "";
     if (key == 2) {
       value = "Right index finger";
+    } else if (key == 1) {
+      value = "Right thumb finger";
     } else if (key == 3) {
       value = "Right middle finger";
     } else if (key == 4) {
@@ -132,8 +134,14 @@ class _ViewSatsangiState extends State<ViewSatsangi> {
       value = "Left index finger";
     } else if (key == 8) {
       value = "Left middle finger";
+    } else if (key == 6) {
+      value = "Left thumb finger";
     } else if (key == 9) {
       value = "Left ring finger";
+    } else if (key == 10) {
+      value = "Left baby finger";
+    } else if (key == 5) {
+      value = "Right baby finger";
     }
     if (index == 1) {
       fingerIso1 = value;
