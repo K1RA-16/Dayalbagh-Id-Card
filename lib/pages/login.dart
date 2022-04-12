@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
               20.heightBox,
               "Dayalbagh ID Enrollment".text.size(20).bold.make(),
               5.heightBox,
-              "v4.2".text.size(10).bold.make(),
+              "v4.6".text.size(10).bold.make(),
               50.heightBox,
               TextField(
                 controller: username,

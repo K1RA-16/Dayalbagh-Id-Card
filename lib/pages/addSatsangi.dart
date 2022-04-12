@@ -95,6 +95,10 @@ class _AddSatsangiState extends State<AddSatsangi>
   @override
   void initState() {
     rescan = false;
+    imageFile = null;
+    consentFile = null;
+    faceImage = "";
+    consentImage = "";
     faceLoading = false;
     fingerScanned = 0;
     photoTaken = false;
@@ -692,19 +696,22 @@ class _AddSatsangiState extends State<AddSatsangi>
                   if (fingerprints.length == 4 &&
                       iso.length == 4 &&
                       faceImage != "" &&
-                      fingerScanned == 4 &&
-                      !faceLoading) {
-                    FirebaseLog().logError("iso", iso.toString());
-                    FirebaseLog().logError(
-                        "fingerprints", fingerprints.length.toString());
-                    updateData();
+                      fingerScanned == 4) {
+                    if (!faceLoading) {
+                      FirebaseLog().logError("iso", iso.toString());
+                      FirebaseLog().logError(
+                          "fingerprints", fingerprints.length.toString());
+                      updateData();
+                    } else {
+                      VxToast.show(context, msg: "Please wait (processing)");
+                    }
                     //VxToast.show(context, msg: "details updated");
                   } else {
                     FirebaseLog().logError("iso", iso.toString());
                     FirebaseLog().logError(
                         "fingerprints", fingerprints.length.toString());
                     VxToast.show(context,
-                        msg: "error updating (try again after resetting data)");
+                        msg: "error please try after resetting");
                   }
                 },
                 child: Row(
@@ -770,6 +777,20 @@ class _AddSatsangiState extends State<AddSatsangi>
             20.heightBox,
             if (faceLoading) CircularProgressIndicator(),
             5.heightBox,
+            if (consentFile != null) "Consent".text.bold.size(15).white.make(),
+            if (consentFile != null)
+              Card(
+                  color: Colors.orange.shade200,
+                  child: Column(children: [
+                    5.heightBox,
+                    Image.file(
+                      consentFile!,
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.contain,
+                    ).pOnly(bottom: 10),
+                  ])),
+            5.heightBox,
             if (imageFile != null) "Face Image".text.bold.size(15).white.make(),
             if (imageFile != null)
               Card(
@@ -783,6 +804,7 @@ class _AddSatsangiState extends State<AddSatsangi>
                       fit: BoxFit.contain,
                     ).pOnly(bottom: 10),
                   ])),
+            5.heightBox,
             if (imageFile == null)
               CircleAvatar(
                 radius: 100,

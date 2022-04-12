@@ -185,13 +185,18 @@ class SatsangiList extends StatelessWidget {
   }
 }
 
-class ListInflate extends StatelessWidget {
+class ListInflate extends StatefulWidget {
   final SatsangiData data;
   final int index;
 
   const ListInflate({Key? key, required this.data, required this.index})
       : super(key: key);
 
+  @override
+  State<ListInflate> createState() => _ListInflateState();
+}
+
+class _ListInflateState extends State<ListInflate> {
   @override
   Widget build(BuildContext context) {
     return VxBox(
@@ -205,13 +210,13 @@ class ListInflate extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: (() {
-                    satsangiListData.index = index;
+                    satsangiListData.index = widget.index;
                     Navigator.pushNamed(context, "/menu");
                   }),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      data.bioMetric_Status
+                      widget.data.bioMetric_Status
                           ? Icon(
                               Icons.check,
                               color: Colors.green,
@@ -225,7 +230,7 @@ class ListInflate extends StatelessWidget {
                           10.heightBox,
                           Container(
                             width: MediaQuery.of(context).size.width - 150,
-                            child: "${data.uid.toString()}"
+                            child: "${widget.data.uid.toString()}"
                                 .text
                                 .overflow(
                                   TextOverflow.ellipsis,
@@ -239,7 +244,7 @@ class ListInflate extends StatelessWidget {
                           10.heightBox,
                           Container(
                             width: MediaQuery.of(context).size.width - 150,
-                            child: "${data.name.toString()}"
+                            child: "${widget.data.name.toString()}"
                                 .text
                                 .overflow(
                                   TextOverflow.ellipsis,

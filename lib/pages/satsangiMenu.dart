@@ -2,6 +2,7 @@ import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
 import 'package:dayalbaghidregistration/data/satsangiData.dart';
 import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class SatsangiMenu extends StatefulWidget {
@@ -12,13 +13,16 @@ class SatsangiMenu extends StatefulWidget {
 class _SatsangiMenuState extends State<SatsangiMenu> {
   bool progressIndicator = false;
   bool manageChildrenTrigger = false;
-
+  var date;
+  var month;
   @override
   void initState() {
     // TODO: implement initState
     manageChildrenTrigger = false;
     progressIndicator = false;
-
+    date = DateTime.now().day;
+    print(date);
+    month = DateTime.now().month;
     super.initState();
   }
 
@@ -57,14 +61,26 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
     }
   }
 
+  deleteData(String uid) async {
+    print(uid);
+    bool t = await PostApi().delete(context, uid);
+    if (t) {
+      VxToast.show(context, msg: "successfully deleted");
+      Navigator.pop(context);
+      // Navigator.pushNamed(context, "/menu");
+    } else {}
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
         if (progressIndicator)
           return false;
-        else
+        else {
+          satsangiListData.index = 0;
           return true;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -80,34 +96,66 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
             child: Column(
               children: [
                 const HeightBox(20),
-                if (!(satsangiListData
-                    .satsangiList[satsangiListData.index].bioMetric_Status))
-                  InkWell(
-                    onTap: () => {
-                      if (!progressIndicator)
-                        Navigator.pushNamed(context, "/addSatsangi")
-                    },
-                    child: Card(
-                      borderOnForeground: true,
-                      elevation: 8,
-                      margin: EdgeInsets.all(8.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      color: Colors.blueGrey,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add),
-                          Center(
-                            child: Text("Add Biometrics",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 19)),
+                // if (!((satsangiListData
+                //     .satsangiList[satsangiListData.index].bioMetric_Status)))
+                ((satsangiListData
+                        .satsangiList[satsangiListData.index].bioMetric_Status))
+                    ? InkWell(
+                        onTap: () => {
+                          //print("cgeck"),
+                          if (!progressIndicator)
+                            deleteData(satsangiListData
+                                .satsangiList[satsangiListData.index].uid)
+                        },
+                        child: Card(
+                          borderOnForeground: true,
+                          elevation: 8,
+                          margin: EdgeInsets.all(8.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
                           ),
-                        ],
-                      ).p(20),
-                    ),
-                  ),
+                          color: Colors.blueGrey,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.delete),
+                              Center(
+                                child: Text("Delete Biometrics",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 19)),
+                              ),
+                            ],
+                          ).p(20),
+                        ),
+                      )
+                    : InkWell(
+                        onTap: () => {
+                          if (!progressIndicator)
+                            Navigator.pushNamed(context, "/addSatsangi")
+                        },
+                        child: Card(
+                          borderOnForeground: true,
+                          elevation: 8,
+                          margin: EdgeInsets.all(8.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          color: Colors.blueGrey,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add),
+                              Center(
+                                child: Text("Add Biometrics",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 19)),
+                              ),
+                            ],
+                          ).p(20),
+                        ),
+                      ),
                 const HeightBox(10),
                 InkWell(
                   onTap: () => {

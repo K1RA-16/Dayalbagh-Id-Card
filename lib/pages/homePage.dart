@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
     EncryptedSharedPreferences encryptedSharedPreferences =
         EncryptedSharedPreferences();
     await encryptedSharedPreferences.setString("token", " ");
-
+    dropdownItems.clear();
     Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
   }
 
