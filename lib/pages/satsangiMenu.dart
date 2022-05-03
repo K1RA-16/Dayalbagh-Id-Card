@@ -103,9 +103,10 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
                     ? InkWell(
                         onTap: () => {
                           //print("cgeck"),
-                          if (!progressIndicator)
-                            deleteData(satsangiListData
-                                .satsangiList[satsangiListData.index].uid)
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) =>
+                                  _buildConfirmationBox(context))
                         },
                         child: Card(
                           borderOnForeground: true,
@@ -243,6 +244,60 @@ class _SatsangiMenuState extends State<SatsangiMenu> {
           )),
         ),
       ),
+    );
+  }
+
+  Widget _buildConfirmationBox(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.blueGrey,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text("Please Confrim deletion"),
+      titleTextStyle: TextStyle(fontSize: 18),
+      actions: [
+        15.heightBox,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                if (!progressIndicator) {
+                  deleteData(satsangiListData
+                      .satsangiList[satsangiListData.index].uid);
+                }
+                Navigator.pop(context);
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Confirm',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+                primary: Colors.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+              ),
+            ),
+          ],
+        ),
+        15.heightBox,
+      ],
     );
   }
 }

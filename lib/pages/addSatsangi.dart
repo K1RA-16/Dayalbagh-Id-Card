@@ -5,9 +5,11 @@ import 'dart:typed_data';
 //column in nexxt and finger not available
 //next double check
 import 'package:dayalbaghidregistration/apiAccess/postApis.dart';
+import 'package:dayalbaghidregistration/data/fingerData.dart';
 import 'package:dayalbaghidregistration/data/satsangiData.dart';
 import 'package:dayalbaghidregistration/pages/addChild.dart';
 import 'package:dayalbaghidregistration/pages/listSatsangis.dart';
+import 'package:dayalbaghidregistration/utils/methodChannels.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,6 +31,8 @@ Uint8List fingerData8 = Uint8List(0);
 Uint8List fingerData9 = Uint8List(0);
 Uint8List fingerData10 = Uint8List(0);
 
+late FingerData fingerTemp1;
+late FingerData fingerTemp2;
 int code = 0;
 bool faceLoading = false;
 bool consentLoading = false;
@@ -227,11 +231,11 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   initialiseReader() async {
     try {
-      String x = await AddSatsangi.platform.invokeMethod("initialiseReader");
-      VxToast.show(context, msg: x);
-
+      await MethodChannels().init();
       // ignore: empty_catches
-    } on PlatformException catch (e) {}
+    } on PlatformException catch (e) {
+      VxToast.show(context, msg: "error connecting the device");
+    }
   }
 
   startReadingFirst() async {
@@ -240,7 +244,7 @@ class _AddSatsangiState extends State<AddSatsangi>
       loading = true;
     });
 
-    await AddSatsangi.platform.invokeMethod("startReading1");
+    // fingerTemp1 = await MethodChannels().startAutoCapture(1000, true);
   }
 
   startReadingSecond() async {
@@ -249,26 +253,40 @@ class _AddSatsangiState extends State<AddSatsangi>
       loading = true;
     });
 
-    await AddSatsangi.platform.invokeMethod("startReading2");
+    // fingerTemp2 = await MethodChannels().startAutoCapture(1000, true);
+    // if (fingerTemp1 != null) {
+    //   setState(() {
+    //     fingerData1 = fingerTemp1.fingerImage;
+    //     finger1 = true;
+    //   });
+    // } else {
+    //   VxToast.show(context, msg: "Please place the finger on the scanner");
+    //   setState(() {
+    //     fingerData1 = Uint8List(0);
+    //     finger1 = false;
+    //   });
+    // }
   }
 
   getFingerFinal(
     int fingerIso,
   ) async {
-    Uint8List result = Uint8List(0);
     setState(() {
       dialogLoading = true;
     });
+    int match = 0;
     try {
-      result = await AddSatsangi.platform.invokeMethod("getFingerprint");
+      match = await MethodChannels()
+          .matchISO(fingerTemp1.iSOTemplate, fingerTemp2.iSOTemplate);
     } catch (e) {}
     setState(() {
       dialogLoading = false;
     });
     Navigator.pop(context);
-    if (String.fromCharCodes(result) != "Finger not matched") {
-      Navigator.pop(context);
 
+    if (match > 600) {
+      Navigator.pop(context);
+      print(fingerIso);
       if (fingerIso == 1) {
         if (!finger1) {
           fingerScanned++;
@@ -452,7 +470,10 @@ class _AddSatsangiState extends State<AddSatsangi>
             context: context,
             builder: (BuildContext context) => _buildPopupFinger10(context));
       }
-    } else if (String.fromCharCodes(result) == "Finger not matched") {
+    } else {
+      VxToast.show(context, msg: "finger prints not matched");
+      Navigator.pop(context);
+
       if (fingerIso == 1) {
         finger1 = false;
         showDialog(
@@ -521,11 +542,30 @@ class _AddSatsangiState extends State<AddSatsangi>
 
   getFingerprint(int fingerIso, int index) async {
     Uint8List result = Uint8List(0);
+    int code = 0;
+    print(code);
+    print(index);
     try {
       if (index == 1) {
-        result = await AddSatsangi.platform.invokeMethod("firstFingerPrint");
+        fingerTemp1 =
+            await MethodChannels().startAutoCapture(context, 1000, true);
+        if (fingerTemp1 != null) {
+          code = 1;
+          result = fingerTemp1.fingerImage;
+        } else {
+          code = 0;
+        }
       } else if (index == 2) {
-        result = await AddSatsangi.platform.invokeMethod("secondFingerPrint");
+        fingerTemp2 =
+            await MethodChannels().startAutoCapture(context, 1000, true);
+        if (fingerTemp2 != null) {
+          code = 1;
+          result = fingerTemp1.nfiq > fingerTemp2.nfiq
+              ? fingerTemp1.fingerImage
+              : fingerTemp2.fingerImage;
+        } else {
+          code = 0;
+        }
       }
 
       if (result.isNotEmpty) {
@@ -550,8 +590,9 @@ class _AddSatsangiState extends State<AddSatsangi>
         } else if (fingerIso == 10) {
           fingerData10 = result;
         }
-        int code = convertUint8ListToString(result);
-
+        //int code = convertUint8ListToString(result);
+        print(code);
+        print(index);
         if (code == 0) {
           setState(() {
             loading = false;
@@ -577,7 +618,7 @@ class _AddSatsangiState extends State<AddSatsangi>
               finger10 = false;
             }
           });
-          Navigator.pop(context);
+
           if (index == 1) {
             showDialog(
                 context: context,
@@ -593,13 +634,14 @@ class _AddSatsangiState extends State<AddSatsangi>
 
         if (code == 1) {
           setState(() {
-            Navigator.pop(context);
             if (index == 1) {
+              // print("second");
               showDialog(
                   context: context,
                   builder: (BuildContext context) =>
                       _buildPopupScanSecondTime(context, fingerIso));
             } else if (index == 2) {
+              print("check");
               showDialog(
                   context: context,
                   builder: (BuildContext context) =>
@@ -610,7 +652,9 @@ class _AddSatsangiState extends State<AddSatsangi>
           });
         }
       }
-    } on PlatformException catch (e) {}
+    } on PlatformException catch (e) {
+      print("exception $e");
+    }
   }
 
   int convertUint8ListToString(Uint8List uint8list) {
@@ -1233,11 +1277,8 @@ class _AddSatsangiState extends State<AddSatsangi>
           onPressed: () {
             Navigator.pop(context);
             //print("re read iso $fingerIso");
-            showDialog(
-                context: context,
-                builder: (BuildContext context) =>
-                    _buildPopupFingerprint2(context, fingerIso));
             startReadingSecond();
+            getFingerprint(fingerIso, 2);
           },
           child: const Padding(
             padding: EdgeInsets.all(8.0),
@@ -1266,11 +1307,8 @@ class _AddSatsangiState extends State<AddSatsangi>
           onPressed: () {
             Navigator.pop(context);
             //print("re read iso $fingerIso");
-            showDialog(
-                context: context,
-                builder: (BuildContext context) =>
-                    _buildPopupFingerprint1(context, fingerIso));
             startReadingFirst();
+            getFingerprint(fingerIso, 1);
           },
           child: const Padding(
             padding: EdgeInsets.all(8.0),
@@ -1335,11 +1373,13 @@ class _AddSatsangiState extends State<AddSatsangi>
                 VxToast.show(context,
                     msg: "you cannot scan more than 4 fingerprints");
               } else {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFingerprint1(context, 1));
                 startReadingFirst();
+                getFingerprint(1, 1);
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) =>
+                //         _buildPopupFingerprint1(context, 1));
+
               }
             },
             child: Row(
@@ -1475,11 +1515,12 @@ class _AddSatsangiState extends State<AddSatsangi>
                 VxToast.show(context,
                     msg: "you cannot scan more than 4 fingerprints");
               } else {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFingerprint1(context, 2));
                 startReadingFirst();
+                getFingerprint(2, 1);
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) =>
+                //         _buildPopupFingerprint1(context, 2));
               }
             },
             child: Row(
@@ -1614,11 +1655,12 @@ class _AddSatsangiState extends State<AddSatsangi>
                 VxToast.show(context,
                     msg: "you cannot scan more than 4 fingerprints");
               } else {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFingerprint1(context, 3));
                 startReadingFirst();
+                getFingerprint(3, 1);
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) =>
+                //         _buildPopupFingerprint1(context, 3));
               }
             },
             child: Row(
@@ -1753,11 +1795,12 @@ class _AddSatsangiState extends State<AddSatsangi>
                 VxToast.show(context,
                     msg: "you cannot scan more than 4 fingerprints");
               } else {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFingerprint1(context, 4));
                 startReadingFirst();
+                getFingerprint(4, 1);
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) =>
+                //         _buildPopupFingerprint1(context, 4));
               }
             },
             child: Row(
@@ -1895,11 +1938,12 @@ class _AddSatsangiState extends State<AddSatsangi>
                 VxToast.show(context,
                     msg: "you cannot scan more than 4 fingerprints");
               } else {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFingerprint1(context, 5));
                 startReadingFirst();
+                getFingerprint(5, 1);
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) =>
+                //         _buildPopupFingerprint1(context, 5));
               }
             },
             child: Row(
@@ -2038,11 +2082,12 @@ class _AddSatsangiState extends State<AddSatsangi>
                 VxToast.show(context,
                     msg: "you cannot scan more than 4 fingerprints");
               } else {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFingerprint1(context, 6));
                 startReadingFirst();
+                getFingerprint(6, 1);
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) =>
+                //         _buildPopupFingerprint1(context, 6));
               }
             },
             child: Row(
@@ -2180,11 +2225,12 @@ class _AddSatsangiState extends State<AddSatsangi>
                 VxToast.show(context,
                     msg: "you cannot scan more than 4 fingerprints");
               } else {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFingerprint1(context, 7));
                 startReadingFirst();
+                getFingerprint(7, 1);
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) =>
+                //         _buildPopupFingerprint1(context, 7));
               }
             },
             child: Row(
@@ -2322,11 +2368,12 @@ class _AddSatsangiState extends State<AddSatsangi>
                 VxToast.show(context,
                     msg: "you cannot scan more than 4 fingerprints");
               } else {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFingerprint1(context, 8));
                 startReadingFirst();
+                getFingerprint(8, 1);
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) =>
+                //         _buildPopupFingerprint1(context, 8));
               }
             },
             child: Row(
@@ -2464,11 +2511,12 @@ class _AddSatsangiState extends State<AddSatsangi>
                 VxToast.show(context,
                     msg: "you cannot scan more than 4 fingerprints");
               } else {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFingerprint1(context, 9));
                 startReadingFirst();
+                getFingerprint(9, 1);
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) =>
+                //         _buildPopupFingerprint1(context, 9));
               }
             },
             child: Row(
@@ -2606,11 +2654,12 @@ class _AddSatsangiState extends State<AddSatsangi>
                 VxToast.show(context,
                     msg: "you cannot scan more than 4 fingerprints");
               } else {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildPopupFingerprint1(context, 10));
                 startReadingFirst();
+                getFingerprint(10, 1);
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) =>
+                //         _buildPopupFingerprint1(context, 10));
               }
             },
             child: Row(
@@ -2689,57 +2738,68 @@ class _AddSatsangiState extends State<AddSatsangi>
     );
   }
 
-  Widget _buildPopupFingerprint1(BuildContext context, int fingerIso) {
-    return AlertDialog(
-      backgroundColor: Colors.blueGrey,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: "Continue".text.make().centered(),
-      titleTextStyle: TextStyle(fontSize: 18),
-      actions: <Widget>[
-        5.heightBox,
-        "please wait until the red light turns off".text.make(),
-        5.heightBox,
-        Center(
-          child: InkWell(
-            onTap: () {
-              getFingerprint(fingerIso, 1);
-            },
-            child: Icon(
-              Icons.arrow_circle_right,
-              size: 60,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildPopupFingerprint1(BuildContext context, int fingerIso) {
+  //   return AlertDialog(
+  //     backgroundColor: Colors.blueGrey,
+  //     title: Text("Click to Start Scan").centered(),
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+  //     titleTextStyle: TextStyle(fontSize: 18),
+  //     actions: [
+  //       5.heightBox,
+  //       Text("Place the finger on the scanner until the red light turns off")
+  //           .centered()
+  //           .p(5),
+  //       5.heightBox,
+  //       Center(
+  //         child: InkWell(
+  //           onTap: () {
+  //             getFingerprint(fingerIso, 1);
+  //           },
+  //           child: Icon(
+  //             Icons.arrow_circle_right,
+  //             size: 60,
+  //             color: Colors.white,
+  //           ),
+  //         ),
+  //       ),
+  //       // ],
+  //     ],
+  //     // scrollable: true,
+  //     // backgroundColor: Colors.blueGrey,
+  //     // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+  //     // //  title: "Continue".text.make().centered(),
+  //     // titleTextStyle: TextStyle(fontSize: 18),
+  //     //
+  //   );
+  // }
 
-  Widget _buildPopupFingerprint2(BuildContext context, int fingerIso) {
-    return AlertDialog(
-      backgroundColor: Colors.blueGrey,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text("Continue").centered(),
-      titleTextStyle: TextStyle(fontSize: 18),
-      actions: <Widget>[
-        5.heightBox,
-        "please wait until the red light turns off".text.make(),
-        5.heightBox,
-        Center(
-          child: InkWell(
-            onTap: () {
-              getFingerprint(fingerIso, 2);
-            },
-            child: Icon(
-              Icons.arrow_circle_right,
-              size: 60,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildPopupFingerprint2(BuildContext context, int fingerIso) {
+  //   return AlertDialog(
+  //     backgroundColor: Colors.blueGrey,
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+  //     title: Text("Click to Start Scan").centered(),
+  //     titleTextStyle: TextStyle(fontSize: 18),
+  //     actions: [
+  //       5.heightBox,
+  //       Text("Place the finger on the scanner until the red light turns off")
+  //           .centered()
+  //           .p(5),
+  //       5.heightBox,
+  //       Center(
+  //         child: InkWell(
+  //           onTap: () {
+  //             getFingerprint(fingerIso, 2);
+  //           },
+  //           child: Icon(
+  //             Icons.arrow_circle_right,
+  //             size: 60,
+  //             color: Colors.white,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildPopUpWait(BuildContext context) {
     return AlertDialog(
@@ -2788,7 +2848,7 @@ class _AddSatsangiState extends State<AddSatsangi>
       title: Text("Please take second scan of \n-> ${fingerIsoMap[fingerIso]}"),
       titleTextStyle: TextStyle(fontSize: 18),
       actions: [
-        "Remove the finger and place it again".text.make(),
+        Text("Remove the finger and place it again"),
         15.heightBox,
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -2796,11 +2856,9 @@ class _AddSatsangiState extends State<AddSatsangi>
             primary: Colors.orange,
           ),
           onPressed: () {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) =>
-                    _buildPopupFingerprint2(context, fingerIso));
             startReadingSecond();
+
+            getFingerprint(fingerIso, 2);
           },
           child: const Padding(
             padding: EdgeInsets.all(8.0),

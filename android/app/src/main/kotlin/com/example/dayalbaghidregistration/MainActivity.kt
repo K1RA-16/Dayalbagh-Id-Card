@@ -23,6 +23,7 @@ import androidx.core.app.ActivityCompat
 
 import androidx.core.content.ContextCompat
 import java.util.jar.Manifest
+import kotlin.math.log
 
 
 class MainActivity: FlutterActivity() , MFS100Event {
@@ -62,29 +63,72 @@ class MainActivity: FlutterActivity() , MFS100Event {
         ).setMethodCallHandler { call, result ->
             // Note: this method is invoked on the main thread.
             // TODO
+            when(call.method){
 
-            if (call.method == "startReading1") {
+                "init" ->{
+//                    Log.e("result","");
+//                    result.success(1);
+//                    var ret = InitScanner(context)//
+//                    Log.e("result","$ret");
+                    result.success(onStart(this))
+                }
 
-                InitScanner(this);
-                byteArray1 = ByteArray(0);
-                StartSyncCapture(1);
-                //result.success(list);
-                //MFS100Test().Stop();
+                "autoCapture" ->{
+                    mfs100!!.Init()
+                    val map = call.arguments as Map<String, Any>
+                    val fingerData=FingerData()
+                    val ret= mfs100!!.AutoCapture(fingerData, map["timeout"] as Int,map["detectFinger"] as Boolean)
 
-            }else if(call.method == "startReading2"){
-                InitScanner(this);
-                byteArray2 = ByteArray(0);
-                StartSyncCapture(2);
-            }
-            else if(call.method == "firstFingerPrint"){
-                Stop()
-                result.success(byteArray1)
-            }
-            else if(call.method == "secondFingerPrint"){
-                Stop()
-                result.success(byteArray2)
-            }
-            else if (call.method == "getPhoneData") {
+                    if (ret==0){
+
+                        val data=HashMap<String,Any>()
+                        data["finger_image"]=fingerData.FingerImage()
+                        data["quality"]=fingerData.Quality()
+                        data["nfiq"]=fingerData.Nfiq()
+                        data["raw_data"]=fingerData.RawData()
+                        data["iso_template"]=fingerData.ISOTemplate()
+                        data["in_width"]=fingerData.InWidth()
+                        data["in_height"]=fingerData.InHeight()
+                        data["in_area"]=fingerData.InArea()
+                        data["resolution"]=fingerData.Resolution()
+                        data["greyscale"]=fingerData.GrayScale()
+                        data["bpp"]=fingerData.Bpp()
+                        data["wsq_compress_ratio"]=fingerData.WSQCompressRatio()
+                        data["wsq_info"]=fingerData.WSQInfo()
+
+                        result.success(data)
+
+                    }else{
+                        Log.e("error",mfs100!!.GetErrorMsg(ret))
+                        result.error(ret.toString(),mfs100!!.GetErrorMsg(ret),null)
+                    }
+
+                }
+
+                "matchISO" ->{
+                    val map = call.arguments as Map<*, *>
+                    val ret= mfs100!!.MatchISO(map["firstTemplate"] as ByteArray ,map["secondTemplate"] as ByteArray)
+                    result.success(ret)
+                }
+
+                "stopAutoCapture" ->{
+
+                    result.success(mfs100!!.StopAutoCapture())
+                }
+
+                "getPlatformVersion" ->{
+                    result.success(0)
+                }
+
+                "getErrorMessage" ->{
+                    val map = call.arguments as Map<*, *>
+                    result.success(mfs100!!.GetErrorMsg(map["error"] as Int))
+                }
+
+                "dispose" ->{
+                    mfs100!!.Dispose()
+                }
+                "getPhoneData"-> {
 
                 var m:MutableMap<String, String> = mutableMapOf();
                 val manager: TelephonyManager =
@@ -110,7 +154,6 @@ class MainActivity: FlutterActivity() , MFS100Event {
 //
 //                    }
                 }
-                val manufacturer = Build.MANUFACTURER
                 val deviceModel = Build.MODEL
                 val deviceBrand = Build.BRAND
 
@@ -121,41 +164,106 @@ class MainActivity: FlutterActivity() , MFS100Event {
 
 
             }
-            else if(call.method == "getFingerprint") {
-                val ret = mfs100?.MatchISO(iso1, iso2);
-                if (ret != null) {
-                    if (ret >= 0) {
-                        if (ret >= 96) {
-                            if (nfiq1!! > nfiq2!!) {
-                                result.success(byteArray2)
-                            } else if (nfiq2!! > nfiq1!!) {
-                                result.success(byteArray1)
-                            }
-                        } else {
-                            Log.d("finger","not matched")
-                            var bytearray = ByteArray(0);
-                            bytearray = "Finger not matched".toByteArray()
-                            result.success(bytearray)
-                        }
-                    } else{var bytearray = ByteArray(0);
-                        bytearray = (mfs100?.GetErrorMsg(ret)).toString().toByteArray()
-                        result.success(bytearray)}
+                "unInit" ->{
+                    result.success(mfs100!!.UnInit())
+                }
 
-                };
-            }
-            else if(call.method == "initialiseReader"){
-                onStart(this);
-
-//                result.success(code);
+                else -> result.notImplemented()
 
             }
-            else {
-                result.notImplemented()
-            }
+//            if (call.method == "startReading1") {
+//
+//                InitScanner(this);
+//                byteArray1 = ByteArray(0);
+//                StartSyncCapture(1);
+//                //result.success(list);
+//                //MFS100Test().Stop();
+//
+//            }else if(call.method == "startReading2"){
+//                InitScanner(this);
+//                byteArray2 = ByteArray(0);
+//                StartSyncCapture(2);
+//            }
+//            else if(call.method == "firstFingerPrint"){
+//                Stop()
+//                result.success(byteArray1)
+//            }
+//            else if(call.method == "secondFingerPrint"){
+//                Stop()
+//                result.success(byteArray2)
+//            }
+//            else if (call.method == "getPhoneData") {
+//
+//                var m:MutableMap<String, String> = mutableMapOf();
+//                val manager: TelephonyManager =
+//                    context.getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+//                val carrierName: String = manager.getNetworkOperatorName()
+//                Log.d("carrier",carrierName)
+//                val permissionCheck =
+//                    ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE)
+//
+//                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+//                    ActivityCompat.requestPermissions(
+//                        this,
+//                        arrayOf(android.Manifest.permission.READ_PHONE_STATE),
+//                        REQUEST_READ_PHONE_STATE
+//                    )
+//                } else {
+//                    val imei = manager.imei
+//                    m["imei"] = imei;
+////                    try{
+////                    val data = manager.isDataEnabled
+////                    m["data"] = data.toString()}
+////                    catch (e:Exception){
+////
+////                    }
+//                }
+//                val manufacturer = Build.MANUFACTURER
+//                val deviceModel = Build.MODEL
+//                val deviceBrand = Build.BRAND
+//
+//                m["phoneBrand"]=deviceBrand;
+//                m["phoneModel"] = deviceModel
+//                m["carrier"] = carrierName;
+//                result.success(m);
+//
+//
+//            }
+//            else if(call.method == "getFingerprint") {
+//                val ret = mfs100?.MatchISO(iso1, iso2);
+//                if (ret != null) {
+//                    if (ret >= 0) {
+//                        if (ret >= 96) {
+//                            if (nfiq1!! > nfiq2!!) {
+//                                result.success(byteArray2)
+//                            } else if (nfiq2!! > nfiq1!!) {
+//                                result.success(byteArray1)
+//                            }
+//                        } else {
+//                            Log.d("finger","not matched")
+//                            var bytearray = ByteArray(0);
+//                            bytearray = "Finger not matched".toByteArray()
+//                            result.success(bytearray)
+//                        }
+//                    } else{var bytearray = ByteArray(0);
+//                        bytearray = (mfs100?.GetErrorMsg(ret)).toString().toByteArray()
+//                        result.success(bytearray)}
+//
+//                };
+//            }
+//            else if(call.method == "initialiseReader"){
+//                onStart(this);
+//
+////                result.success(code);
+//
+//            }
+//            else {
+//                result.notImplemented()
+//            }
         }
     }
 
-    protected fun onStart(mCOntext: Context) {
+    protected fun onStart(mCOntext: Context):Int {
         try {
 
             mfs100 = MFS100(this)
@@ -171,8 +279,10 @@ class MainActivity: FlutterActivity() , MFS100Event {
             } else {
                  InitScanner(mCOntext)
             }
+            return 1;
         } catch (e: Exception) {
             e.printStackTrace()
+            return -1;
         }
 
     }
@@ -191,10 +301,11 @@ class MainActivity: FlutterActivity() , MFS100Event {
     }
 
 
-    private fun InitScanner(context: Context){
+    private fun InitScanner(context: Context):Int{
          try {
 
             val ret = mfs100!!.Init()
+             Log.d("error","$ret")
             if (ret != 0) {
                 val x = mfs100!!.GetErrorMsg(ret)
                 Log.d("error","$x $ret")
@@ -203,10 +314,14 @@ class MainActivity: FlutterActivity() , MFS100Event {
                     mfs100!!.GetDeviceInfo().Make()
                 } Model: ${mfs100!!.GetDeviceInfo().Model()}
 Certificate: ${mfs100!!.GetCertification()}"""
+
             }
+             return ret;
         } catch (ex: Exception) {
             "exception"
+             return -1;
         }
+
     }
 
     protected fun StartSyncCapture(index:Int) {
