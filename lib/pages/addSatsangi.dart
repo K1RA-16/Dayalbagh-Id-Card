@@ -187,7 +187,9 @@ class _AddSatsangiState extends State<AddSatsangi>
             builder: (BuildContext context) => _buildPopupImage(context));
         setState(() {});
       }
-    } catch (e) {}
+    } catch (e) {
+      print("exception");
+    }
   }
 
   getConsent() async {
